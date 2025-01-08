@@ -1,0 +1,5 @@
+/* Disable scrolling */
+.w-full {
+    overflow: hidden; /* Prevents scrolling */
+  }
+  
