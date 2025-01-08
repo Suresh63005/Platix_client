@@ -1,0 +1,9 @@
+/* Custom styling for the SweetAlert2 popup */
+.swal-popup-custom {
+    border-radius: 12px; /* Curved square with rounded corners */
+    padding: 20px;
+    width: auto;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: add shadow for better appearance */
+  }
+  
