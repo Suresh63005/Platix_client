@@ -71,7 +71,7 @@ const OrganizationList = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
-      <div className="organization-list-container w-full md:pl-4 flex flex-col">
+      <div className="organization-list-container bg-white w-full md:pl-4 flex flex-col">
         <Header name={"Organizations"} />
 
         <Pagetitle
@@ -81,7 +81,7 @@ const OrganizationList = () => {
           filterValue={filter}
           onFilterChange={handleFilterChange}
           options={filterOptions}
-          searchPlaceholder="Search organizations..."
+          searchPlaceholder="Search "
           onSearch={handleSearch}
         />
 

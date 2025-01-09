@@ -42,11 +42,11 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
 
   return (
     <div className="reports-container p-4 flex-1">
-      <div className="table-container bg-white border border-gray-300 shadow-sm rounded-md p-4">
-        <div className="w-full max-h-[400px]">
-          <table className="text-sm min-w-max overscroll-auto">
+      <div className="table-container bg-white border  shadow-sm rounded-md p-4 w-[981px]">
+        <div className="w-full max-h-[400px] overflow-auto">
+          <table className="text-sm min-w-full table-auto">
             <thead>
-              <tr className="border-b bg-gray-50">
+              <tr className="border-b ">
                 <th className="p-2 text-center">
                   <input
                     type="checkbox"
@@ -70,7 +70,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
             </thead>
             <tbody>
               {paginatedData.map((item, index) => (
-                <tr key={item.id} className="border-b hover:bg-gray-100">
+                <tr key={item.id} className="border-b ">
                   <td className="p-2 text-center">
                     <input
                       type="checkbox"
@@ -103,13 +103,13 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
         </div>
 
         {/* Pagination */}
-        <div className="pagination-container flex items-center justify-between mt-4 flex-wrap gap-4">
+        <div className="pagination-container flex items-center justify-between mt-4 flex-wrap gap-4 w-full">
           <div className="showing-container text-gray-700 font-medium text-sm">
             Showing page {currentPage} of {totalPages}
           </div>
           <div className="flex items-center font-medium text-sm gap-4">
             <button
-              className={`bg-gray-200 p-2 rounded ${
+              className={`bg-[#F3E6F2] p-2 rounded ${
                 currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
               onClick={handlePrevious}
@@ -121,7 +121,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
               Page {currentPage} of {totalPages}
             </div>
             <button
-              className={`bg-blue-600 text-white p-2 rounded ${
+              className={`bg-[#660F5D] text-white p-2 rounded ${
                 currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
               }`}
               onClick={handleNext}

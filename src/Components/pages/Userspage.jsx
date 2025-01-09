@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
-import FilterDropdown from "../../common/FilterDropdown"; // Import the FilterDropdown component
+
 
 const Userspage = () => {
   const [users, setUsers] = useState([]);

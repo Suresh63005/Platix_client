@@ -88,7 +88,7 @@ const CreateOrganization = () => {
                 <label htmlFor="google-coordinates" className="block text-xs font-medium">
                   Google Coordinates
                 </label>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex  gap-3">
                   <InputField type={"text"} placeholder={"Longitude"} className="p-2" />
                   <InputField type={"text"} placeholder={"Latitude"} className="p-2" />
                 </div>
