@@ -60,76 +60,76 @@ const CreateOrganization = () => {
           <h3 className="form-title text-lg font-bold mb-4">Create Organization</h3>
 
           {/* Form Section */}
-          <form className="grid gap-6" onSubmit={handleSubmit}>
-            {/* Form Row 1 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              <InputField
-                label={"Organization Name"}
-                type={"text"}
-                placeholder={"Enter Organization Name"}
-                className="p-2"
-              />
-              <SelectField
-                label="Organization Type"
-                options={[
-                  { value: "", label: "Select Role" },
-                  { value: "Dentist", label: "Dentist" },
-                  { value: "Radiology", label: "Radiology" }
-                ]}
-                className="p-2"
-              />
-              <InputField 
-                label={"Address"} 
-                type={"text"} 
-                placeholder={"Enter Address"} 
-                className="p-2" 
-              />
-              <div className="flex flex-col p-2">
-                <label htmlFor="google-coordinates" className="block text-xs font-medium">
-                  Google Coordinates
-                </label>
-                <div className="flex  gap-3">
-                  <InputField type={"text"} placeholder={"Longitude"} className="p-2" />
-                  <InputField type={"text"} placeholder={"Latitude"} className="p-2" />
-                </div>
-              </div>
-            </div>
+          <form className="grid gap-4" onSubmit={handleSubmit}> {/* Decrease gap between rows */}
+  {/* Form Row 1 */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"> {/* Adjust column gap */}
+    <InputField
+      label={"Organization Name"}
+      type={"text"}
+      placeholder={"Enter Organization Name"}
+      className="p-1" /* Reduced padding for tighter spacing */
+    />
+    <SelectField
+      label="Organization Type"
+      options={[
+        { value: "", label: "Select Role" },
+        { value: "Dentist", label: "Dentist" },
+        { value: "Radiology", label: "Radiology" }
+      ]}
+      className="p-1"
+    />
+    <InputField
+      label={"Address"}
+      type={"text"}
+      placeholder={"Enter Address"}
+      className="p-1"
+    />
+    <div className="flex flex-col p-1 mt-[-5px]">
+      <label htmlFor="google-coordinates" className="block text-xs font-medium">
+        Google Coordinates
+      </label>
+      <div className="flex gap-2"> {/* Adjusted spacing between longitude and latitude inputs */}
+        <InputField type={"text"} placeholder={"Longitude"} className="p-1"/>
+        <InputField type={"text"} placeholder={"Latitude"} className="p-1" />
+      </div>
+    </div>
+  </div>
 
-            {/* Form Row 2 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              <PhoneNumberInput
-                value={phoneNumber}
-                onChange={setPhoneNumber}
-                defaultCountry="US"
-                label={"Phone Number"}
-                className="p-2"
-              />
-              <WhatsAppInput
-                label={"WhatsApp Number"}
-                value={whatsAppNumber}
-                onChange={(e) => setWhatsAppNumber(e.target.value)}
-                className="p-2"
-              />
-              <InputField label="Email" type="email" placeholder="Enter Email" className="p-2" />
-              <InputField label="Business Name" type="text" placeholder="Enter Business Name" className="p-2" />
-            </div>
+  {/* Form Row 2 */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <PhoneNumberInput
+      value={phoneNumber}
+      onChange={setPhoneNumber}
+      defaultCountry="US"
+      label={"Phone Number"}
+      className="p-1"
+    />
+    <WhatsAppInput
+      label={"WhatsApp Number"}
+      value={whatsAppNumber}
+      onChange={(e) => setWhatsAppNumber(e.target.value)}
+      className="p-1"
+    />
+    <InputField label="Email" type="email" placeholder="Enter Email" className="p-1" />
+    <InputField label="Business Name" type="text" placeholder="Enter Business Name" className="p-1" />
+  </div>
 
-            {/* Form Row 3 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              <InputField label="GST" type="text" placeholder="Enter GST Number" className="p-2" />
-              <SelectField
-                label="Designation"
-                options={[
-                  { value: "Dentist", label: "Dentist" },
-                  { value: "Radiology", label: "Radiology" }
-                ]}
-                className="p-2"
-              />
-            </div>
+  {/* Form Row 3 */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+    <InputField label="GST" type="text" placeholder="Enter GST Number" className="p-1" />
+    <SelectField
+      label="Designation"
+      options={[
+        { value: "Dentist", label: "Dentist" },
+        { value: "Radiology", label: "Radiology" }
+      ]}
+      className="p-1"
+    />
+  </div>
 
-            <FileUpload />
-            <Submit />
-          </form>
+  <FileUpload className="p-1" />
+  <Submit className="p-1" />
+</form>
         </div>
 
         {/* User Services Component */}

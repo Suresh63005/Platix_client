@@ -1,11 +1,30 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import axios from "axios"; // Import axios for API calls
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState(""); // State for email input
+  const [password, setPassword] = useState(""); // State for password input
+  const [error, setError] = useState(""); // State for error messages
+  const navigate = useNavigate(); // Hook to navigate programmatically
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent form from reloading the page
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/admin/login", { email, password });
+      // If login is successful, store the token and navigate to the dashboard
+      localStorage.setItem("token", response.data.token); // Save token in localStorage
+      navigate("/organizationlist"); 
+    } catch (error) {
+      setError(error.response?.data?.message || "Something went wrong"); // Show error message
+    }
   };
 
   return (
@@ -20,9 +39,14 @@ const Login = () => {
             />
           </div>
           <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">
-            Login with phone number
+            Login with Email
           </h3>
-          <form>
+          {error && (
+            <div className="mb-4 text-red-500 text-sm text-center">
+              {error} {/* Display error message */}
+            </div>
+          )}
+          <form onSubmit={handleSubmit}>
             {/* Email Field */}
             <div className="mb-4">
               <label
@@ -38,6 +62,8 @@ const Login = () => {
                 <input
                   type="email"
                   id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)} // Set email value
                   className="w-full py-2 px-0 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="eg : platix@gmail.com"
                 />
@@ -58,6 +84,8 @@ const Login = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)} // Set password value
                   className="w-full py-2 px-0 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="password"
                 />
@@ -72,7 +100,7 @@ const Login = () => {
                 </span>
               </div>
               <h4 className="text-sm text-[#131313] text-right mt-1 cursor-pointer font-medium">
-                Forgot Password?
+                <Link to="/forgotpass">Forgot Password?</Link> {/* Add Link */}
               </h4>
             </div>
             {/* Login Button */}

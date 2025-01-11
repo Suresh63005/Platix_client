@@ -31,8 +31,8 @@ const Settings = () => {
                   Website Image
                 </label>
                 <input
-                  type="text"
-                  placeholder="Enter Name"
+                  type="file"
+                  // placeholder="Enter Name"
                   className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D]"
                 />
               </div>
