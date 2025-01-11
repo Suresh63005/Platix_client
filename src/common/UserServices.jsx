@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Edit, Delete } from "@mui/icons-material";
+import { Edit } from "@mui/icons-material";
 
 const UserServices = () => {
   const [services, setServices] = useState([]);

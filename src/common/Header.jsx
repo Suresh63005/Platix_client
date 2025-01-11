@@ -1,8 +1,14 @@
 import React from 'react';
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
+import { useNavigate } from 'react-router-dom';
 import { ReactComponent as UserIcon } from "../assets/images/icon.svg";
 
 const Header = ({ name }) => {
+  const navigate = useNavigate();
+
+  const navigateToAccount = () => {
+    navigate('/Account');
+  };
+
   return (
     <div>
       <div className="header-container flex justify-between items-center h-[75px] bg-white p-3 ml-0">
@@ -10,7 +16,7 @@ const Header = ({ name }) => {
         <div className="users-title text-xl font-bold hidden sm:block">{name}</div>
 
         {/* Account icon (always on the right side) */}
-        <div className="account-icon ml-auto bg-[#F3E6F2] rounded-full p-2">
+        <div className="account-icon ml-auto bg-[#F3E6F2] rounded-full p-2" onClick={navigateToAccount}>
           <UserIcon className="w-6 h-6" /> {/* Adjust size using Tailwind classes */}
         </div>
       </div>

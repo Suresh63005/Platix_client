@@ -8,3 +8,8 @@
 
 }
 /*  */
+/* Hide scrollbar but keep the scrollable area */
+.overflow-y-scroll{
+    scrollbar-width: thin;
+    scrollbar-color: #660F5D;
+}

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
+import { useNavigate } from "react-router-dom";
 import Header from '../../common/Header';
 import PageNavigation from '../../common/PageNavigation';
 import { InputField } from '../../common/Input_fileds';
@@ -10,15 +11,22 @@ const CreateOrganizationType = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
 
+  const navigate = useNavigate();
+  
+  const handleBackClick = () => {
+    navigate(-1); // Go to the previous page
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     // Add form submission logic
   };
+  
 
   return (
     <div className="create-organization-type-container flex flex-col min-h-screen bg-gray-100">
       <Header name={"Organization Types"} />
-      <PageNavigation title={"Create Organization Type"} />
+      <PageNavigation title={"Create Organization Type"} onBackClick={handleBackClick}/>
 
       <div className="create-organization-form-container flex-1 bg-white px-6 py-4 rounded-lg shadow-md mx-4 mb-4">
         <form className="organization-form-container space-y-4" onSubmit={handleSubmit}>

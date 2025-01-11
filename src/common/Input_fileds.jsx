@@ -14,7 +14,7 @@ export const Header = ({ name }) => (
 
 // Input Field Component
 export const InputField = ({ label, type, placeholder, value, onChange }) => (
-  <div className="mb-4">
+  <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <input
       type={type}
@@ -28,7 +28,7 @@ export const InputField = ({ label, type, placeholder, value, onChange }) => (
 
 // Select Field Component
 export const SelectField = ({ label, options, value, onChange }) => (
-  <div className="mb-4">
+  <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <select
       value={value}
@@ -46,7 +46,7 @@ export const SelectField = ({ label, options, value, onChange }) => (
 
 // Phone Input Component
 export const PhoneNumberInput = ({ label, value, onChange, defaultCountry }) => (
-  <div className="mb-4">
+  <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <div className="flex items-center rounded-md border border-gray-300 focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] overflow-hidden">
       <PhoneInput
@@ -66,7 +66,7 @@ export const PhoneNumberInput = ({ label, value, onChange, defaultCountry }) => 
 
 // WhatsApp Input Component
 export const WhatsAppInput = ({ label, value, onChange }) => (
-  <div className="mb-4">
+  <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <div className="flex items-center rounded-md border border-gray-300 focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D]">
       <WhatsApp color="success" className="ml-2" fontSize="small" />
