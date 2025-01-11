@@ -18,10 +18,10 @@ import UserReports from "./Components/Reports/UserReports";
 import OrderReports from "./Components/Reports/OrderReports";
 import PaymentsReports from "./Components/Reports/PaymentsReports";
 import RevenueReports from "./Components/Reports/RevenueReports";
+import Settings from "./Components/SettingsPage/Settings";
+import Account from "./Components/pages/Account";
 // Custom hook to use Auth Context
 // const useAuth = () => useContext(AuthContext);
-
-
 
 // Sidebar Layout Component
 function LayoutSidebar({ children }) {
@@ -35,150 +35,138 @@ function LayoutSidebar({ children }) {
 
 function App() {
   return (
-    
-      <div className="App">
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Login />} />
-            <Route path="/forgotpass" element={<Forgotpass />} />
-            <Route path="/createnewpass" element={<Createnewpass />} />
+    <div className="App">
+      <BrowserRouter>
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/forgotpass" element={<Forgotpass />} />
+          <Route path="/createnewpass" element={<Createnewpass />} />
 
-            {/* Protected Route with Sidebar Layout */}
-            <Route
-              path="/userpage"
-              element={
-                
-                  <LayoutSidebar>
-                    <Userspage />
-                  </LayoutSidebar>
-                
-              }
-            />
-            <Route
-              path="/createuser"
-              element={
-                
-                  <LayoutSidebar>
-                    <Createuser/>
-                  </LayoutSidebar>
-                
-              }
-            />
-            <Route
-              path="/roles-list"
-              element={
-                
-                  <LayoutSidebar>
-                    <Rolespage/>
-                  </LayoutSidebar>
-                
-              }
-            />
-            <Route
-              path="/createorganization"
-              element={
-                
-                  <LayoutSidebar>
-                    <CreateOrganization/>
-                  </LayoutSidebar>
-                
-              }
-            />
-            <Route
-              path="/organizationlist"
-              element={
-                
-                  <LayoutSidebar>
-                    <Organizationlist/>
-                  </LayoutSidebar>
-                
-              }
-            />
-            <Route
-              path="/organizationtypelist"
-              element={
-                
-                  <LayoutSidebar>
-                    <OrganizationTypelist/>
-                  </LayoutSidebar>
-                
-              }
-            />
-              <Route
-              path="/createorganizationtype"
-              element={
-                
-                  <LayoutSidebar>
-                    <CreateOrganizationType/>
-                  </LayoutSidebar>
-                
-              }
-            />
-              <Route
-              path="/services"
-              element={
-                
-                  <LayoutSidebar>
-                    <Services/>
-                  </LayoutSidebar>
-                
-              }
-            />
-              <Route
-              path="/createservice"
-              element={
-                
-                  <LayoutSidebar>
-                    <CreateService/>
-                  </LayoutSidebar>
-                
-              }
-            />
-              <Route
-              path="/userreports"
-              element={
-                
-                  <LayoutSidebar>
-                    <UserReports/>
-                  </LayoutSidebar>
-                
-              }
-            />
-              <Route
-              path="/orderreports"
-              element={
-                
-                  <LayoutSidebar>
-                    <OrderReports/>
-                  </LayoutSidebar>
-                
-              }
-            />
-              <Route
-              path="/paymentreports"
-              element={
-                
-                  <LayoutSidebar>
-                    <PaymentsReports/>
-                  </LayoutSidebar>
-                
-              }
-            />
-              <Route
-              path="/revenuereports"
-              element={
-                
-                  <LayoutSidebar>
-                    <RevenueReports/>
-                  </LayoutSidebar>
-                
-              }
-            />
-          </Routes>
-        </BrowserRouter>
-      </div>
-    
+          {/* Protected Route with Sidebar Layout */}
+          <Route
+            path="/userpage"
+            element={
+              <LayoutSidebar>
+                <Userspage />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/createuser"
+            element={
+              <LayoutSidebar>
+                <Createuser />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/roles-list"
+            element={
+              <LayoutSidebar>
+                <Rolespage />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/createorganization"
+            element={
+              <LayoutSidebar>
+                <CreateOrganization />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/organizationlist"
+            element={
+              <LayoutSidebar>
+                <Organizationlist />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/organizationtypelist"
+            element={
+              <LayoutSidebar>
+                <OrganizationTypelist />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/createorganizationtype"
+            element={
+              <LayoutSidebar>
+                <CreateOrganizationType />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/services"
+            element={
+              <LayoutSidebar>
+                <Services />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/createservice"
+            element={
+              <LayoutSidebar>
+                <CreateService />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/userreports"
+            element={
+              <LayoutSidebar>
+                <UserReports />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/orderreports"
+            element={
+              <LayoutSidebar>
+                <OrderReports />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/paymentreports"
+            element={
+              <LayoutSidebar>
+                <PaymentsReports />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/revenuereports"
+            element={
+              <LayoutSidebar>
+                <RevenueReports />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <LayoutSidebar>
+                <Settings />
+              </LayoutSidebar>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <LayoutSidebar>
+                <Account />
+              </LayoutSidebar>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 

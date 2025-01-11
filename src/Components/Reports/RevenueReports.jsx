@@ -91,18 +91,24 @@ const RevenueReports = () => {
           item.from.toLowerCase().includes(lowerCaseQuery) ||
           item.to.toLowerCase().includes(lowerCaseQuery)
       );
-      setFilteredData(result);
+      if (JSON.stringify(result) !== JSON.stringify(filteredData)) {
+        setFilteredData(result);
+      }
     } else {
-      setFilteredData(initialData); // Reset to initial data if search query is empty
+      if (JSON.stringify(initialData) !== JSON.stringify(filteredData)) {
+        setFilteredData(initialData);
+      }
     }
-  }, [debouncedSearchQuery, initialData]);
+  }, [debouncedSearchQuery, initialData, filteredData]);
+  
+  
 
   return (
     <div>
       <Header name={"Reports"} />
       <ReportsTitle
         title={"Revenue Reports"}
-        searchPlaceholder="Search by Order ID, From, or To..."
+        searchPlaceholder="Search "
         onSearch={(e) => setSearchQuery(e.target.value)} // Set search query on input change
       />
       <div className="overflow-x-auto w-full">

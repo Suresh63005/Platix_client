@@ -1,7 +1,33 @@
-import React from 'react';
-import { Icon } from '@iconify/react';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Icon } from "@iconify/react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Forgotpass = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm();  // useForm hook
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();  // Initialize useNavigate
+
+  // Handle form submission
+  const onSubmit = async (data) => {
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/forgotpassword", data);
+
+      if (response.status === 200) {
+        setSuccess("A password reset link has been sent to your email.");
+        setError("");  // Clear previous errors
+        setTimeout(() => {
+          navigate("/createnewpass"); // Redirect to /createnewpass
+        }, 3000); // Wait for 3 seconds before redirecting
+      }
+    } catch (err) {
+      setError("Error sending reset link");
+      setSuccess("");  // Clear previous success message
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex items-center justify-center flex-grow">
@@ -19,8 +45,13 @@ const Forgotpass = () => {
           <h3 className="text-center text-[#860579] mb-6 text-[12px]">
             Please enter your Registered Email id to send reset link
           </h3>
-          <form>
-            
+
+          {/* Display error or success messages */}
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+          {success && <div className="text-green-500 mb-4">{success}</div>}
+
+          {/* Form for email input */}
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -35,13 +66,17 @@ const Forgotpass = () => {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   className="w-full py-2 px-0 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
-                  placeholder="eg : platix@gmail.com"
+                  placeholder="eg: platix@gmail.com"
+                  {...register("email", { required: "Email is required" })} // Hook form registration
                 />
               </div>
+              {errors.email && (
+                <p className="text-red-500 text-xs">{errors.email.message}</p>  // Error handling
+              )}
             </div>
 
-            
             <div className="mt-[32px]">
               <button
                 type="submit"
@@ -59,7 +94,7 @@ const Forgotpass = () => {
           </form>
         </div>
       </div>
-      
+
       <div className="flex justify-center py-4 mt-auto bg-white">
         <h4 className="text-sm text-[#131313]">© Copyright 2025 Platix Admin portal</h4>
       </div>
