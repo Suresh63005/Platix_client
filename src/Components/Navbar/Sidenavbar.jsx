@@ -74,7 +74,7 @@ const Sidenavbar = () => {
         } sm:translate-x-0 transition-transform duration-300 z-50 h-full sm:h-auto`}
       >
         {/* Logo Section */}
-        <div className="h-[60px] w-[250px] bg-white flex items-center justify-center relative">
+        <div className="h-[60px] w-[250px] bg-white logo-section flex items-center justify-center relative">
           <img
             src="/assets/images/Frame 427319709.png"
             alt="logo"
@@ -143,7 +143,7 @@ const Sidenavbar = () => {
 
             {/* Submenu */}
             <Collapse style={{ margin: "0px" }} in={isReportsOpen}>
-              <div className="pl-6 space-y-4">
+              <div className="pl-6 space-y-1">
                 {[
                   { label: "User Reports", route: "/userreports" },
                   { label: "Order Reports", route: "/orderreports" },
@@ -157,7 +157,7 @@ const Sidenavbar = () => {
                       className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${
                         activeReport === report.label ||
                         location.pathname.includes(report.route)
-                          ? "bg-white text-[#660F5D] rounded-lg"
+                          ? "bg-gray-100 text-[#660F5D] rounded-lg"
                           : "text-white"
                       }`}
                       role="menuitem"
@@ -176,7 +176,7 @@ const Sidenavbar = () => {
             {/* Settings Section */}
             <div
               onClick={(e) => handleClick("settings", false, e)}
-              className={`flex items-center cursor-pointer p-2 m-4 mt-0 text-[12px] ${
+              className={`flex items-center cursor-pointer p-2 m-4 mt-0 text-[12px]  ${
                 activeItem === "settings"
                   ? "bg-white text-[#660F5D] rounded-lg"
                   : "text-white"
@@ -185,8 +185,8 @@ const Sidenavbar = () => {
               aria-label="Settings" // Accessibility
             >
               <Link to="/settings" className="flex items-center w-full">
-                <SettingsIcon className="w-5 h-5" />
-                <span className="ml-4 mt-0">Settings</span>
+                <SettingsIcon className="w-5 h-5 mb-5" />
+                <span className="ml-4 mt-0 mb-5">Settings</span>
               </Link>
             </div>
           </div>

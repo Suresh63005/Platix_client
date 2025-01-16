@@ -107,12 +107,12 @@ const PaymentsReports = () => {
   }, [debouncedSearchQuery]);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen">
-      <div className="w-full md:pl-4 flex flex-col">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100">
+      <div className="w-full md:pl-0 flex flex-col">
         <Header name={"Reports"} />
         <ReportsTitle
           title={"Payments Reports"}
-          searchPlaceholder="Search by Order ID or Username..."
+          searchPlaceholder="Search"
           onSearch={(e) => setSearchQuery(e.target.value)}
         />
         <div className="w-full flex-grow"> {/* Ensures layout takes full height */}

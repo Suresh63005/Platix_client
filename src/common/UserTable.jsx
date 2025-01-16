@@ -56,8 +56,8 @@ const Table = ({ columns, data, page, totalPages, setPage, fields, setData }) =>
   return (
     <div className="userlist-container p-4 flex-1 overflow-auto">
       <div className="usertable-container bg-white border border-[#EAE5FF] shadow-sm rounded-md p-4 overflow-x-auto h-full">
-        <table className="w-full text-sm">
-          <thead>
+        <table className="w-full text-[12px]">
+          <thead className="text-[12px]">
             <tr className="border-b-[1px] bg-white">
               <th className="p-2 text-center">
                 <input

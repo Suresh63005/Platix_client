@@ -1,60 +1,87 @@
-import React, { useState } from 'react';
-import { Editor, EditorState, RichUtils } from 'draft-js';
-import 'draft-js/dist/Draft.css';
+import React, { useRef, useEffect, useState } from "react";
+import JoditEditor from "jodit-react";
+
+// Debounce function
+const useDebounce = (callback, delay) => {
+  const timeoutRef = useRef(null);
+
+  return (value) => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      callback(value);
+    }, delay);
+  };
+};
 
 const TextEditor = ({ onChange, value }) => {
-  const [editorState, setEditorState] = useState(value || EditorState.createEmpty());
+  const editorRef = useRef(null);
+  const [localValue, setLocalValue] = useState(value || "");
 
-  const handleKeyCommand = (command) => {
-    const newState = RichUtils.handleKeyCommand(editorState, command);
-    if (newState) {
-      setEditorState(newState);
-      return 'handled';
+  const config = {
+    readonly: false, // Enable editing
+    placeholder: "Write something...",
+    height: 300,
+    buttons: [
+      "bold",
+      "italic",
+      "underline",
+      "strikethrough",
+      "|",
+      "ul",
+      "ol",
+      "outdent",
+      "indent",
+      "|",
+      "font",
+      "fontsize",
+      "paragraph",
+      "|",
+      "align",
+      "undo",
+      "redo",
+      "|",
+      "link",
+      "image",
+      "source",
+    ],
+    uploader: {
+      insertImageAsBase64URI: true,
+    },
+    spellcheck: true,
+    toolbarSticky: true,
+    showCharsCounter: false,
+    showWordsCounter: false,
+  };
+
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.focus(); // Auto-focus when the component mounts
     }
-    return 'not-handled';
-  };
+  }, []);
 
-  const toggleBlockType = (blockType) => {
-    const newState = RichUtils.toggleBlockType(editorState, blockType);
-    setEditorState(newState);
-  };
+  const debouncedOnChange = useDebounce((newContent) => {
+    setLocalValue(newContent);
+    if (onChange) {
+      onChange(newContent); // Call parent onChange after debounce
+    }
+  }, 500); // Debounce time in milliseconds
 
-  const toggleInlineStyle = (inlineStyle) => {
-    const newState = RichUtils.toggleInlineStyle(editorState, inlineStyle);
-    setEditorState(newState);
-  };
-
-  const focusEditor = () => {
-    // Focus editor when clicking the editor area
-    document.querySelector('.editor').focus();
-  };
-
-  const handleChange = (editorState) => {
-    setEditorState(editorState);
-    onChange && onChange(editorState);
+  const handleBlur = (content) => {
+    setLocalValue(content);
+    if (onChange) {
+      onChange(content); // Update on blur to avoid unnecessary updates
+    }
   };
 
   return (
     <div className="editor-container">
-      <div className="toolbar">
-        <button onClick={() => toggleBlockType('header-one')}>H1</button>
-        <button onClick={() => toggleBlockType('header-two')}>H2</button>
-        <button onClick={() => toggleInlineStyle('BOLD')}>Bold</button>
-        <button onClick={() => toggleInlineStyle('ITALIC')}>Italic</button>
-        <button onClick={() => toggleInlineStyle('UNDERLINE')}>Underline</button>
-        <button onClick={() => toggleInlineStyle('STRIKETHROUGH')}>Strikethrough</button>
-        <button onClick={() => toggleBlockType('unordered-list-item')}>UL</button>
-        <button onClick={() => toggleBlockType('ordered-list-item')}>OL</button>
-      </div>
-
-      <div className="editor" onClick={focusEditor}>
-        <Editor
-          editorState={editorState}
-          handleKeyCommand={handleKeyCommand}
-          onChange={handleChange}
-          placeholder="Write something..."
-        />
-      </div>
+      <JoditEditor
+        ref={editorRef}
+        value={localValue}
+        config={config}
+        onBlur={handleBlur}
+        onChange={debouncedOnChange} // Use debounced onChange
+      />
     </div>
   );
 };

@@ -54,9 +54,16 @@ const OrganizationList = () => {
     </div>
   );
 
-  const handleFilterChange = (value) => {
-    setFilter(value); // Update filter state
-    setPage(1); // Reset to the first page when filter changes
+  const handleFilterChange = (event) => {
+    if (event && event.target) {
+      const value = event.target.value; // Get the selected value
+      if (value !== undefined) {
+        setFilter(value); // Update the filter state
+        setPage(1); // Reset to the first page when filter changes
+      }
+    } else {
+      console.error("Invalid event or event.target", event);
+    }
   };
 
   const handleSearch = (event) => {
@@ -71,8 +78,8 @@ const OrganizationList = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
-      <div className="organization-list-container bg-white w-full md:pl-4 flex flex-col">
-        <Header name={"Organizations"} />
+      <div className="organization-list-container bg-gray-100 w-full md:pl-0 flex flex-col">
+        <Header name={"Organization"} />
 
         <Pagetitle
           title="Organization List"
@@ -81,10 +88,10 @@ const OrganizationList = () => {
           filterValue={filter}
           onFilterChange={handleFilterChange}
           options={filterOptions}
-          searchPlaceholder="Search "
+          searchPlaceholder="Search.. "
           onSearch={handleSearch}
+          filterPlaceholder={"Filter"}
         />
-
 <Table
   columns={["Organization Name", "Organization Type", "Mobile No", "Users"]}
   fields={["name", "type", "mobile", "icon"]}

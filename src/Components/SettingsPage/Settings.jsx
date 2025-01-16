@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import Header from "../../common/Header";
-import JoditEditor from "jodit-react";
+import TextEditor from "./TextEditor"; // Import TextEditor instead of directly using JoditEditor
 import PasswordInput from "../../common/PasswordInput";
 
 const Settings = () => {
   const [termsContent, setTermsContent] = useState("");
   const [privacyContent, setPrivacyContent] = useState("");
-
-  const config = {
-    readonly: false,
-    height: 300,
-  };
 
   const handleUpdate = () => {
     console.log("Updated terms and privacy policy");
@@ -32,36 +27,15 @@ const Settings = () => {
                 </label>
                 <input
                   type="file"
-                  // placeholder="Enter Name"
-                  className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D]"
+                  className="w-full py-[6px] px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D]"
                 />
               </div>
 
-              <PasswordInput
-                label="Notification API key"
-                placeholder="Enter API key"
-              />
-
-              <PasswordInput
-                label="SMS Gateway API key"
-                placeholder="Enter API key"
-                
-              />
-
-              <PasswordInput
-                label="Payment Gateway API key"
-                placeholder="Enter API key"
-              />
-
-              <PasswordInput
-                label="Email API key"
-                placeholder="Enter API key"
-              />
-
-              <PasswordInput
-                label="WhatsApp API key"
-                placeholder="Enter API key"
-              />
+              <PasswordInput label="Notification API key" placeholder="Enter API key" />
+              <PasswordInput label="SMS Gateway API key" placeholder="Enter API key" />
+              <PasswordInput label="Payment Gateway API key" placeholder="Enter API key" />
+              <PasswordInput label="Email API key" placeholder="Enter API key" />
+              <PasswordInput label="WhatsApp API key" placeholder="Enter API key" />
             </div>
 
             {/* Jodit Editor for Terms and Privacy Side by Side */}
@@ -70,9 +44,8 @@ const Settings = () => {
                 <label className="block text-gray-700 text-sm font-medium mb-2">
                   Privacy Policy
                 </label>
-                <JoditEditor
+                <TextEditor
                   value={privacyContent}
-                  config={config}
                   onChange={(newContent) => setPrivacyContent(newContent)}
                 />
               </div>
@@ -81,9 +54,8 @@ const Settings = () => {
                 <label className="block text-gray-700 text-sm font-medium mb-2">
                   Terms And Conditions
                 </label>
-                <JoditEditor
+                <TextEditor
                   value={termsContent}
-                  config={config}
                   onChange={(newContent) => setTermsContent(newContent)}
                 />
               </div>

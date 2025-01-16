@@ -66,10 +66,10 @@ const Createnewpass = () => {
             />
           </div>
 
-          <h3 className="text-xl font-bold text-gray-800 mb-[12px] text-center">
-            Create Your New Password
+          <h3 className="text-[24px] font-extrabold mb-[12px] text-center">
+            Create New Password
           </h3>
-          <h4 className="text-center text-[#860579] text-[12px] mb-6">
+          <h4 className="text-center text-[#860579] text-[16px] mb-6">
             Set your new password here
           </h4>
 
@@ -80,17 +80,17 @@ const Createnewpass = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-4">
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-[#860579]">
-                <span className="px-3 text-gray-500">
+                <span className="px-3 passwordicon">
                   <Icon icon="solar:lock-password-unlocked-outline" width={20} />
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="w-full py-2 px-0 text-[14px] focus:outline-none focus:ring-0"
+                  className="w-full py-3 password px-0 text-[14px] focus:outline-none focus:ring-0"
                   placeholder="Create password"
                   {...register("newPassword", { required: "Password is required" })}
                 />
                 <span
-                  className="px-3 text-gray-500 cursor-pointer"
+                  className="px-3 text-gray-800 cursor-pointer"
                   onClick={togglePasswordVisibility}
                 >
                   <Icon
@@ -104,17 +104,17 @@ const Createnewpass = () => {
 
             <div className="mb-4">
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-[#860579]">
-                <span className="px-3 text-gray-500">
+                <span className="px-3 passwordicon">
                   <Icon icon="solar:lock-password-unlocked-outline" width={20} />
                 </span>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
-                  className="w-full py-2 px-0 text-[14px] focus:outline-none focus:ring-0"
+                  className="w-full py-3 password px-0 text-[14px] focus:outline-none focus:ring-0"
                   placeholder="Re-enter password"
                   {...register("confirmPassword", { required: "Please confirm your password" })}
                 />
                 <span
-                  className="px-3 text-gray-500 cursor-pointer"
+                  className="px-3 text-gray-800 cursor-pointer"
                   onClick={toggleConfirmPasswordVisibility}
                 >
                   <Icon

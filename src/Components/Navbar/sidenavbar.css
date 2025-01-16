@@ -12,3 +12,15 @@
     overflow-y: auto; /* Enables scrolling while hiding the scrollbar */
   }
   
+  .logo-section {
+    position: sticky;
+    top: 0;
+    z-index: 10; /* To keep it above other content */
+    background-color: white; /* Ensure logo container has a solid background */
+    width: 100%; /* Ensure it spans the full sidebar width */
+    padding: 0 16px; /* Optional padding */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+  }

@@ -53,7 +53,7 @@ const Services = () => {
   };
 
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 h-full">
       {/* Header */}
       <Header name={"Services"} />
 

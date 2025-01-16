@@ -104,7 +104,7 @@ const RevenueReports = () => {
   
 
   return (
-    <div>
+    <div className='bg-gray-100 h-full'>
       <Header name={"Reports"} />
       <ReportsTitle
         title={"Revenue Reports"}

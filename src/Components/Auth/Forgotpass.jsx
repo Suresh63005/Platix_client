@@ -60,14 +60,14 @@ const Forgotpass = () => {
                 Email
               </label>
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-[#860579]">
-                <span className="px-3 text-gray-500 border-none">
+                <span className="px-3 emailicon border-none">
                   <Icon icon="material-symbols-light:mail-outline" width={20} />
                 </span>
                 <input
                   type="email"
                   id="email"
                   name="email"
-                  className="w-full py-2 px-0 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
+                  className="w-full py-3 email px-0 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="eg: platix@gmail.com"
                   {...register("email", { required: "Email is required" })} // Hook form registration
                 />
