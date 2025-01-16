@@ -56,11 +56,11 @@ const UserReports = () => {
   };
 
   return (
-    <div>
+    <div className='bg-gray-100 h-full'>
       <Header name="Reports" />
       <ReportsTitle
         title="User Reports"
-        searchPlaceholder="Search by Username or Role..."
+        searchPlaceholder="Search"
         onSearch={(e) => handleSearch(e.target.value)}
       />
       <div className="overflow-x-auto">

@@ -13,3 +13,15 @@
     scrollbar-width: thin;
     scrollbar-color: #660F5D;
 }
+/* App.css */
+@import '@fontsource/poppins'; /* Defaults to 400 (regular) weight */
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+.email::placeholder{
+    color: #303030;
+}
+.password::placeholder{
+    color: #303030;
+}

@@ -58,7 +58,7 @@ const Userspage = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
-      <div className="userspagecontainer w-full md:pl-4 flex flex-col">
+      <div className="userspagecontainer w-full md:pl-0 flex flex-col bg-gray-100">
         <Header name={"Organization"} />
 
         <Pagetitle
