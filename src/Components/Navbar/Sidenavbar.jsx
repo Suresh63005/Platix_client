@@ -10,9 +10,9 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
 import EngineeringOutlinedIcon from "@mui/icons-material/EngineeringOutlined";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
-import MenuIcon from "@mui/icons-material/Menu"; // Hamburger menu icon
-import CloseIcon from "@mui/icons-material/Close"; // Close menu icon
-import { Link, useLocation } from "react-router-dom"; // For routing
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./sidenavbar.css";
 
 const Sidenavbar = () => {
@@ -21,6 +21,7 @@ const Sidenavbar = () => {
   const [activeReport, setActiveReport] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const path = location.pathname.split("/").pop(); // Extract route name
@@ -28,38 +29,42 @@ const Sidenavbar = () => {
     setActiveReport(null); // Reset active report when location changes
   }, [location]);
 
-  const handleClick = useCallback((item, isReport = false, e) => {
-    e.preventDefault();  // Prevent default link behavior on div click
-    if (isReport) {
-      setActiveReport(item);
-    } else if (item === "reports") {
-      setIsReportsOpen((prev) => !prev); // Toggle reports
-    }
-    setActiveItem(item);
-  }, []);
+  const handleClick = useCallback(
+    (item, route, isReport = false, e) => {
+      e.preventDefault(); // Prevent default link behavior
+      if (isReport) {
+        setActiveReport(item);
+        navigate(route); // Navigate to report route
+      } else if (item === "reports") {
+        setIsReportsOpen((prev) => !prev); // Toggle reports
+      } else {
+        navigate(route); // Navigate to main route
+        setActiveItem(item);
+      }
+    },
+    [navigate]
+  );
 
   const renderNavItem = (icon, label, itemKey, route) => {
     const isActive = activeItem === itemKey || location.pathname === route;
     return (
       <div
-        onClick={(e) => handleClick(itemKey, false, e)} // Pass event to handleClick
+        onClick={(e) => handleClick(itemKey, route, false, e)}
         className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${
           isActive ? "bg-white text-[#660F5D] rounded-lg" : "text-white"
         }`}
-        role="menuitem" // Accessibility
-        aria-label={label} // Accessibility
+        role="menuitem"
+        aria-label={label}
       >
-        <Link to={route} className="flex items-center w-full">
-          {React.cloneElement(icon, {
-            style: {
-              fill: isActive ? "#660F5D" : "white",
-              width: "20px",
-              height: "20px",
-            },
-            className: "w-5 h-5",
-          })}
-          <span className="ml-4">{label}</span>
-        </Link>
+        {React.cloneElement(icon, {
+          style: {
+            fill: isActive ? "#660F5D" : "white",
+            width: "20px",
+            height: "20px",
+          },
+          className: "w-5 h-5",
+        })}
+        <span className="ml-4">{label}</span>
       </div>
     );
   };
@@ -80,7 +85,6 @@ const Sidenavbar = () => {
             alt="logo"
             className="h-full w-full object-contain"
           />
-          {/* Mobile Close Button */}
           {isSidebarOpen && (
             <button
               className="absolute top-4 right-4 sm:hidden z-60 p-2 rounded-full bg-white"
@@ -122,14 +126,14 @@ const Sidenavbar = () => {
 
             {/* Reports Section */}
             <div
-              onClick={(e) => handleClick("reports", false, e)}
+              onClick={(e) => handleClick("reports", "", false, e)}
               className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${
                 activeItem === "reports"
                   ? "bg-white text-[#660F5D] rounded-lg"
                   : "text-white"
               }`}
-              role="menuitem" // Accessibility
-              aria-expanded={isReportsOpen} // Accessibility
+              role="menuitem"
+              aria-expanded={isReportsOpen}
               aria-label="Reports"
             >
               <AssessmentOutlinedIcon className="w-5 h-5" />
@@ -141,7 +145,7 @@ const Sidenavbar = () => {
               )}
             </div>
 
-            {/* Submenu */}
+            {/* Reports Submenu */}
             <Collapse style={{ margin: "0px" }} in={isReportsOpen}>
               <div className="pl-6 space-y-4">
                 {[
@@ -149,46 +153,35 @@ const Sidenavbar = () => {
                   { label: "Order Reports", route: "/orderreports" },
                   { label: "Payment Reports", route: "/paymentreports" },
                   { label: "Revenue Reports", route: "/revenuereports" },
-                ].map((report) => {
-                  return (
-                    <div
-                      key={report.label}
-                      onClick={(e) => handleClick(report.label, true, e)}
-                      className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${
-                        activeReport === report.label ||
-                        location.pathname.includes(report.route)
-                          ? "bg-white text-[#660F5D] rounded-lg"
-                          : "text-white"
-                      }`}
-                      role="menuitem"
-                      aria-label={report.label}
-                    >
-                      <Link to={report.route} className="flex items-center w-full">
-                        <ArrowRightIcon className="w-5 h-5 mr-2" />
-                        {report.label}
-                      </Link>
-                    </div>
-                  );
-                })}
+                ].map((report) => (
+                  <div
+                    key={report.label}
+                    onClick={(e) =>
+                      handleClick(report.label, report.route, true, e)
+                    }
+                    className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${
+                      activeReport === report.label ||
+                      location.pathname.includes(report.route)
+                        ? "bg-white text-[#660F5D] rounded-lg"
+                        : "text-white"
+                    }`}
+                    role="menuitem"
+                    aria-label={report.label}
+                  >
+                    <ArrowRightIcon className="w-5 h-5 mr-2" />
+                    {report.label}
+                  </div>
+                ))}
               </div>
             </Collapse>
 
             {/* Settings Section */}
-            <div
-              onClick={(e) => handleClick("settings", false, e)}
-              className={`flex items-center cursor-pointer p-2 m-4 mt-0 text-[12px] ${
-                activeItem === "settings"
-                  ? "bg-white text-[#660F5D] rounded-lg"
-                  : "text-white"
-              }`}
-              role="menuitem" // Accessibility
-              aria-label="Settings" // Accessibility
-            >
-              <Link to="/settings" className="flex items-center w-full">
-                <SettingsIcon className="w-5 h-5" />
-                <span className="ml-4 mt-0">Settings</span>
-              </Link>
-            </div>
+            {renderNavItem(
+              <SettingsIcon />,
+              "Settings",
+              "settings",
+              "/settings"
+            )}
           </div>
         </div>
       </div>

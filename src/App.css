@@ -7,9 +7,28 @@
     color: white;
 
 }
-/*  */
-/* Hide scrollbar but keep the scrollable area */
+
 .overflow-y-scroll{
     scrollbar-width: thin;
     scrollbar-color: #660F5D;
 }
+
+
+input[type="date"]::-webkit-datetime-edit {
+    color: transparent; 
+  }
+  
+  input[type="date"]:focus::-webkit-datetime-edit {
+    color: inherit; 
+  }
+  
+  
+  input[type="date"]::-moz-placeholder {
+    opacity: 0;
+  }
+  
+ 
+  input[type="date"]::-ms-placeholder {
+    opacity: 0;
+  }
+  
