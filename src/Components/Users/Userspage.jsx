@@ -69,7 +69,8 @@ const Userspage = () => {
           onFilterChange={handleFilterChange} // Bind filter change handler
           options={["Owner", "Technician", "Delivery Boy", "Dentist"]} // User types filter options
           searchPlaceholder="Search users..."
-          onSearch={handleSearch} // Bind search handler
+          onSearch={handleSearch}
+          filterPlaceholder={"Filter"} // Bind search handler
         />
 
         <Table

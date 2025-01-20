@@ -15,13 +15,30 @@
 }
 /* App.css */
 @import '@fontsource/poppins'; /* Defaults to 400 (regular) weight */
+@import "@fontsource/montserrat";
 
 body {
-  font-family: 'Poppins', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 .email::placeholder{
     color: #303030;
 }
 .password::placeholder{
     color: #303030;
+}
+
+input::placeholder{
+    font-size: 12px;
+}
+select::placeholder{
+    font-size: 12px;
+}
+option::placeholder{
+    font-size: 12px !important;
+}
+.overflow-x-auto{
+    scrollbar-width: thin;
+}
+.report-table{
+    scrollbar-width: thin;
 }

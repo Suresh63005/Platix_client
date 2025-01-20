@@ -1,32 +1,41 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Pagetitle from "../../common/pagetitle";
-import Table from "../../common/UserTable"; // Assuming you have this component
+import Table from "../../common/UserTable";
 
 const Services = () => {
-  const navigate = useNavigate(); // Initialize navigate hook
-  const [selectedFilter, setSelectedFilter] = useState(""); // Filter for Service
-  const [selectedRole, setSelectedRole] = useState(""); // Filter for Role
+  const navigate = useNavigate();
+  const [selectedFilter, setSelectedFilter] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
   const [organizations, setOrganizations] = useState([
-    { id: 1, name: "Service A", fromdate: "2023-12-01", todate: "2023-12-31", users: 10, role: "Owner" },
-    { id: 2, name: "Service B", fromdate: "2023-11-01", todate: "2023-11-30", users: 15, role: "Technician" },
-    // Add more data as required
+    {
+      id: 1,
+      name: "Service A",
+      fromdate: "2023-12-01",
+      todate: "2023-12-31",
+      role: "Owner",
+    },
+    {
+      id: 2,
+      name: "Service B",
+      fromdate: "2023-11-01",
+      todate: "2023-11-30",
+      role: "Technician",
+    },
   ]);
-  const [selectedServices, setSelectedServices] = useState([]); // Track selected services
+  const [selectedServices, setSelectedServices] = useState([]);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(organizations.length / itemsPerPage);
 
-  // Handle individual service checkbox selection
   const handleServiceChange = (id) => {
     setSelectedServices((prevSelected) => {
       if (prevSelected.includes(id)) {
-        return prevSelected.filter((serviceId) => serviceId !== id); // Deselect service
+        return prevSelected.filter((serviceId) => serviceId !== id);
       } else {
-        const newSelected = [...prevSelected, id]; // Select service
+        const newSelected = [...prevSelected, id];
         if (newSelected.length === organizations.length) {
-          // If all services are selected, select all services
           return organizations.map((org) => org.id);
         }
         return newSelected;
@@ -34,10 +43,12 @@ const Services = () => {
     });
   };
 
-  // Function to filter the organizations based on selected filter and role
   const filteredOrganizations = organizations
     .filter((org) => {
-      if (selectedFilter && !org.name.toLowerCase().includes(selectedFilter.toLowerCase())) {
+      if (
+        selectedFilter &&
+        !org.name.toLowerCase().includes(selectedFilter.toLowerCase())
+      ) {
         return false;
       }
       if (selectedRole && org.role !== selectedRole) {
@@ -47,67 +58,56 @@ const Services = () => {
     })
     .slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  // Handle "Create Service" button click
   const handleCreateServiceClick = () => {
-    navigate("/createservice"); // Navigate to /createservice
+    navigate("/createservice");
   };
 
   return (
     <div className="bg-gray-100 h-full">
-      {/* Header */}
       <Header name={"Services"} />
-
-      {/* Page Title with Filters */}
       <Pagetitle
         title="Services List"
         buttonLabel="Create Service"
-        onButtonClick={handleCreateServiceClick} // Trigger navigation on button click
+        onButtonClick={handleCreateServiceClick}
         filterValue={selectedFilter}
         onFilterChange={(value) => setSelectedFilter(value)}
-        options={["Service A", "Service B"]} // Example filter options
-        searchPlaceholder="Search services..." // Placeholder for search input
-        onSearch={(e) => setSelectedFilter(e.target.value)} // Use search to filter services
+        options={["Service A", "Service B"]}
+        searchPlaceholder="Search services..."
+        onSearch={(e) => setSelectedFilter(e.target.value)}
         showRoleAssign={true}
         roleValue={selectedRole}
         onRoleChange={(value) => setSelectedRole(value)}
-        roleOptions={["Owner", "Technician", "Dentist"]} // Role options
+        roleOptions={["Owner", "Technician", "Dentist"]}
         assignButtonLabel="Assign"
         onAssignClick={() => console.log("Assign Role clicked")}
-        filterPlaceholder="Filter" // Placeholder for filter dropdown
-        selectPlaceholder="Select Role" // Placeholder for role dropdown
-        // Apply custom widths
+        filterPlaceholder="Filter"
+        selectPlaceholder="Select Role"
         customStyles={{
-          roleSelect: "w-[200px]", // Set width of role dropdown to 200px
-          searchInput: "w-[250px]", // Set width of search input to 250px
+          roleSelect: "w-[200px]",
+          searchInput: "w-[250px]",
         }}
       />
 
-      {/* Table Component */}
-      <Table
-        columns={["Select", "Service Name", "From Date", "To Date", "Users"]}
-        fields={["id", "name", "fromdate", "todate", "users"]}
-        data={filteredOrganizations} // Use filtered and paginated data
-        page={page}
-        totalPages={totalPages}
-        setPage={setPage}
-        setData={setOrganizations}
-        renderRow={(org) => (
-          <tr key={org.id}>
-            {/* Select Checkbox */}
-            <td>
-              <input
-                type="checkbox"
-                checked={selectedServices.includes(org.id)} // Check if service is selected
-                onChange={() => handleServiceChange(org.id)} // Toggle selection
-              />
-            </td>
-            <td>{org.name}</td>
-            <td>{org.fromdate}</td>
-            <td>{org.todate}</td>
-            <td>{org.users}</td>
-          </tr>
-        )}
-      />
+      {/* Table Container with Horizontal Scroll */}
+      <div className="overflow-x-auto sm:overflow-x-visible">
+        <Table
+          columns={["Service Name", "From Date", "To Date"]} // Removed "Select" column
+          fields={["name", "fromdate", "todate"]} // Adjusted fields accordingly
+          data={filteredOrganizations}
+          page={page}
+          totalPages={totalPages}
+          setPage={setPage}
+          setData={setOrganizations}
+          renderRow={(org) => (
+            <tr key={org.id}>
+              <td>{org.name}</td>
+              <td>{org.fromdate}</td>
+              <td>{org.todate}</td>
+              <td>{org.users}</td>
+            </tr>
+          )}
+        />
+      </div>
     </div>
   );
 };
