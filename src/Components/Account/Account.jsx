@@ -69,18 +69,18 @@ const Account = () => {
           <form action="">
             <div className="flex flex-wrap gap-4">
               {/* Name and Date of Birth */}
-              <div className="flex w-full gap-4">
-                <div className="flex-1">
+              <div className="flex w-full flex-wrap gap-4">
+                <div className="w-full md:flex-1">
                   <InputField label={"Name"} type={"text"} />
                 </div>
-                <div className="flex-1">
+                <div className="w-full md:flex-1">
                   <InputField label={"Date of Birth"} type={"date"} />
                 </div>
               </div>
 
               {/* Phone Number and Email */}
-              <div className="flex w-full gap-4">
-                <div className="flex-1">
+              <div className="flex w-full flex-wrap gap-4">
+                <div className="w-full md:flex-1">
                   <PhoneNumberInput
                     value={phoneNumber}
                     onChange={setPhoneNumber}
@@ -89,7 +89,7 @@ const Account = () => {
                     className="p-2"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="w-full md:flex-1">
                   <InputField
                     label={"Email"}
                     type={"email"}
@@ -99,8 +99,8 @@ const Account = () => {
               </div>
 
               {/* Password and Confirm Password */}
-              <div className="flex w-full gap-4 text-[8px]">
-                <div className="flex-1">
+              <div className="flex w-full flex-wrap gap-4">
+                <div className="w-full md:flex-1">
                   <PasswordInput
                     label={"Password"}
                     name="password"
@@ -108,7 +108,7 @@ const Account = () => {
                     onChange={handleInputChange}
                   />
                 </div>
-                <div className="flex-1">
+                <div className="w-full md:flex-1">
                   <PasswordInput
                     label={"Confirm Password"}
                     name="confirmPassword"
@@ -123,7 +123,7 @@ const Account = () => {
             <div className="text-right mt-6">
               <button
                 type="submit"
-                className="bg-[#660F5D] text-white py-2 px-4 rounded-md"
+                className="bg-[#660F5D] text-white py-2 px-4 rounded-md w-full md:w-auto"
               >
                 Update
               </button>

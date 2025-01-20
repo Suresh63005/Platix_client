@@ -68,10 +68,10 @@ const OrderReports = () => {
       <Header name={"Reports"} />
       <ReportsTitle
         title={"Order Reports"}
-        searchPlaceholder="Search by Order ID or Username..."
+        searchPlaceholder="Search"
         onSearch={(e) => handleSearch(e.target.value)}
       />
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto report-table">
         <ReportsTable
           columns={columns}
           data={filteredData}
