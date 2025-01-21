@@ -7,7 +7,7 @@ const FilterDropdown = ({ filterValue, onFilterChange, options, placeholder, cla
       onChange={onFilterChange}  // Ensure this triggers the event correctly
       className={className}
     >
-      <option value="">{placeholder}</option>
+      <option value="" disabled selected>{placeholder}</option> {/* Static placeholder option */}
       {options.map((option, index) => (
         <option key={index} value={option}>
           {option}

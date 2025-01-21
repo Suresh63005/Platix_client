@@ -33,7 +33,7 @@ const CreateOrganizationType = () => {
             <InputField
               label="Organization Type"
               type="text"
-              placeholder="Enter Organization Type"
+              placeholder="Enter Organization Type Name"
               {...register("organizationType", { required: "Organization Type is required" })}
               error={errors.organizationType}
               className="focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D] p-2"

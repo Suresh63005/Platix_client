@@ -94,12 +94,12 @@ const CreateOrganization = () => {
                   Google Coordinates
                 </label>
                 <div className="flex gap-2">
-                  <InputField type={"text"} placeholder={"Longitude"} className="p-1" />
                   <InputField type={"text"} placeholder={"Latitude"} className="p-1" />
+                  <InputField type={"text"} placeholder={"Longitude"} className="p-1" />
                 </div>
               </div>
               <PhoneNumberInput
-                label={"Phone Number"}
+                label={"Mobile Number"}
                 value={phoneNumber}
                 onChange={setPhoneNumber}
                 defaultCountry="IN"
