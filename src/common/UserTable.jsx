@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { ReactComponent as Delete } from "../assets/images/Delete.svg";
 import { ReactComponent as Edit } from "../assets/images/Edit.svg";
 import { ReactComponent as Eye } from "../assets/images/Show.svg";
-
+import { ReactComponent as leftArrow } from "../assets/images/Left Arrow.svg";
+import { ReactComponent as RightArrow } from "../assets/images/Right Arrow.svg";
 const Table = ({
   columns,
   data,
