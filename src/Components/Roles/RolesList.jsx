@@ -29,8 +29,8 @@ const Rolespage = () => {
   }, [page]);
 
   return (
-    <div className="flex flex-col md:flex-row h-screen">
-      <div className="userspagecontainer w-full md:pl-4 flex flex-col">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100">
+      <div className="userspagecontainer w-full md:pl-0 flex flex-col">
         <Header name={"Roles"} />
 
         <div className="usersheader flex flex-wrap justify-between items-center p-4 space-y-4 md:space-y-0">

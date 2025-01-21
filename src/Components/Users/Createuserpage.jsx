@@ -152,7 +152,7 @@ const CreateUserPage = () => {
               label="Phone Number"
               value={phoneNumber}
               onChange={setPhoneNumber}
-              defaultCountry="US"
+              defaultCountry="IN"
               className="focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D]"
             />
             <WhatsAppInput

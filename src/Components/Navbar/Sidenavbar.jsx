@@ -34,11 +34,11 @@ const Sidenavbar = () => {
       e.preventDefault(); // Prevent default link behavior
       if (isReport) {
         setActiveReport(item);
-        navigate(route); // Navigate to report route
+        navigate(route); 
       } else if (item === "reports") {
-        setIsReportsOpen((prev) => !prev); // Toggle reports
+        setIsReportsOpen((prev) => !prev); 
       } else {
-        navigate(route); // Navigate to main route
+        navigate(route); 
         setActiveItem(item);
       }
     },

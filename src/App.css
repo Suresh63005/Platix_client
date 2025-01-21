@@ -14,9 +14,12 @@
 }
 
 
-input[type="date"]::-webkit-datetime-edit {
-    color: transparent; 
-  }
+
+input[type="date"]{
+
+  color: #858585;
+}
+    
   
   input[type="date"]:focus::-webkit-datetime-edit {
     color: inherit; 
@@ -24,11 +27,29 @@ input[type="date"]::-webkit-datetime-edit {
   
   
   input[type="date"]::-moz-placeholder {
-    opacity: 0;
+    opacity: 1;
   }
   
  
   input[type="date"]::-ms-placeholder {
-    opacity: 0;
+    opacity: 1;
   }
   
+
+/* App.css */
+@import '@fontsource/poppins'; /* Defaults to 400 (regular) weight */
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+.email::placeholder{
+    color: #303030;
+}
+.password::placeholder{
+    color: #303030;
+}
+
+input::placeholder{
+  font-size: 12px;
+}
+
