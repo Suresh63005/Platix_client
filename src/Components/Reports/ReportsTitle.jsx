@@ -34,10 +34,10 @@ const ReportsTitle = ({
               type="date"
               value={fromDate}
               onChange={onFromDateChange}
-              className="p-2 pl-12 pr-10 border rounded w-full h-[40px] text-[14px] shadow-md"
+              className="p-2 pl-12  border rounded w-full h-[40px] text-[14px] shadow-md"
               placeholder="Select Date"
             />
-            <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            {/* <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" /> */}
           </div>
           {/* To Date Input */}
           <div className="relative w-full sm:w-[150px]">
@@ -48,10 +48,10 @@ const ReportsTitle = ({
               type="date"
               value={toDate}
               onChange={onToDateChange}
-              className="p-2 pl-12 pr-10 border rounded w-full h-[40px] text-[14px] shadow-md"
+              className="p-2 pl-12  border rounded w-full h-[40px] text-[14px] shadow-md"
               placeholder="Select Date"
             />
-            <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            {/* <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" /> */}
           </div>
         </div>
 
