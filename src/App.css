@@ -7,12 +7,35 @@
     color: white;
 
 }
-/*  */
-/* Hide scrollbar but keep the scrollable area */
+
 .overflow-y-scroll{
     scrollbar-width: thin;
     scrollbar-color: #660F5D;
 }
+
+
+
+input[type="date"]{
+
+  color: #858585;
+}
+    
+  
+  input[type="date"]:focus::-webkit-datetime-edit {
+    color: inherit; 
+  }
+  
+  
+  input[type="date"]::-moz-placeholder {
+    opacity: 1;
+  }
+  
+ 
+  input[type="date"]::-ms-placeholder {
+    opacity: 1;
+  }
+  
+
 /* App.css */
  /* Defaults to 400 (regular) weight */
 @import "@fontsource/montserrat";
@@ -29,8 +52,10 @@ body {
 }
 
 input::placeholder{
-    font-size: 12px;
+
+  font-size: 12px;
 }
+
 select::placeholder{
     font-size: 12px;
 }
@@ -43,6 +68,7 @@ option::placeholder{
 .report-table{
     scrollbar-width: thin;
 }
+
 .font-medium{
     font-weight: 600;
 }
@@ -58,3 +84,4 @@ option::placeholder{
     border-color: blue !important;
   }
   
+

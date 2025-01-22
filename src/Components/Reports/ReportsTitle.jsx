@@ -41,9 +41,11 @@ const ReportsTitle = ({
               type="date"
               value={fromDate}
               onChange={onFromDateChange}
+
               {...register("fromDate", { required: "From Date is required" })}
               className="p-2 pl-12 pr-12 border rounded w-full h-[40px] text-[14px] shadow-md"
             />
+
           </div>
           {/* To Date Input */}
           <div className="relative w-full sm:w-[150px]">
@@ -54,9 +56,11 @@ const ReportsTitle = ({
               type="date"
               value={toDate}
               onChange={onToDateChange}
+
               {...register("toDate", { required: "To Date is required" })}
               className="p-2 pl-12 pr-12 border rounded w-full h-[40px] text-[14px] shadow-md"
             />
+
           </div>
         </form>
 
