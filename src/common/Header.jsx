@@ -11,7 +11,7 @@ const Header = ({ name }) => {
 
   return (
     <div>
-      <div className="header-container flex justify-between items-center h-[75px] bg-white p-3 ml-0">
+      <div className="header-container flex justify-between items-center h-[60px] bg-white p-3 ml-0 pl-5">
         {/* Hide title on small screens */}
         <div className="users-title text-[24px] font-extrabold hidden sm:block">{name}</div>
 

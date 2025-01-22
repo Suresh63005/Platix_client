@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { ReactComponent as Delete } from "../assets/images/Delete.svg";
 import { ReactComponent as Edit } from "../assets/images/Edit.svg";
 import { ReactComponent as Eye } from "../assets/images/Show.svg";
-import { ReactComponent as leftArrow } from "../assets/images/Left Arrow.svg";
+import { ReactComponent as LeftArrow } from "../assets/images/Left Arrow.svg";
 import { ReactComponent as RightArrow } from "../assets/images/Right Arrow.svg";
+
 const Table = ({
   columns,
   data,
@@ -12,7 +13,7 @@ const Table = ({
   setPage,
   fields,
   setData,
-  showActions = true,  // Default to true for other pages
+  showActions = true, // Default to true for other pages
 }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
@@ -73,16 +74,16 @@ const Table = ({
                   checked={selectedItems.length === data.length}
                 />
               </th>
-              <th className="p-2 font-semibold text-center">Sr</th>
+              <th className="p-2 font-medium text-center">Sr</th>
               {columns.map((column, index) => (
-                <th key={index} className="p-2 font-semibold text-center">
+                <th key={index} className="p-2 font-medium text-center">
                   {column}
                 </th>
               ))}
               {showActions && (
                 <>
-                  <th className="p-2 font-semibold text-center">Action</th>
-                  <th className="p-2 font-semibold text-center">View</th>
+                  <th className="p-2 font-medium text-center">Action</th>
+                  <th className="p-2 font-medium text-center">View</th>
                 </>
               )}
             </tr>
@@ -175,20 +176,22 @@ const Table = ({
               onClick={handlePrevious}
               disabled={page === 1}
             >
-              ← Previous
+              <LeftArrow className="w-4 h-4" />
+              Previous
             </button>
             <div className="pagenumber-container text-[#660F5D]">
               Page {String(page).padStart(2, "0")} of{" "}
               {String(totalPages).padStart(2, "0")}
             </div>
             <button
-              className={`next-container flex items-center gap-2 bg-[#660F5D] p-2 rounded text-white ${
+              className={`next-container flex items-center gap-2 bg-[#660F5D] p-2 px-4 rounded text-white ${
                 page === totalPages ? "opacity-50 cursor-not-allowed" : ""
               }`}
               onClick={handleNext}
               disabled={page === totalPages}
             >
-              Next →
+              Next
+              <RightArrow className="w-4 h-4" />
             </button>
           </div>
         </div>

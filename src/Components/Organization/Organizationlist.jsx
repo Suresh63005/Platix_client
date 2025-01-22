@@ -88,7 +88,7 @@ const OrganizationList = () => {
           filterValue={filter}
           onFilterChange={handleFilterChange}
           options={filterOptions}
-          searchPlaceholder="Search.. "
+          searchPlaceholder="Search "
           onSearch={handleSearch}
           filterPlaceholder={"Filter"}
         />

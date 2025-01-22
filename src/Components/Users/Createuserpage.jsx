@@ -149,7 +149,7 @@ const CreateUserPage = () => {
               className="focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D]"
             />
             <PhoneNumberInput
-              label="Phone Number"
+              label="Mobile Number"
               value={phoneNumber}
               onChange={setPhoneNumber}
               defaultCountry="IN"

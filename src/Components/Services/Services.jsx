@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Pagetitle from "../../common/pagetitle";
@@ -6,8 +6,8 @@ import Table from "../../common/UserTable";
 
 const Services = () => {
   const navigate = useNavigate();
-  const [selectedFilter, setSelectedFilter] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedFilter, setSelectedFilter] = useState("");  // The search filter for service name
+  const [selectedRole, setSelectedRole] = useState("");      // The role filter from dropdown
   const [organizations, setOrganizations] = useState([
     {
       id: 1,
@@ -24,43 +24,40 @@ const Services = () => {
       role: "Technician",
     },
   ]);
-  const [selectedServices, setSelectedServices] = useState([]);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(organizations.length / itemsPerPage);
 
-  const handleServiceChange = (id) => {
-    setSelectedServices((prevSelected) => {
-      if (prevSelected.includes(id)) {
-        return prevSelected.filter((serviceId) => serviceId !== id);
-      } else {
-        const newSelected = [...prevSelected, id];
-        if (newSelected.length === organizations.length) {
-          return organizations.map((org) => org.id);
-        }
-        return newSelected;
-      }
-    });
-  };
-
+  // Handle filtered organizations based on both search filter and role filter
   const filteredOrganizations = organizations
     .filter((org) => {
-      if (
-        selectedFilter &&
-        !org.name.toLowerCase().includes(selectedFilter.toLowerCase())
-      ) {
+      // Ensure that selectedFilter is a string before calling toLowerCase
+      const filter = selectedFilter ? selectedFilter.toLowerCase() : ""; // Safe toLowerCase
+      const role = selectedRole || "";
+
+      // Filter by service name if the selectedFilter is not empty
+      if (filter && !org.name.toLowerCase().includes(filter)) {
         return false;
       }
-      if (selectedRole && org.role !== selectedRole) {
+
+      // Filter by role if selectedRole is not empty
+      if (role && org.role !== role) {
         return false;
       }
+
       return true;
     })
-    .slice((page - 1) * itemsPerPage, page * itemsPerPage);
+    .slice((page - 1) * itemsPerPage, page * itemsPerPage);  // Paginate the results
 
   const handleCreateServiceClick = () => {
     navigate("/createservice");
   };
+
+  // Debugging for state updates
+  useEffect(() => {
+    console.log("selectedFilter:", selectedFilter);
+    console.log("selectedRole:", selectedRole);
+  }, [selectedFilter, selectedRole]);
 
   return (
     <div className="bg-gray-100 h-full">
@@ -70,14 +67,20 @@ const Services = () => {
         buttonLabel="Create Service"
         onButtonClick={handleCreateServiceClick}
         filterValue={selectedFilter}
-        onFilterChange={(value) => setSelectedFilter(value)}
-        options={["Service A", "Service B"]}
+        onFilterChange={(value) => setSelectedFilter(value)}  // Updated filter change handler
+        options={["Service A", "Service B"]} // The options can be more dynamic, you can adjust accordingly
         searchPlaceholder="Search services..."
-        onSearch={(e) => setSelectedFilter(e.target.value)}
+        onSearch={(e) => {
+          const value = e.target.value;  // Extract the value from the input event
+          setSelectedFilter(value); // Update the selectedFilter
+        }}
         showRoleAssign={true}
-        roleValue={selectedRole}
-        onRoleChange={(value) => setSelectedRole(value)}
-        roleOptions={["Owner", "Technician", "Dentist"]}
+        roleValue={selectedRole} // Pass selectedRole value to dropdown
+        onRoleChange={(e) => {
+          const value = e.target.value; // Extract the value from the select event
+          setSelectedRole(value); // Update the selectedRole
+        }}
+        roleOptions={["Owner", "Technician", "Dentist"]} // The role options for the dropdown filter
         assignButtonLabel="Assign"
         onAssignClick={() => console.log("Assign Role clicked")}
         filterPlaceholder="Filter"
@@ -91,9 +94,9 @@ const Services = () => {
       {/* Table Container with Horizontal Scroll */}
       <div className="overflow-x-auto sm:overflow-x-visible">
         <Table
-          columns={["Service Name", "From Date", "To Date"]} // Removed "Select" column
-          fields={["name", "fromdate", "todate"]} // Adjusted fields accordingly
-          data={filteredOrganizations}
+          columns={["Service Name", "From Date", "To Date"]}
+          fields={["name", "fromdate", "todate"]}
+          data={filteredOrganizations} // Display the filtered organizations
           page={page}
           totalPages={totalPages}
           setPage={setPage}
@@ -103,7 +106,7 @@ const Services = () => {
               <td>{org.name}</td>
               <td>{org.fromdate}</td>
               <td>{org.todate}</td>
-              <td>{org.users}</td>
+              <td>{org.role}</td>
             </tr>
           )}
         />

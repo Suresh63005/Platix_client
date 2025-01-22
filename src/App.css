@@ -37,7 +37,7 @@ input[type="date"]{
   
 
 /* App.css */
-@import '@fontsource/poppins'; /* Defaults to 400 (regular) weight */
+ /* Defaults to 400 (regular) weight */
 @import "@fontsource/montserrat";
 
 body {
@@ -46,6 +46,7 @@ body {
 .email::placeholder{
     color: #303030;
 }
+
 .password::placeholder{
     color: #303030;
 }
@@ -67,4 +68,20 @@ option::placeholder{
 .report-table{
     scrollbar-width: thin;
 }
+
+.font-medium{
+    font-weight: 600;
+}
+.font-extrabold{
+    font-weight:900 !important;
+}
+
+.focused-input {
+    border-color: red !important;
+  }
+  
+  .default-input {
+    border-color: blue !important;
+  }
+  
 

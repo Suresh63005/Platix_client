@@ -4,6 +4,7 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { ReactComponent as UploadIcon } from "../assets/images/material-symbols_upload.svg";
 import { ReactComponent as Delete } from "../assets/images/casual-delete.svg";
+import { ReactComponent as Whatsappicon } from "../assets/images/whatsapp_icon.svg";
 
 // Header Component
 export const Header = ({ name }) => (
@@ -69,7 +70,7 @@ export const WhatsAppInput = ({ label, value, onChange }) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <div className="flex items-center rounded-md border border-gray-300 focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D]">
-      <WhatsApp color="success" className="ml-2" fontSize="small" />
+      <Whatsappicon color="success" className="ml-2" fontSize="small" />
       <input
         type="text"
         placeholder="Enter WhatsApp number"
