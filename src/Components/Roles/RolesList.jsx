@@ -41,13 +41,14 @@ const Rolespage = () => {
 
         {/* Roles Table */}
         <Table
-          columns={["Role Name", "From Date", "To Date"]}
-          fields={["name", "fromDate", "toDate"]}
-          data={roles}
-          page={page}
-          totalPages={totalPages}
-          setPage={setPage}
-        />
+  columns={["Role Name", "From Date", "To Date"]}
+  fields={["name", "fromDate", "toDate"]}
+  data={roles}
+  page={page}
+  totalPages={totalPages}
+  setPage={setPage}
+  showActions={false}  // Hide actions and view columns on Rolespage
+/>
       </div>
     </div>
   );

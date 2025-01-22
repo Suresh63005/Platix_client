@@ -22,7 +22,7 @@ const Settings = () => {
             {/* Grid for Inputs */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">
+                <label className="block  text-sm font-medium mb-[4px]">
                   Website Image
                 </label>
                 <input
@@ -66,7 +66,7 @@ const Settings = () => {
               <button
                 type="button"
                 onClick={handleUpdate}
-                className="px-6 py-2 text-white bg-[#660F5D] rounded-lg hover:bg-[#5c0e58]"
+                className="px-6 py-2 text-white text-[12px] bg-[#660F5D] rounded-lg hover:bg-[#5c0e58]"
               >
                 Update
               </button>

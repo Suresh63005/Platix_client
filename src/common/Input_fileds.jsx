@@ -33,7 +33,7 @@ export const SelectField = ({ label, options, value, onChange }) => (
     <select
       value={value}
       onChange={onChange}
-      className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#660F5D]"
+      className="w-full border border-gray-300 rounded-md p-2 text-[12px] focus:outline-none focus:ring-2 focus:ring-[#660F5D]"
     >
       {options.map((option) => (
         <option key={option.value} value={option.value}>

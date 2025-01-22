@@ -51,6 +51,7 @@ const TextEditor = ({ onChange, value }) => {
     toolbarSticky: true,
     showCharsCounter: false,
     showWordsCounter: false,
+    disablePlugins: ['poweredByJodit'],
   };
 
   useEffect(() => {
