@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2"; // Import SweetAlert
 import UserServices from "../../common/UserServices";
 import {
@@ -9,27 +9,58 @@ import {
   PhoneNumberInput,
   FileUpload,
 } from "../../common/Input_fileds";
-import Submit from "../../common/Submit";
 import Header from "../../common/Header";
 import PageNavigation from "../../common/PageNavigation";
 import TickSquare from "../../assets/images/TickSquare.svg";
+import { organizationsData } from "../../Data/data";
+import { ReactComponent as Cancelbtnicon } from "../../assets/images/Cancel_button_icon.svg";
+import { useForm } from "react-hook-form"; // Import useForm
 
 const CreateOrganization = () => {
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [whatsAppNumber, setWhatsAppNumber] = useState("");
-  const [selectedRole, setSelectedRole] = useState(""); // Track selected role
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const { id, mode: initialMode } = location.state || {};
+  const [mode, setMode] = useState(initialMode || "create");
+  const [organization, setOrganization] = useState(null);
+
+  // Initialize form with useForm hook
+  const { register, handleSubmit, setValue, watch, control, reset } = useForm();
+
+  const formData = watch(); // This will give the current form values
+
+  useEffect(() => {
+    if (location.state) {
+      const { mode, id } = location.state;
+      if (mode === "edit") {
+        setMode("edit");
+      } else if (mode === "view") {
+        setMode("view");
+      }
+    } else {
+      setMode("create"); // Default to create if no mode provided
+    }
+  }, [location.state]);
+
+  useEffect(() => {
+    if (id) {
+      const org = organizationsData.find((org) => org.id === id);
+      setOrganization(org);
+      reset({ ...org }); // Pre-fill the form with organization data if editing
+    }
+  }, [id, reset]);
 
   const handleBackClick = () => {
     navigate(-1); // Navigate to the previous page
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
+  const onSubmit = (data) => {
     // SweetAlert after form submission
     Swal.fire({
-      text: "Organization created successfully",
+      text:
+        mode === "edit"
+          ? "Organization Updated Successfully"
+          : "Organization created successfully",
       imageUrl: TickSquare, // Add image for success icon
       imageWidth: 50,
       imageHeight: 50,
@@ -47,134 +78,215 @@ const CreateOrganization = () => {
     });
   };
 
+  const handleSelectChange = (value, name) => {
+    setValue(name, value); // Set selected value in form
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* Static Header and Navigation */}
       <div className="bg-gray-100">
         <Header name={"Organization"} />
-        <PageNavigation title={"Create Organization"} onBackClick={handleBackClick} />
+        <PageNavigation
+          title={
+            mode === "edit"
+              ? "Edit Organization"
+              : mode === "view"
+              ? "View Organization"
+              : "Create Organization"
+          }
+          onBackClick={handleBackClick}
+        />
       </div>
 
-      {/* Scrollable Form and Services Section */}
       <div className="flex-1 overflow-y-auto p-3">
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h3 className="form-title text-lg font-bold mb-4">Create Organization</h3>
+          <h3 className="form-title text-lg font-bold mb-4">
+            {mode === "view"
+              ? "View Organization"
+              : mode === "edit"
+              ? "Edit Organization"
+              : "Create Organization"}
+          </h3>
 
-          {/* Form Section */}
-          <form className="grid gap-4" onSubmit={handleSubmit}>
-            {/* Common Inputs */}
+          <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <InputField
                 label={"Organization Name"}
                 type={"text"}
                 placeholder={"Enter Organization Name"}
+                {...register("name")}
+                value={formData.name || ""}
                 className="p-1"
+                readOnly={mode === "view"}
               />
               <SelectField
                 label="Organization Type"
+                defaultplaceholder={"Select Role"}
                 options={[
-                  { value: "", label: "Select Role" },
                   { value: "Dentist", label: "Dentist" },
                   { value: "Radiology", label: "Radiology" },
                   { value: "Material Supplier", label: "Material Supplier" },
                   { value: "Dental Laboratory", label: "Dental Laboratory" },
                 ]}
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                className="p-1"
+                value={formData.type || ""}
+                onChange={(value) => handleSelectChange(value, "type")}
+                className="p-1 w-full"
+                readOnly={mode === "view"}
               />
               <InputField
                 label={"Address"}
                 type={"text"}
                 placeholder={"Enter Address"}
+                {...register("address")}
+                value={formData.address || ""}
                 className="p-1"
+                disabled={mode === "view"}
               />
               <div className="flex flex-col p-1 mt-[-5px]">
-                <label htmlFor="google-coordinates" className="block text-xs font-medium">
+                <label
+                  htmlFor="google-coordinates"
+                  className="block text-xs font-medium"
+                >
                   Google Coordinates
                 </label>
                 <div className="flex gap-2">
-                  <InputField type={"text"} placeholder={"Latitude"} className="p-1" />
-                  <InputField type={"text"} placeholder={"Longitude"} className="p-1" />
+                  <InputField
+                    type={"text"}
+                    placeholder={"Latitude"}
+                    {...register("googleCoordinates.latitude")}
+                    value={formData.googleCoordinates?.latitude || ""}
+                    className="p-1"
+                    disabled={mode === "view"}
+                  />
+                  <InputField
+                    type={"text"}
+                    placeholder={"Longitude"}
+                    {...register("googleCoordinates.longitude")}
+                    value={formData.googleCoordinates?.longitude || ""}
+                    className="p-1"
+                    disabled={mode === "view"}
+                  />
                 </div>
               </div>
               <PhoneNumberInput
                 label={"Mobile Number"}
-                value={phoneNumber}
-                onChange={setPhoneNumber}
-                defaultCountry="IN"
+                value={formData.mobile || ""}
+                onChange={(value) => setValue("mobile", value)}
+                defaultCountry={"IN"}
                 className="p-1"
+                disabled={mode === "view"}
               />
               <WhatsAppInput
                 label={"WhatsApp Number"}
-                value={whatsAppNumber}
-                onChange={(e) => setWhatsAppNumber(e.target.value)}
+                value={formData.whatsapp || ""}
+                onChange={(e) => setValue("whatsapp", e.target.value)}
                 className="p-1"
+                disabled={mode === "view"}
               />
               <InputField
                 label={"Email"}
                 type={"email"}
                 placeholder={"Enter Email"}
+                {...register("email")}
+                value={formData.email || ""}
                 className="p-1"
+                disabled={mode === "view"}
               />
-              {/* Conditional Field: Business Name */}
-              {selectedRole === "Dentist" || selectedRole === "Dental Laboratory" ? (
+              {formData.type === "Dentist" ||
+              formData.type === "Dental Laboratory" ? (
                 <InputField
                   label="Business Name"
                   type="text"
                   placeholder="Enter Business Name"
+                  {...register("businessName")}
+                  value={formData.businessName || ""}
                   className="p-1"
+                  disabled={mode === "view"}
                 />
               ) : null}
             </div>
-
-            {/* Conditional Inputs Based on Role */}
-            {selectedRole === "Dentist" && (
+            {formData.type === "Dentist" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
                   label="Registration ID"
                   type="text"
                   placeholder="Enter Registration ID"
+                  {...register("registrationId")}
+                  value={formData.registrationId || ""}
                   className="p-1"
+                  disabled={mode === "view"}
                 />
                 <SelectField
                   label="Designation"
+                  defaultplaceholder={"Select Designation"}
                   options={[
                     { value: "Dentist", label: "Dentist" },
-                    { value: "Radiology", label: "Radiology" },
+                    { value: "Orthodontist", label: "Orthodontist" },
+                    { value: "Prosthodontist", label: "Prosthodontist" },
+                    { value: "Oral surgeon", label: "Oral surgeon" },
+                    { value: "Periodontist", label: "Periodontist" },
+                    { value: "Implantologist", label: "Implantologist" },
+                    { value: "Oral Pathologist", label: "Oral Pathologist" },
+                    { value: "Oral Medicine & Radiologist", label: "Oral Medicine & Radiologist" },
+                    { value: "Community dentist", label: "Community dentist" },
+                    { value: "Paeddontist", label: "Paeddontist" },
                   ]}
+                  value={formData.designation || ""}
+                  onChange={(value) => handleSelectChange(value, "designation")}
                   className="p-1"
+                  disabled={mode === "view"}
                 />
               </div>
             )}
-
-            {selectedRole === "Dental Laboratory" && (
+            {formData.type === "Dental Laboratory" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
                   label="GST"
                   type="text"
                   placeholder="Enter GST Number"
+                  {...register("gstNumber")}
+                  value={formData.gstNumber || ""}
                   className="p-1"
+                  disabled={mode === "view"}
                 />
                 <SelectField
                   label="Designation"
+                  defaultplaceholder={"Select Designation"}
                   options={[
-                    { value: "Dentist", label: "Dentist" },
-                    { value: "Radiology", label: "Radiology" },
+                    { value: "Owner", label: "Owner" },
+                    { value: "Technician", label: "Technician" },
+                    { value: "Delivery Boy", label: "Delivery Boy" },
                   ]}
+                  value={formData.designation || ""}
+                  onChange={(e) => handleSelectChange(e, "designation")}
                   className="p-1"
-                  disabled
+                  disabled={mode === "view"}
                 />
               </div>
             )}
-
-            <FileUpload className="p-1" />
-            <Submit className="p-1" />
+            <FileUpload className="p-1" disabled={mode === "view"} />
+            {mode !== "view" && (
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  type="reset"
+                  className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
+                >
+                  <Cancelbtnicon className="w-4 h-4" /> {/* Icon added here */}
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  name="submit"
+                  className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm"
+                >
+                  {mode === "edit" ? "Update" : "Save"}
+                </button>
+              </div>
+            )}
           </form>
         </div>
 
-        {/* User Services Component for Dental Laboratory */}
-        {selectedRole === "Dental Laboratory" && (
+        {formData.type === "Dental Laboratory" && (
           <div className="bg-white shadow-md rounded-lg p-6">
             <UserServices />
           </div>

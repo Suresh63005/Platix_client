@@ -36,7 +36,7 @@ const OrderReports = () => {
       to: "Patient X",
       orderStatus: "Completed",
       mobileNo: "1234567890",
-      patientDetails: "Patient details here",
+      patientDetails: "Patient details",
     },
     {
       id: 2,
@@ -47,7 +47,7 @@ const OrderReports = () => {
       to: "Patient Y",
       orderStatus: "Pending",
       mobileNo: "9876543210",
-      patientDetails: "Patient details here",
+      patientDetails: "Patient details",
     },
   ];
 

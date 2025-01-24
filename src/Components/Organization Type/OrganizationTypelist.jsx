@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
@@ -22,6 +22,7 @@ const useDebounce = (value, delay) => {
 };
 
 const OrganizationList = () => {
+  
   const [organizationTypes, setOrganizationTypes] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -82,7 +83,12 @@ const OrganizationList = () => {
   const handleCreateOrganizationType = () => {
     navigate("/createorganizationtype");
   };
-
+  const handleEdit = (id)=>{
+    navigate("/createorganizationtype",{state: {id,mode:"edit"}})
+  }
+  const handleview = (id)=>{
+    navigate("/createorganizationtype",{state: {id,mode:"view"}})
+  }
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100">
       <div className="organization-list-container w-full md:pl-0 flex flex-col">
@@ -95,7 +101,7 @@ const OrganizationList = () => {
           filterValue={filter}
           onFilterChange={handleFilterChange}
           options={filterOptions}
-          searchPlaceholder="Search..."
+          searchPlaceholder="Search"
           onSearch={handleSearch}
           filterPlaceholder={"Filter"}
         />
@@ -107,6 +113,8 @@ const OrganizationList = () => {
           page={page}
           totalPages={totalPages}
           setPage={setPage}
+          handleEdit={handleEdit}
+          handleview={handleview}
         />
       </div>
     </div>

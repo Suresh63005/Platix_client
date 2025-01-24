@@ -85,3 +85,20 @@ option::placeholder{
   }
   
 
+.searchbar::placeholder{
+  color: #131313 !important;
+  font-weight: 600;
+}
+
+.optionclass {
+  color: #131313 !important;
+  font-weight: 600;
+}
+
+.css-1wvake5{
+  border: none !important;
+}
+
+.css-1b9a91j-control:hover {
+  border-color: #045D78 !important;
+}

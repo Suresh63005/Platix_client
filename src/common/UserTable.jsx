@@ -5,6 +5,7 @@ import { ReactComponent as Eye } from "../assets/images/Show.svg";
 import { ReactComponent as LeftArrow } from "../assets/images/Left Arrow.svg";
 import { ReactComponent as RightArrow } from "../assets/images/Right Arrow.svg";
 
+
 const Table = ({
   columns,
   data,
@@ -13,10 +14,15 @@ const Table = ({
   setPage,
   fields,
   setData,
-  showActions = true, // Default to true for other pages
+  showActions = true,
+  handleEdit,
+  handleview, // Default to true for other pages
 }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
+
+
+  
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
@@ -47,9 +53,7 @@ const Table = ({
     }
   };
 
-  const handleEdit = (itemId) => {
-    setEditingItem(itemId);
-  };
+
 
   const handleDelete = (itemId) => {
     const updatedData = data.filter((item) => item.id !== itemId);
@@ -74,9 +78,9 @@ const Table = ({
                   checked={selectedItems.length === data.length}
                 />
               </th>
-              <th className="p-2 font-medium text-center">Sr</th>
+              <th className="p-2 font-medium text-left">Sr</th>
               {columns.map((column, index) => (
-                <th key={index} className="p-2 font-medium text-center">
+                <th key={index} className="p-2 font-medium text-left">
                   {column}
                 </th>
               ))}
@@ -99,13 +103,13 @@ const Table = ({
                     checked={selectedItems.includes(item.id)}
                   />
                 </td>
-                <td className="p-2 text-center text-[12px] font-medium text-[#4D5D6B]">
+                <td className="p-2 text-left text-[12px] font-medium text-[#4D5D6B]">
                   {(page - 1) * 10 + (index + 1)}
                 </td>
                 {fields.map((field, idx) => (
                   <td
                     key={idx}
-                    className="p-2 text-center text-[12px] font-medium text-[#4D5D6B]"
+                    className="p-2 text-left text-[12px] font-medium text-[#4D5D6B]"
                   >
                     {editingItem === item.id ? (
                       <input
@@ -142,7 +146,7 @@ const Table = ({
                         ) : (
                           <Edit
                             className="w-5 h-5 text-gray-600 cursor-pointer"
-                            onClick={() => handleEdit(item.id)}
+                            onClick={() => {handleEdit(item.id)}}
                           />
                         )}
                         <Delete
@@ -153,7 +157,8 @@ const Table = ({
                     </td>
                     <td className="p-2">
                       <div className="flex justify-center items-center h-full">
-                        <Eye className="w-5 h-5 cursor-pointer" />
+                        <Eye className="w-5 h-5 cursor-pointer" 
+                        onClick={()=>handleview(item.id)}/>
                       </div>
                     </td>
                   </>

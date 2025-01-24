@@ -65,7 +65,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
                 {columns.map((column, index) => (
                   <th
                     key={index}
-                    className="p-2 font-medium text-center whitespace-nowrap"
+                    className="p-2 font-medium text-left whitespace-nowrap"
                     style={{ minWidth: "120px" }} // Adjust minWidth as needed
                   >
                     {column}
@@ -92,7 +92,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
                   {columns.map((col, colIndex) => (
                     <td
                       key={colIndex}
-                      className="p-2 text-center text-[12px] font-medium text-gray-500"
+                      className="p-2 text-left text-[12px] font-medium text-gray-500"
                       style={{ minWidth: "120px" }} // Adjust minWidth as needed
                     >
                       {item[columnKeyMapping[col]] || "-"}
