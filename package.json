@@ -25,6 +25,7 @@
     "react-quill": "^2.0.0",
     "react-router-dom": "^7.1.1",
     "react-scripts": "5.0.1",
+    "react-select": "^5.9.0",
     "react-world-flags": "^1.6.0",
     "styled-components": "^6.1.13",
     "sweetalert2": "^11.15.10"

@@ -71,7 +71,7 @@ const Account = () => {
               {/* Name and Date of Birth */}
               <div className="flex w-full flex-wrap gap-4">
                 <div className="w-full md:flex-1">
-                  <InputField label={"Name"} type={"text"} />
+                  <InputField label={"Name"} type={"text"} placeholder={"Enter Your Name"} />
                 </div>
                 <div className="w-full md:flex-1">
                   <InputField label={"Date of Birth"} type={"date"} />
@@ -106,6 +106,7 @@ const Account = () => {
                     name="password"
                     value={password.password}
                     onChange={handleInputChange}
+                    placeholder={"Password"}
                   />
                 </div>
                 <div className="w-full md:flex-1">
@@ -115,6 +116,7 @@ const Account = () => {
                     value={password.confirmPassword}
                     onChange={handleInputChange}
                     className={""}
+                    placeholder={"Confirm Password"}
                   />
                 </div>
               </div>

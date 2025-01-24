@@ -77,6 +77,14 @@ function App() {
             }
           />
           <Route
+            path="/createorganization/:id"
+            element={
+              <LayoutSidebar>
+                <CreateOrganization />
+              </LayoutSidebar>
+            }
+          />
+          <Route
             path="/organizationlist"
             element={
               <LayoutSidebar>

@@ -43,7 +43,7 @@ const ReportsTitle = ({
               onChange={onFromDateChange}
 
               {...register("fromDate", { required: "From Date is required" })}
-              className="p-2 pl-12 pr-12 border rounded w-full h-[40px] text-[14px] shadow-md"
+              className="p-2 pl-12  border rounded w-full h-[40px] text-[14px] shadow-md"
             />
 
           </div>
@@ -58,7 +58,7 @@ const ReportsTitle = ({
               onChange={onToDateChange}
 
               {...register("toDate", { required: "To Date is required" })}
-              className="p-2 pl-12 pr-12 border rounded w-full h-[40px] text-[14px] shadow-md"
+              className="p-2 pl-12  border rounded w-full h-[40px] text-[14px] shadow-md"
             />
 
           </div>
@@ -68,7 +68,7 @@ const ReportsTitle = ({
         <div className="relative w-full sm:w-[250px]"> {/* Responsive width */}
           <input
             type="text"
-            className="p-2 border rounded w-full h-[40px] text-[14px] shadow-md pr-10"
+            className="p-2 border rounded w-full h-[40px] text-[14px] searchbar shadow-md pr-10"
             placeholder={searchPlaceholder || "Search..."}
             onChange={onSearch}
           />

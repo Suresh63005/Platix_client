@@ -26,6 +26,7 @@ import ReportsIcon from "../../assets/images/ReportsIcon.svg";
 import ActiveReportsIcon from "../../assets/images/active_ReportsIcon.svg";
 import SettingsIcon from "../../assets/images/SettingsIcon.svg";
 import ActiveSettingsIcon from "../../assets/images/active_SettingsIcon.svg";
+import RightDropDown from "../../assets/images/right_drop_down_arrow.svg";
 
 const Sidenavbar = () => {
   const [isReportsOpen, setIsReportsOpen] = useState(false);
@@ -54,6 +55,8 @@ const Sidenavbar = () => {
     } else if (currentPath.includes("/reports")) {
       setActiveItem("reports");
     } else if (currentPath === "/services") {
+      setActiveItem("services");
+    } else if (currentPath === "/createservice") {
       setActiveItem("services");
     } else if (currentPath === "/roles-list") {
       setActiveItem("roles");
@@ -184,7 +187,7 @@ const Sidenavbar = () => {
   {isReportsOpen ? (
     <ArrowDropUp className="ml-auto" />
   ) : (
-    <ArrowDropDown className="ml-auto" />
+    <ArrowRightIcon className="ml-auto" />
   )}
 </div>
 
@@ -203,13 +206,13 @@ const Sidenavbar = () => {
         }
         className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${
           activeReport === report.label || location.pathname.includes(report.route)
-            ? "bg-[#d2d0d0] text-[#660F5D] rounded-lg"  // Slightly lighter background for the selected report option
+            ? "bg-[#F3E6F2] text-[#660F5D] rounded-lg"  // Slightly lighter background for the selected report option
             : "text-white"
         }`}
         role="menuitem"
         aria-label={report.label}
       >
-        <ArrowRightIcon className="w-5 h-5 mr-2" />
+        {/* <ArrowRightIcon className="w-5 h-5 mr-2" /> */}
         {report.label}
       </div>
     ))}
