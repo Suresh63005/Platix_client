@@ -1,19 +1,33 @@
 import React from "react";
+import Select from "react-select";
 
-const FilterDropdown = ({ filterValue, onFilterChange, options, placeholder, className }) => {
+const FilterDropdown = ({ filterValue, onFilterChange, options, placeholder, customStyles }) => {
+  // Transform options into React Select's required format
+  const formattedOptions = options.map((option) => ({
+    value: option,
+    label: option,
+  }));
+
+  // Custom components to hide the default dropdown arrow
+  const customComponents = {
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  };
+
   return (
-    <select
-      value={filterValue}
-      onChange={onFilterChange}  // Ensure this triggers the event correctly
-      className={className}
-    >
-      <option value="">{placeholder}</option>
-      {options.map((option, index) => (
-        <option key={index} value={option}>
-          {option}
-        </option>
-      ))}
-    </select>
+    <Select
+      value={
+        filterValue
+          ? formattedOptions.find((opt) => opt.value === filterValue) // Set selected option
+          : { value: "", label: placeholder, isDisabled: true } // Set placeholder as the selected option
+      }
+      onChange={(selectedOption) => onFilterChange(selectedOption?.value)} // Trigger value change
+      options={formattedOptions} // Dropdown options (placeholder not included here)
+      placeholder={placeholder} // Placeholder text
+      styles={customStyles} // Custom styles for the dropdown
+      components={customComponents} // Custom components to hide the default arrow
+      isOptionDisabled={(option) => option.isDisabled} // Disable the placeholder option
+    />
   );
 };
 

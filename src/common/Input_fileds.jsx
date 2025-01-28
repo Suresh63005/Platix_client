@@ -4,6 +4,9 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { ReactComponent as UploadIcon } from "../assets/images/material-symbols_upload.svg";
 import { ReactComponent as Delete } from "../assets/images/casual-delete.svg";
+import { ReactComponent as Whatsappicon } from "../assets/images/whatsapp_icon.svg";
+import { ReactComponent as DownArrow } from "../assets/images/Down Arrow.svg";
+import Select from "react-select"; // Import react-select
 
 // Header Component
 export const Header = ({ name }) => (
@@ -13,48 +16,104 @@ export const Header = ({ name }) => (
 );
 
 // Input Field Component
-export const InputField = ({ label, type, placeholder, value, onChange }) => (
+export const InputField = ({ label, type, placeholder, value, onChange, name }) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <input
       type={type}
+      name={name}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="w-full border border-gray-300 focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md p-2 text-sm"
+      className="w-full border border-[#EAEAFF] font-medium focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md p-2 text-[12px] py-3 text-[#757575] font-['Montserrat', sans-serif]"
     />
   </div>
 );
 
-// Select Field Component
-export const SelectField = ({ label, options, value, onChange }) => (
+// Select Field Component using react-select
+export const SelectField = ({ label, options, value, onChange, name,defaultplaceholder }) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
-    <select
-      value={value}
-      onChange={onChange}
-      className="w-full border border-gray-300 rounded-md p-2 text-[12px] focus:outline-none focus:ring-2 focus:ring-[#660F5D]"
-    >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+    <Select
+      value={
+        value ? options.find((option) => option.value === value) : { value: "", label: defaultplaceholder, isDisabled: true }
+      }
+      onChange={(selectedOption) => {
+        if (selectedOption) {
+          onChange(selectedOption.value); // Directly pass the selected value
+        }
+      }}
+      options={options}
+      name={name}
+      className="text-[12px]" // Additional classes
+      styles={{
+        control: (base, {isFocused}) => ({
+          ...base,
+          border: isFocused ? "2px solid #660F5D" : " 1px solid #EAEAFF",
+          boxShadow: isFocused ? 'none':'none',
+          borderRadius: "5px",
+          padding: "2px",
+          fontSize: "12px", // Consistent font size
+          color: "#757575",
+          height:"42px",
+          
+          "&:hover":{
+            
+          }
+        }),
+        placeholder: (base) => ({
+          ...base,
+          color: "#757575",
+          fontSize: "12px", // Placeholder font size
+        }),
+        singleValue: (base) => ({
+          ...base,
+          fontSize: "12px",
+          fontWeight: "600",
+          color:"#757575",
+          fontFamily:"Montserrat', sans-serif",
+        }),
+        option: (base) => ({
+          ...base,
+          backgroundColor: "white", // No background color change for selected state
+          color: "#757575", // Default text color
+          fontWeight: "100",
+          cursor: "pointer",
+          fontSize: "12px", // Option font size
+           // Fixed option width
+          "&:hover": {
+            backgroundColor: "#660F5D", // Apply hover effect
+            color: "white", // Change text color to white on hover
+          },
+        }),
+        // menu: (base) => ({
+        //   ...base,
+        //   width: "150px", // Fixed dropdown menu width
+        // }),
+      }}
+      components={{
+        DropdownIndicator: () => (
+          <DownArrow className="w-[16px] h-[16px] pr-1" /> // Use the custom DownArrow icon
+        ),
+        IndicatorSeparator: () => null, // Remove indicator separator
+      }}
+    />
   </div>
 );
 
+
 // Phone Input Component
-export const PhoneNumberInput = ({ label, value, onChange, defaultCountry }) => (
+export const PhoneNumberInput = ({ label, value, onChange, defaultCountry,name }) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
-    <div className="flex items-center rounded-md border border-gray-300 focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] overflow-hidden">
+    <div className="flex items-center rounded-md border border-[#EAEAFF] focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] overflow-hidden font-medium text-[#757575]">
       <PhoneInput
         placeholder="Enter phone number"
+        name={name}
         value={value}
         onChange={onChange}
         defaultCountry={defaultCountry}
-        className="w-full p-2 text-sm focus-visible:outline-0"
+        className="w-full p-2 text-sm focus-visible:outline-0 py-3"
         style={{
           border: "none", // Remove internal borders
           boxShadow: "none", // Remove internal focus shadows
@@ -65,17 +124,18 @@ export const PhoneNumberInput = ({ label, value, onChange, defaultCountry }) => 
 );
 
 // WhatsApp Input Component
-export const WhatsAppInput = ({ label, value, onChange }) => (
+export const WhatsAppInput = ({ label, value, onChange, name }) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
-    <div className="flex items-center rounded-md border border-gray-300 focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D]">
-      <WhatsApp color="success" className="ml-2" fontSize="small" />
+    <div className="flex items-center rounded-md border border-[#EAEAFF] focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] font-medium text-[#757575] font-['Montserrat', sans-serif] ">
+      <Whatsappicon color="success" className="ml-2" fontSize="small" />
       <input
         type="text"
+        name = {name}
         placeholder="Enter WhatsApp number"
         value={value}
         onChange={onChange}
-        className="w-full p-2 text-sm outline-none"
+        className="w-full p-2 text-sm outline-none py-3"
       />
     </div>
   </div>

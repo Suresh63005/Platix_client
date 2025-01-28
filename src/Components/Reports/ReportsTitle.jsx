@@ -1,6 +1,6 @@
 import React from "react";
+import { useForm } from "react-hook-form"; // Import useForm hook
 import { ReactComponent as Searchicon } from "../../assets/images/search_normal.svg"; // Import the search icon
-import { ReactComponent as CalendarIcon } from "../../assets/images/Calender.svg"; // Import the calendar icon
 import { ReactComponent as DownloadIcon } from "../../assets/images/tabler_download.svg"; // Import the download icon
 
 const ReportsTitle = ({
@@ -14,6 +14,13 @@ const ReportsTitle = ({
   onFromDateChange,
   onToDateChange,
 }) => {
+  const { register, handleSubmit, formState: { errors } } = useForm();
+
+  const onSubmit = (data) => {
+    // handle form submission if needed
+    console.log(data);
+  };
+
   return (
     <div className="flex flex-col md:flex-row justify-between items-center p-4 space-y-4 md:space-y-0">
       {/* Title Section */}
@@ -24,7 +31,7 @@ const ReportsTitle = ({
       {/* Controls Section */}
       <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
         {/* Date Range Inputs */}
-        <div className="flex space-x-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex space-x-4">
           {/* From Date Input */}
           <div className="relative w-full sm:w-[150px]">
             <label className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-[14px]">
@@ -34,10 +41,11 @@ const ReportsTitle = ({
               type="date"
               value={fromDate}
               onChange={onFromDateChange}
-              className="p-2 pl-12 pr-10 border rounded w-full h-[40px] text-[14px] shadow-md"
-              placeholder="Select Date"
+
+              {...register("fromDate", { required: "From Date is required" })}
+              className="p-2 pl-12  border rounded w-full h-[40px] text-[14px] shadow-md"
             />
-            <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+
           </div>
           {/* To Date Input */}
           <div className="relative w-full sm:w-[150px]">
@@ -48,18 +56,19 @@ const ReportsTitle = ({
               type="date"
               value={toDate}
               onChange={onToDateChange}
-              className="p-2 pl-12 pr-10 border rounded w-full h-[40px] text-[14px] shadow-md"
-              placeholder="Select Date"
+
+              {...register("toDate", { required: "To Date is required" })}
+              className="p-2 pl-12  border rounded w-full h-[40px] text-[14px] shadow-md"
             />
-            <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+
           </div>
-        </div>
+        </form>
 
         {/* Search Bar */}
         <div className="relative w-full sm:w-[250px]"> {/* Responsive width */}
           <input
             type="text"
-            className="p-2 border rounded w-full h-[40px] text-[14px] shadow-md pr-10"
+            className="p-2 border rounded w-full h-[40px] text-[14px] searchbar shadow-md pr-10"
             placeholder={searchPlaceholder || "Search..."}
             onChange={onSearch}
           />

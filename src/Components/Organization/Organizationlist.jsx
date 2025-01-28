@@ -3,37 +3,43 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
-import UserICon from '../../assets/images/Users icon.svg'; // Import the user icon image
+import UserICon from "../../assets/images/Users icon.svg";
+import { organizationsData } from "../../Data/data";
 
 const OrganizationList = () => {
   const [organizations, setOrganizations] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [filter, setFilter] = useState(""); // Added filter state
-  const [searchQuery, setSearchQuery] = useState(""); // Added search query state
+  const [filter, setFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const orgsPerPage = 10;
-  const navigate = useNavigate(); // Initialize navigate function
+  const navigate = useNavigate();
 
-  const filterOptions = ["Dentist", "Dental Laboratory", "Radiology", "Material Supplier"]; // Filter options
-  
-  // Dummy organizations data (replace with actual data from your API)
+  const filterOptions = [
+    "Dentist",
+    "Dental Laboratory",
+    "Radiology",
+    "Material Supplier",
+  ];
+
   const loadOrganizationsForPage = (page, filter, searchQuery) => {
     const start = (page - 1) * orgsPerPage;
-    const newOrgs = Array.from({ length: orgsPerPage }, (_, index) => ({
-      name: `Organization ${start + index + 1}`,
-      type: index % 2 === 0 ? "Dentist" : "Radiology",
-      mobile: `+1 123-456-789${index}`,
-      id: start + index + 1,
-    }));
+    let filteredOrgs = organizationsData;
 
-    // Apply filter and search query
-    const filteredOrgs = newOrgs.filter((org) => 
-      (filter ? org.type === filter : true) && 
-      (searchQuery ? org.name.toLowerCase().includes(searchQuery.toLowerCase()) : true)
-    );
+    if (filter) {
+      filteredOrgs = filteredOrgs.filter((org) => org.type === filter);
+    }
 
-    setOrganizations(filteredOrgs);
-    setTotalPages(Math.ceil(filteredOrgs.length / orgsPerPage)); 
+    if (searchQuery) {
+      filteredOrgs = filteredOrgs.filter((org) =>
+        org.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    const paginatedOrgs = filteredOrgs.slice(start, start + orgsPerPage);
+
+    setOrganizations(paginatedOrgs);
+    setTotalPages(Math.ceil(filteredOrgs.length / orgsPerPage));
   };
 
   useEffect(() => {
@@ -46,7 +52,7 @@ const OrganizationList = () => {
 
   const renderUserIcon = () => (
     <div
-      className="flex items-center justify-center py-2 px-7 rounded-sm cursor-pointer"
+      className="flex items-center justify-center py-2 px-7 rounded-[10px] cursor-pointer"
       style={{ backgroundColor: "#660F5D1A" }}
       onClick={handleIconClick}
     >
@@ -54,26 +60,26 @@ const OrganizationList = () => {
     </div>
   );
 
-  const handleFilterChange = (event) => {
-    if (event && event.target) {
-      const value = event.target.value; // Get the selected value
-      if (value !== undefined) {
-        setFilter(value); // Update the filter state
-        setPage(1); // Reset to the first page when filter changes
-      }
-    } else {
-      console.error("Invalid event or event.target", event);
-    }
+  const handleFilterChange = (value) => {
+    setFilter(value);
+    setPage(1);
   };
 
   const handleSearch = (event) => {
-    setSearchQuery(event.target.value); // Update search query state
-    setPage(1); // Reset to the first page when search query changes
+    setSearchQuery(event.target.value);
+    setPage(1);
   };
 
   const handleCreateOrganization = () => {
-    // Navigate to the create organization page
     navigate("/createorganization");
+  };
+
+  const handleEdit = (id) => {
+    navigate("/createorganization", { state: { id, mode: "edit" } });
+  };
+
+  const handleView = (id) => {
+    navigate("/createorganization", { state: { id, mode: "view" } });
   };
 
   return (
@@ -88,22 +94,29 @@ const OrganizationList = () => {
           filterValue={filter}
           onFilterChange={handleFilterChange}
           options={filterOptions}
-          searchPlaceholder="Search.. "
+          searchPlaceholder="Search "
           onSearch={handleSearch}
-          filterPlaceholder={"Filter"}
+          filterPlaceholder="Filter"
         />
-<Table
-  columns={["Organization Name", "Organization Type", "Mobile No", "Users"]}
-  fields={["name", "type", "mobile", "icon"]}
-  data={organizations.map((org) => ({
-    ...org,
-    icon: renderUserIcon(),
-  }))}
-  page={page}
-  totalPages={totalPages}
-  setPage={setPage}
-  setData={setOrganizations}  // Pass setOrganizations as setData
-/>
+        <Table
+          columns={[
+            "Organization Name",
+            "Organization Type",
+            "Mobile No",
+            "Users",
+          ]}
+          fields={["name", "type", "mobile", "icon"]}
+          data={organizations.map((org) => ({
+            ...org,
+            icon: renderUserIcon(),
+          }))}
+          page={page}
+          totalPages={totalPages}
+          setPage={setPage}
+          setData={setOrganizations}
+          handleEdit={handleEdit}
+          handleview={handleView}
+        />
       </div>
     </div>
   );

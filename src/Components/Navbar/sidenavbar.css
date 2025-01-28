@@ -1,4 +1,10 @@
 /* Hide the scrollbar */
+@import '@fontsource/poppins';
+
+body {
+  font-family: 'poppins', sans-serif;
+}
+
 .scrollbar-hidden::-webkit-scrollbar {
     display: none;
   }
