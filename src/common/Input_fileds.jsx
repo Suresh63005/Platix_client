@@ -25,7 +25,7 @@ export const InputField = ({ label, type, placeholder, value, onChange, name }) 
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="w-full border border-[#EAEAFF] font-medium focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md p-2 text-[12px] py-3 text-[#757575] font-['Montserrat', sans-serif]"
+      className="w-full border border-[#EAEAFF] font-medium focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md p-2 text-[12px]  text-[#757575] font-['Montserrat', sans-serif]"
     />
   </div>
 );
@@ -113,7 +113,7 @@ export const PhoneNumberInput = ({ label, value, onChange, defaultCountry,name }
         value={value}
         onChange={onChange}
         defaultCountry={defaultCountry}
-        className="w-full p-2 text-sm focus-visible:outline-0 py-3"
+        className="w-full p-2 text-sm focus-visible:outline-0 "
         style={{
           border: "none", // Remove internal borders
           boxShadow: "none", // Remove internal focus shadows
@@ -135,7 +135,7 @@ export const WhatsAppInput = ({ label, value, onChange, name }) => (
         placeholder="Enter WhatsApp number"
         value={value}
         onChange={onChange}
-        className="w-full p-2 text-sm outline-none py-3"
+        className="w-full p-2 text-sm outline-none "
       />
     </div>
   </div>
