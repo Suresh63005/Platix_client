@@ -23,11 +23,12 @@ const CreateOrganization = () => {
   const { id, mode: initialMode } = location.state || {};
   const [mode, setMode] = useState(initialMode || "create");
   const [organization, setOrganization] = useState(null);
+  const [formData, setFormData] = useState({name:'',type:'',address:'',description:'',email:'',whatsapp:'',mobile:'',Longitude:''});
 
   // Initialize form with useForm hook
   const { register, handleSubmit, setValue, watch, control, reset } = useForm();
 
-  const formData = watch(); // This will give the current form values
+  // const formData = watch(); // This will give the current form values
 
   useEffect(() => {
     if (location.state) {
@@ -192,7 +193,16 @@ const CreateOrganization = () => {
                 className="p-1"
                 disabled={mode === "view"}
               />
-              {formData.type === "Dentist" ||
+              <InputField
+                label={"Description"}
+                type={"text"}
+                placeholder={"Enter Description"}
+                {...register("description")}
+                value={formData.description || ""}
+                className="p-1"
+                disabled={mode === "view"}
+              />
+              {/* {formData.type === "Dentist" ||
               formData.type === "Dental Laboratory" ? (
                 <InputField
                   label="Business Name"
@@ -203,10 +213,19 @@ const CreateOrganization = () => {
                   className="p-1"
                   disabled={mode === "view"}
                 />
-              ) : null}
+              ) : null} */}
             </div>
             {formData.type === "Dentist" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <InputField
+                  label="Business Name"
+                  type="text"
+                  placeholder="Enter Business Name"
+                  {...register("businessName")}
+                  value={formData.businessName || ""}
+                  className="p-1"
+                  disabled={mode === "view"}
+                />
                 <InputField
                   label="Registration ID"
                   type="text"
