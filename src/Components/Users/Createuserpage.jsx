@@ -23,6 +23,7 @@ const CreateUserPage = () => {
   const [designationOptions, setDesignationOptions] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [whatsAppNumber, setWhatsAppNumber] = useState("");
+  const [dateOfBirth,setDateOfBirth] = useState("")
 
   useEffect(() => {
     // Handle view and edit modes
@@ -33,7 +34,7 @@ const CreateUserPage = () => {
         setRoles(userData.role);
         setPhoneNumber(userData.phoneNumber);
         setWhatsAppNumber(userData.whatsAppNumber);
-
+        setDateOfBirth(userData.dateOfBirth)
         handleRoleChange(userData.role);
       }
     }
@@ -173,7 +174,7 @@ const CreateUserPage = () => {
             <InputField
               label="Date of Birth"
               type="date"
-              value={user?.dob || ""}
+              value={user?.dateOfBirth || ""}
               disabled={mode === "view"}
             />
             <InputField
