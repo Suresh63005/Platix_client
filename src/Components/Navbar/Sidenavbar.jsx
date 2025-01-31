@@ -110,14 +110,14 @@ const Sidenavbar = () => {
   return (
     <div className="flex">
 <div
-  className={`fixed sm:static top-0 left-0 w-[250px] bg-[#660F5D] text-white transform ${
+  className={`fixed sm:static top-0 left-0 w-[20vw] bg-[#660F5D] text-white transform ${
     isSidebarOpen
       ? "translate-x-0"
       : "-translate-x-full overflow-y-auto scrollbar-hidden"
   } sm:translate-x-0 transition-transform duration-300 z-50 h-full sm:h-auto`}
 >
   {/* Logo Section */}
-  <div className="h-[60px] w-[250px] bg-white flex items-center justify-center sticky top-0 z-50">
+  <div className="h-[60px] w-full bg-white flex items-center justify-center sticky top-0 z-50">
     <img
       src="/assets/images/Frame 427319709.png"
       alt="logo"
@@ -136,7 +136,7 @@ const Sidenavbar = () => {
 
   {/* Navigation Menu */}
   <div className="flex-1 overflow-y-auto mt-4 scrollbar-hidden">
-    <div className="space-y-4 font-medium">
+    <div className="space-y-4 font-medium md:">
       {renderNavItem(
         OrganizationIcon,
         ActiveorganizationIcon,

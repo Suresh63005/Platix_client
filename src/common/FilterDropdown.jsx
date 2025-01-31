@@ -1,33 +1,82 @@
 import React from "react";
 import Select from "react-select";
+import { ReactComponent as DownArrow } from "../assets/images/Down Arrow.svg"; // Import DownArrow
 
-const FilterDropdown = ({ filterValue, onFilterChange, options, placeholder, customStyles }) => {
-  // Transform options into React Select's required format
+const FilterDropdown = ({ filterValue, onFilterChange, options, placeholder, className }) => {
+  // Custom styles directly in the component
+  const customStyles = {
+    control: (base, { isFocused }) => ({
+      ...base,
+      border: isFocused ? "2px solid #660F5D" : "1px solid #EAEAFF",
+      boxShadow: isFocused ? 'none' : '0px 0px 4px 1px #00000033',
+      borderRadius: "5px",
+      padding: "2px",
+      fontSize: "12px", // Consistent font size
+      color: "#757575",
+      height: "42px",
+      "&:hover": {},
+    }),
+    placeholder: (base) => ({
+      ...base,
+      color: "#131313",
+      fontWeight: 600,
+      fontSize: "12px",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      fontSize: "12px",
+      fontWeight: "600",
+      color: "#131313",
+      fontFamily: "Montserrat, sans-serif",
+    }),
+    option: (base) => ({
+      ...base,
+      backgroundColor: "white",
+      color: "#757575",
+      fontWeight: "600",
+      cursor: "pointer",
+      fontSize: "12px",
+      "&:hover": {
+        backgroundColor: "#660F5D",
+        color: "white",
+      },
+    }),
+    menu: (base) => ({
+      ...base,
+      width: "150px", // Fixed dropdown menu width
+    }),
+  };
+
+  // Transform options into React Select's format
   const formattedOptions = options.map((option) => ({
     value: option,
     label: option,
   }));
 
-  // Custom components to hide the default dropdown arrow
-  const customComponents = {
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  };
-
   return (
-    <Select
-      value={
-        filterValue
-          ? formattedOptions.find((opt) => opt.value === filterValue) // Set selected option
-          : { value: "", label: placeholder, isDisabled: true } // Set placeholder as the selected option
-      }
-      onChange={(selectedOption) => onFilterChange(selectedOption?.value)} // Trigger value change
-      options={formattedOptions} // Dropdown options (placeholder not included here)
-      placeholder={placeholder} // Placeholder text
-      styles={customStyles} // Custom styles for the dropdown
-      components={customComponents} // Custom components to hide the default arrow
-      isOptionDisabled={(option) => option.isDisabled} // Disable the placeholder option
-    />
+    <div className="relative w-full">
+      <Select
+        value={
+          filterValue
+            ? formattedOptions.find((opt) => opt.value === filterValue)
+            : { value: "", label: placeholder, isDisabled: true }
+        }
+        onChange={(selectedOption) => onFilterChange(selectedOption?.value)}
+        options={formattedOptions}
+        placeholder={placeholder}
+        className={className}
+        styles={customStyles} // Apply custom styles directly
+        components={{
+          DropdownIndicator: () => null, // Hide default arrow
+          IndicatorSeparator: () => null,
+        }}
+      />
+      
+      {/* Custom DownArrow inside the field */}
+      <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <DownArrow className="w-4 h-4 text-gray-400" />
+      </div>
+    </div>
   );
 };
 

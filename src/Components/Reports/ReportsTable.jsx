@@ -44,11 +44,11 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
 
   return (
     <div className="reports-container p-4 flex-1">
-      <div className="table-container bg-white border  shadow-sm rounded-md p-4 w-[981px]">
-        <div className="w-full max-h-[400px] overflow-auto">
+      <div className="table-container bg-white border border-[#EAEAFF]  shadow-sm rounded-md p-4 max-w-[77vw]">
+        <div className="w-full max-h-[400px] overflow-auto scrollbar-color">
           <table className="text-sm min-w-full table-auto">
             <thead className="text-[12px]">
-              <tr className="border-b">
+              <tr className="border-b-[1px] border-[#F3E6F2]">
                 <th className="p-2 text-center">
                   <input
                     type="checkbox"
@@ -76,7 +76,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
             </thead>
             <tbody>
               {paginatedData.map((item, index) => (
-                <tr key={item.id} className="border-b">
+                <tr key={item.id} className="border-b-[1px] border-[#F3E6F2]">
                   <td className="p-2 text-center">
                     <input
                       type="checkbox"

@@ -5,6 +5,8 @@ import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
 import UserICon from "../../assets/images/Users icon.svg";
 import { organizationsData } from "../../Data/data";
+import { Class, Label } from "@mui/icons-material";
+import { ClassNames } from "@emotion/react";
 
 const OrganizationList = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -103,7 +105,7 @@ const OrganizationList = () => {
             "Organization Name",
             "Organization Type",
             "Mobile No",
-            "Users",
+            { label: "Users", style: { textAlign: "center" } }, 
           ]}
           fields={["name", "type", "mobile", "icon"]}
           data={organizations.map((org) => ({
