@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
+import { organizationTypesData } from "../../Data/data";
 
 // Debounced hook for search or filter
 const useDebounce = (value, delay) => {
@@ -40,39 +41,31 @@ const OrganizationList = () => {
   // Dummy organization types data (replace with actual data from your API)
   const loadOrganizationsForPage = (page, filter, searchQuery) => {
     const start = (page - 1) * orgsPerPage;
+    let filteredOrgs = organizationTypesData;
 
-    // Create dummy data
-    const newOrgs = Array.from({ length: orgsPerPage }, (_, index) => ({
-      type: filterOptions[index % filterOptions.length], // Alternate between types
-      fromdate: `2022-01-01`,
-      todate: `2025-01-01`,
-      id: start + index + 1,
-    }));
+    if (filter) {
+      filteredOrgs = filteredOrgs.filter((org) => org.type === filter);
+    }
 
-    // Apply filter and search query (case insensitive)
-    const filteredOrgs = newOrgs.filter((org) => {
-      const matchesFilter = filter ? org.type.toLowerCase() === filter.toLowerCase() : true;
-      const matchesSearchQuery = searchQuery
-        ? org.type.toLowerCase().includes(searchQuery.toLowerCase())
-        : true;
+    if (searchQuery) {
+      filteredOrgs = filteredOrgs.filter((org) =>
+        org.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
 
-      return matchesFilter && matchesSearchQuery;
-    });
+    const paginatedOrgs = filteredOrgs.slice(start, start + orgsPerPage);
 
-    // Set the filtered data
-    setOrganizationTypes(filteredOrgs);
-    setTotalPages(Math.ceil(filteredOrgs.length / orgsPerPage)); // Set the total pages
+    setOrganizationTypes(paginatedOrgs);
+    setTotalPages(Math.ceil(filteredOrgs.length / orgsPerPage));
   };
 
   useEffect(() => {
     loadOrganizationsForPage(page, debouncedFilter, debouncedSearchQuery);
   }, [page, debouncedFilter, debouncedSearchQuery]);
 
-  const handleFilterChange = (event) => {
-    if (event && event.target) {
-      setFilter(event.target.value); // Update filter state
-      setPage(1); // Reset to the first page when filter changes
-    }
+  const handleFilterChange = (value) => {
+    setFilter(value);
+    setPage(1);
   };
 
   const handleSearch = (event) => {
@@ -113,6 +106,7 @@ const OrganizationList = () => {
           page={page}
           totalPages={totalPages}
           setPage={setPage}
+          setData={setOrganizationTypes}
           handleEdit={handleEdit}
           handleview={handleview}
         />

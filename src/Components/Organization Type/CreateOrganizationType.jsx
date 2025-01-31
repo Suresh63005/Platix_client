@@ -96,7 +96,7 @@ const CreateOrganizationType = () => {
         onBackClick={handleBackClick}
       />
 
-      <div className="create-organization-form-container flex-1 bg-white px-6 py-4 rounded-lg shadow-md mx-4 mb-4">
+      <div className="create-organization-form-container border border-[#EAEAFF]flex-1 bg-white px-6 py-4 rounded-lg shadow-md mx-4 mb-4 max-h-[max-content]">
         <form
           className="organization-form-container space-y-4"
           onSubmit={handleSubmit(onSubmit)} // Make sure this is triggered on form submission

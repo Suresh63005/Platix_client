@@ -68,8 +68,8 @@ const ReportsTitle = ({
         <div className="relative w-full sm:w-[250px]"> {/* Responsive width */}
           <input
             type="text"
-            className="p-2 border rounded w-full h-[40px] text-[14px] searchbar shadow-md pr-10"
-            placeholder={searchPlaceholder || "Search..."}
+            className="p-2 border rounded w-full h-[40px] text-[14px] searchbar-w shadow-md pr-10"
+            placeholder={searchPlaceholder || "Search"}
             onChange={onSearch}
           />
           <Searchicon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />

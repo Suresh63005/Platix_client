@@ -25,7 +25,7 @@ export const InputField = ({ label, type, placeholder, value, onChange, name }) 
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="w-full border border-[#EAEAFF] font-medium focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md p-2 text-[12px]  text-[#757575] font-['Montserrat', sans-serif]"
+      className="w-full border border-[#EAEAFF] font-medium focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md p-2 text-[12px] h-[42px]  text-[#757575] font-['Montserrat', sans-serif]"
     />
   </div>
 );
@@ -103,7 +103,7 @@ export const SelectField = ({ label, options, value, onChange, name,defaultplace
 
 
 // Phone Input Component
-export const PhoneNumberInput = ({ label, value, onChange, defaultCountry,name }) => (
+export const PhoneNumberInput = ({ label, value, onChange, defaultCountry, name }) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <div className="flex items-center rounded-md border border-[#EAEAFF] focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] overflow-hidden font-medium text-[#757575]">
@@ -113,10 +113,10 @@ export const PhoneNumberInput = ({ label, value, onChange, defaultCountry,name }
         value={value}
         onChange={onChange}
         defaultCountry={defaultCountry}
-        className="w-full p-2 text-sm focus-visible:outline-0 "
+        className="w-full p-2 text-sm focus-visible:outline-0 h-[42px] "
         style={{
-          border: "none", // Remove internal borders
-          boxShadow: "none", // Remove internal focus shadows
+          border: "none", 
+          boxShadow: "none",
         }}
       />
     </div>
@@ -127,7 +127,7 @@ export const PhoneNumberInput = ({ label, value, onChange, defaultCountry,name }
 export const WhatsAppInput = ({ label, value, onChange, name }) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
-    <div className="flex items-center rounded-md border border-[#EAEAFF] focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] font-medium text-[#757575] font-['Montserrat', sans-serif] ">
+    <div className="flex items-center rounded-md border border-[#EAEAFF] focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] overflow-hidden font-medium text-[#757575]">
       <Whatsappicon color="success" className="ml-2" fontSize="small" />
       <input
         type="text"
@@ -135,13 +135,15 @@ export const WhatsAppInput = ({ label, value, onChange, name }) => (
         placeholder="Enter WhatsApp number"
         value={value}
         onChange={onChange}
-        className="w-full p-2 text-sm outline-none "
+        className="w-full p-2 text-sm outline-none h-[42px] "
       />
     </div>
   </div>
 );
 
 // File Upload Component
+ // Assuming you have these icons imported
+
 export const FileUpload = () => {
   const [files, setFiles] = useState([]);
 
@@ -162,12 +164,12 @@ export const FileUpload = () => {
   return (
     <div className="mt-4">
       {/* File Upload Input */}
-      <div className="flex flex-wrap gap-4 mb-4">
+      <div className="flex flex-wrap gap-4 mb-4 items-center">
         <input
           type="file"
           multiple
           onChange={handleFileChange}
-          className="w-full sm:w-[400px] border border-gray-300 rounded-md p-1 text-sm"
+          className="w-full sm:w-[350px] border border-gray-300 rounded-md p-1 text-sm"
         />
         <button
           className="flex items-center gap-1 bg-[#660F5D] text-white px-7 py-1 rounded-md text-[12px]"
@@ -200,6 +202,7 @@ export const FileUpload = () => {
     </div>
   );
 };
+
 
 // Service Management Component
 export const ServiceForm = () => {

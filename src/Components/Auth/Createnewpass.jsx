@@ -81,7 +81,7 @@ const Createnewpass = () => {
             <div className="mb-4">
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-[#860579]">
                 <span className="px-3 passwordicon">
-                  <Icon icon="solar:lock-password-unlocked-outline" width={20} />
+                  <Icon icon="solar:lock-password-unlocked-outline" className="text-[#3030304D]" width={20} />
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -95,7 +95,7 @@ const Createnewpass = () => {
                 >
                   <Icon
                     icon={showPassword ? "mdi:eye" : "mdi:eye-off"}
-                    width={20}
+                    width={20} 
                   />
                 </span>
               </div>
@@ -105,7 +105,7 @@ const Createnewpass = () => {
             <div className="mb-4">
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-[#860579]">
                 <span className="px-3 passwordicon">
-                  <Icon icon="solar:lock-password-unlocked-outline" width={20} />
+                  <Icon icon="solar:lock-password-unlocked-outline" className="text-[#3030304D]" width={20} />
                 </span>
                 <input
                   type={showConfirmPassword ? "text" : "password"}
@@ -145,9 +145,7 @@ const Createnewpass = () => {
       </div>
 
       <div className="flex justify-center py-4 mt-auto bg-white">
-        <h4 className="text-sm text-[#131313]">
-          © Copyright 2025 Platix Admin portal
-        </h4>
+        <h4 className="text-sm text-[#25064C] font-medium ">© Copyright 2025 Platix Admin portal</h4>
       </div>
     </div>
   );

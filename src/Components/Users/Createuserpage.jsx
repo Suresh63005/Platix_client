@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useForm } from "react-hook-form";
 import {
   InputField,
   SelectField,
@@ -19,23 +20,41 @@ const CreateUserPage = () => {
   const { id, mode: initialMode } = location.state || {};
   const [mode, setMode] = useState(initialMode || "create");
   const [user, setUser] = useState(null);
-  const [roles, setRoles] = useState("");
   const [designationOptions, setDesignationOptions] = useState([]);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [whatsAppNumber, setWhatsAppNumber] = useState("");
-  const [dateOfBirth,setDateOfBirth] = useState("")
+  const [formdata,setFormData] = useState({
+    prefix:"",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    whatsAppNumber: "",
+    dateOfBirth: "",
+    role: "",
+    designation: "",
+    organization: "",
+    startDate:"",
+  })
+
+  // Initialize useForm
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const formData = watch(); // Watch form data for real-time updates
 
   useEffect(() => {
-    // Handle view and edit modes
     if (id) {
       const userData = usersData.find((user) => user.id === id);
       if (userData) {
         setUser(userData);
-        setRoles(userData.role);
-        setPhoneNumber(userData.phoneNumber);
-        setWhatsAppNumber(userData.whatsAppNumber);
-        setDateOfBirth(userData.dateOfBirth)
-        handleRoleChange(userData.role);
+        setFormData(userData)
+        reset(userData); // Pre-fill the form with user data
+        handleRoleChange(userData.role); // Set designation options based on role
       }
     }
     if (mode === "view" || mode === "edit") {
@@ -43,10 +62,10 @@ const CreateUserPage = () => {
     } else {
       setMode("create");
     }
-  }, [id, mode]);
+  }, [id, mode, reset]);
 
   const handleRoleChange = (selectedRole) => {
-    setRoles(selectedRole);
+    setValue("role", selectedRole); // Update role in form data
 
     switch (selectedRole) {
       case "Dentist":
@@ -79,8 +98,7 @@ const CreateUserPage = () => {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const onSubmit = (data) => {
     const message =
       mode === "edit" ? "User updated successfully" : "User created successfully";
 
@@ -121,7 +139,7 @@ const CreateUserPage = () => {
       />
 
       <div className="create-user-form-container flex-1 bg-white px-6 py-4 rounded-lg shadow-md mx-4 mb-4">
-        <form className="user-form-container space-y-4" onSubmit={handleSubmit}>
+        <form className="user-form-container space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <h3 className="form-title p-2 font-bold">
             {mode === "view"
               ? "View User"
@@ -137,35 +155,37 @@ const CreateUserPage = () => {
                 { value: "Mr", label: "Mr" },
                 { value: "Mrs", label: "Mrs" },
               ]}
-              value={user?.prefix || ""}
+              value={formData.prefix || ""}
+              onChange={(value) => setValue("prefix", value)}
               disabled={mode === "view"}
             />
             <SelectField
               label="Roles"
               defaultplaceholder="Select Role"
               options={[
-                { value: "Roles", label: "Roles" },
                 { value: "Dentist", label: "Dentist" },
                 { value: "Dental Laboratory", label: "Dental Laboratory" },
                 { value: "Radiology center", label: "Radiology center" },
                 { value: "Material Supplier", label: "Material Supplier" },
               ]}
-              value={roles}
-              onChange={(e) => handleRoleChange(e.target.value)}
+              value={formData.role || ""}
+              onChange={(value) => handleRoleChange(value)}
               disabled={mode === "view"}
             />
             <InputField
               label="First Name"
               type="text"
+              value={formData.firstName || ""}
               placeholder="Enter First name"
-              value={user?.firstName || ""}
+              {...register("firstName", { required: true })}
               disabled={mode === "view"}
             />
             <InputField
               label="Last Name"
               type="text"
+              value={formData.lastName || ""}
               placeholder="Enter Last name"
-              value={user?.lastName || ""}
+              {...register("lastName", { required: true })}
               disabled={mode === "view"}
             />
           </div>
@@ -174,27 +194,29 @@ const CreateUserPage = () => {
             <InputField
               label="Date of Birth"
               type="date"
-              value={user?.dateOfBirth || ""}
+              value={formData.dateOfBirth || ""}
+              {...register("dateOfBirth")}
               disabled={mode === "view"}
             />
             <InputField
               label="Email"
               type="email"
+              value={formData.email || ""}
               placeholder="Enter email"
-              value={user?.email || ""}
+              {...register("email", { required: true })}
               disabled={mode === "view"}
             />
             <PhoneNumberInput
               label="Mobile Number"
-              value={phoneNumber}
-              onChange={setPhoneNumber}
+              value={formData.phoneNumber || ""}
+              onChange={(value) => setValue("phoneNumber", value)}
               defaultCountry="IN"
               disabled={mode === "view"}
             />
             <WhatsAppInput
               label="WhatsApp Number"
-              value={whatsAppNumber}
-              onChange={setWhatsAppNumber}
+              value={formData.whatsAppNumber || ""}
+              onChange={(value) => setValue("whatsAppNumber", value)}
               disabled={mode === "view"}
             />
           </div>
@@ -204,14 +226,16 @@ const CreateUserPage = () => {
               label="Designation"
               defaultplaceholder="Select Designation"
               options={designationOptions}
-              value={user?.designation || ""}
+              value={formData.designation || ""}
+              onChange={(value) => setValue("designation", value)}
               disabled={mode === "view"}
             />
             <InputField
               label="Organization"
               type="text"
+              value={formData.organization || ""}
               placeholder="Organization"
-              value={user?.organization || ""}
+              {...register("organization")}
               disabled={mode === "view"}
             />
           </div>

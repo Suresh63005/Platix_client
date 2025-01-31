@@ -23,12 +23,19 @@ const CreateOrganization = () => {
   const { id, mode: initialMode } = location.state || {};
   const [mode, setMode] = useState(initialMode || "create");
   const [organization, setOrganization] = useState(null);
-  const [formData, setFormData] = useState({name:'',type:'',address:'',description:'',email:'',whatsapp:'',mobile:'',Longitude:''});
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "",
+    address: "",
+    description: "",
+    email: "",
+    whatsapp: "",
+    mobile: "",
+    Longitude: "",
+  });
 
   // Initialize form with useForm hook
   const { register, handleSubmit, setValue, watch, control, reset } = useForm();
-
-  // const formData = watch(); // This will give the current form values
 
   useEffect(() => {
     if (location.state) {
@@ -47,7 +54,7 @@ const CreateOrganization = () => {
     if (id) {
       const org = organizationsData.find((org) => org.id === id);
       setOrganization(org);
-      reset({ ...org }); // Pre-fill the form with organization data if editing
+      setFormData({ ...org }); // Pre-fill the form with organization data if editing
     }
   }, [id, reset]);
 
@@ -61,7 +68,7 @@ const CreateOrganization = () => {
       text:
         mode === "edit"
           ? "Organization Updated Successfully"
-          : "Organization created successfully",
+          : "Organization Added successfully",
       imageUrl: TickSquare, // Add image for success icon
       imageWidth: 50,
       imageHeight: 50,
@@ -71,16 +78,18 @@ const CreateOrganization = () => {
       showCloseButton: false,
       customClass: {
         popup: "swal-popup-custom",
+        image: "swal-image-custom", // Apply custom styling for image
+        title: "swal-no-gap", // Apply custom styling for text
       },
       willClose: () => {
-        // Navigate to the organization list page after success message
         navigate("/organizationlist");
       },
     });
   };
 
   const handleSelectChange = (value, name) => {
-    setValue(name, value); // Set selected value in form
+    setValue(name, value); // Update form data in react-hook-form
+    setFormData((prev) => ({ ...prev, [name]: value })); // Ensure UI updates properly
   };
 
   return (
@@ -100,7 +109,7 @@ const CreateOrganization = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto p-3">
-        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+        <div className="bg-white border border-[#EAEAFF] shadow-md rounded-lg p-6 mb-6">
           <h3 className="form-title text-lg font-bold mb-4">
             {mode === "view"
               ? "View Organization"
@@ -202,19 +211,38 @@ const CreateOrganization = () => {
                 className="p-1"
                 disabled={mode === "view"}
               />
-              {/* {formData.type === "Dentist" ||
-              formData.type === "Dental Laboratory" ? (
+            </div>
+
+            {/* GST Number Field (Common for all roles except Dentist) */}
+            {formData.type !== "Dentist" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
-                  label="Business Name"
+                  label="GST"
                   type="text"
-                  placeholder="Enter Business Name"
-                  {...register("businessName")}
-                  value={formData.businessName || ""}
+                  placeholder="Enter GST Number"
+                  {...register("gstNumber")}
+                  value={formData.gstNumber || ""}
                   className="p-1"
                   disabled={mode === "view"}
                 />
-              ) : null} */}
-            </div>
+                <SelectField
+                  label="Designation"
+                  defaultplaceholder={"Select Designation"}
+                  options={[
+                    { value: "Owner", label: "Owner" },
+                    { value: "Technician", label: "Technician" },
+                    { value: "Delivery Boy", label: "Delivery Boy" },
+                  ]}
+                  value={formData.designation || ""}
+                  onChange={(e) => handleSelectChange(e, "designation")}
+                  className="p-1"
+                  disabled={mode === "view"}
+                />
+              </div>
+              
+            )}
+           
+            {/* Dentist-specific fields */}
             {formData.type === "Dentist" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
@@ -246,7 +274,10 @@ const CreateOrganization = () => {
                     { value: "Periodontist", label: "Periodontist" },
                     { value: "Implantologist", label: "Implantologist" },
                     { value: "Oral Pathologist", label: "Oral Pathologist" },
-                    { value: "Oral Medicine & Radiologist", label: "Oral Medicine & Radiologist" },
+                    {
+                      value: "Oral Medicine & Radiologist",
+                      label: "Oral Medicine & Radiologist",
+                    },
                     { value: "Community dentist", label: "Community dentist" },
                     { value: "Paeddontist", label: "Paeddontist" },
                   ]}
@@ -257,33 +288,14 @@ const CreateOrganization = () => {
                 />
               </div>
             )}
-            {formData.type === "Dental Laboratory" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <InputField
-                  label="GST"
-                  type="text"
-                  placeholder="Enter GST Number"
-                  {...register("gstNumber")}
-                  value={formData.gstNumber || ""}
-                  className="p-1"
-                  disabled={mode === "view"}
-                />
-                <SelectField
-                  label="Designation"
-                  defaultplaceholder={"Select Designation"}
-                  options={[
-                    { value: "Owner", label: "Owner" },
-                    { value: "Technician", label: "Technician" },
-                    { value: "Delivery Boy", label: "Delivery Boy" },
-                  ]}
-                  value={formData.designation || ""}
-                  onChange={(e) => handleSelectChange(e, "designation")}
-                  className="p-1"
-                  disabled={mode === "view"}
-                />
-              </div>
-            )}
+
+            {/* Dental Laboratory-specific fields */}
+           
+
             <FileUpload className="p-1" disabled={mode === "view"} />
+            <FileUpload className="p-1" disabled={mode === "view"} />
+           
+
             {mode !== "view" && (
               <div className="flex justify-end gap-3 mt-4">
                 <button
@@ -305,7 +317,9 @@ const CreateOrganization = () => {
           </form>
         </div>
 
-        {formData.type === "Dental Laboratory" && (
+        {(formData.type === "Radiology" ||
+          formData.type === "Material Supplier" ||
+          formData.type === "Dental Laboratory") && (
           <div className="bg-white shadow-md rounded-lg p-6">
             <UserServices />
           </div>

@@ -65,6 +65,7 @@ option::placeholder{
 .overflow-x-auto{
     scrollbar-width: thin;
 }
+
 .report-table{
     scrollbar-width: thin;
 }
@@ -89,7 +90,18 @@ option::placeholder{
   color: #131313 !important;
   font-weight: 600;
 }
+.searchbar{
+  box-shadow: 0px 0px 4px 1px #00000033 !important;
+  width: 300px;
 
+}
+.searchbar-w{
+  box-shadow: 0px 0px 4px 1px #00000033 !important;
+}
+.searchbar-w::placeholder{
+  color: #131313 !important;
+  font-weight: 600;
+}
 .optionclass {
   color: #131313 !important;
   font-weight: 600;
@@ -102,3 +114,89 @@ option::placeholder{
 .css-1b9a91j-control:hover {
   border-color: #045D78 !important;
 }
+
+.organization-form{
+  height: 500px !important;
+}
+
+.swal-popup-custom {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 40px !important;
+  height: 250px;
+  width: 450px;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.swal-image-custom {
+  margin-bottom: -10px !important; /* Adjust the gap (try -10px to remove spacing) */
+}
+
+.swal-no-gap {
+  margin-top: -5px !important; /* Reduce gap between icon and text */
+}
+/* Style the default checkbox */
+input[type="checkbox"] {
+  -webkit-appearance: none; /* Remove default checkbox style in Webkit browsers */
+  -moz-appearance: none; /* Remove default checkbox style in Firefox */
+  appearance: none; /* Remove default checkbox style in modern browsers */
+  width: 13px;
+  height: 13px;
+  border: 1px solid #000000CC; /* Border color */
+  border-radius: 4px;
+  background-color: white; /* Background color */
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* When checked, change background and border color */
+input[type="checkbox"]:checked {
+  background-color: #660F5D; /* Checked background color */
+  border-color: #660F5D; /* Border color when checked */
+}
+
+/* Add a checkmark when checked */
+input[type="checkbox"]:checked::after {
+  content: '✔'; /* Unicode for checkmark */
+  position: absolute;
+  font-size: 12px;
+  color: white; /* Checkmark color */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Optional: Add a hover effect */
+input[type="checkbox"]:hover {
+  border-color: #999;
+}
+.scrollbar-color{
+  scrollbar-width: thin !important;
+  scrollbar-color: #660f5D white !important;
+}
+
+.PhoneInputCountrySelect option:hover {
+  background-color: #660F5D; /* Background color on hover */
+  color: white;              /* Text color on hover */
+}
+/* ::-webkit-scrollbar {
+  width: 12px !important; 
+}
+
+.overflow-auto::-webkit-scrollbar-track {
+  background: #f1f1f1 !important; 
+  border-radius: 10px !important; 
+}
+
+.overflow-auto::-webkit-scrollbar-thumb {
+  background: #888 !important; 
+  border-radius: 10px !important; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555 !important; 
+} */

@@ -5,7 +5,6 @@ import { ReactComponent as Eye } from "../assets/images/Show.svg";
 import { ReactComponent as LeftArrow } from "../assets/images/Left Arrow.svg";
 import { ReactComponent as RightArrow } from "../assets/images/Right Arrow.svg";
 
-
 const Table = ({
   columns,
   data,
@@ -16,13 +15,10 @@ const Table = ({
   setData,
   showActions = true,
   handleEdit,
-  handleview, // Default to true for other pages
+  handleview,
 }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
-
-
-  
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
@@ -53,8 +49,6 @@ const Table = ({
     }
   };
 
-
-
   const handleDelete = (itemId) => {
     const updatedData = data.filter((item) => item.id !== itemId);
     setData(updatedData);
@@ -65,11 +59,11 @@ const Table = ({
   };
 
   return (
-    <div className="userlist-container p-4 flex-1 overflow-auto overflow-x-scroll">
-      <div className="usertable-container bg-white border border-[#EAE5FF] shadow-sm rounded-md p-4 h-full overflow-x-auto">
-        <table className="w-full table text-[12px]">
+    <div className="userlist-container p-4 flex-1 overflow-auto scrollbar-color">
+      <div className="usertable-container bg-white border border-[#EAEAFF] shadow-sm rounded-md p-4 h-[max-content] ">
+        <table className="w-full table text-[12px] ">
           <thead className="text-[12px]">
-            <tr className="border-b-[1px] bg-white">
+            <tr className="border-b-[1px] border-[#F3E6F2] bg-white">
               <th className="p-2 text-center text-[12px]">
                 <input
                   type="checkbox"
@@ -79,11 +73,16 @@ const Table = ({
                 />
               </th>
               <th className="p-2 font-medium text-left">Sr</th>
-              {columns.map((column, index) => (
-                <th key={index} className="p-2 font-medium text-left">
-                  {column}
-                </th>
-              ))}
+              {columns.map((column, index) => {
+                // Extract label and style if column is an object
+                const label = typeof column === "object" ? column.label : column;
+                const style = typeof column === "object" ? column.style : {};
+                return (
+                  <th key={index} className="p-2 font-medium text-left" style={style}>
+                    {label}
+                  </th>
+                );
+              })}
               {showActions && (
                 <>
                   <th className="p-2 font-medium text-center">Action</th>
@@ -94,14 +93,18 @@ const Table = ({
           </thead>
           <tbody>
             {data.map((item, index) => (
-              <tr key={item.id} className="border-b ">
+              <tr key={item.id} className="border-b border-[#F3E6F2] ">
                 <td className="p-2 text-center text-[12px]">
-                  <input
-                    type="checkbox"
-                    className="cursor-pointer text-[12px]"
-                    onChange={(e) => handleSelectItem(e, item.id)}
-                    checked={selectedItems.includes(item.id)}
-                  />
+                  <div className="custom-checkbox">
+                    <input
+                      type="checkbox"
+                      className="cursor-pointer text-[12px]"
+                      onChange={(e) => handleSelectItem(e, item.id)}
+                      checked={selectedItems.includes(item.id)}
+                    />
+                    <div className="custom-checkbox-box"></div>{" "}
+                    {/* Custom checkbox box */}
+                  </div>
                 </td>
                 <td className="p-2 text-left text-[12px] font-medium text-[#4D5D6B]">
                   {(page - 1) * 10 + (index + 1)}
@@ -146,7 +149,9 @@ const Table = ({
                         ) : (
                           <Edit
                             className="w-5 h-5 text-gray-600 cursor-pointer"
-                            onClick={() => {handleEdit(item.id)}}
+                            onClick={() => {
+                              handleEdit(item.id);
+                            }}
                           />
                         )}
                         <Delete
@@ -157,8 +162,10 @@ const Table = ({
                     </td>
                     <td className="p-2">
                       <div className="flex justify-center items-center h-full">
-                        <Eye className="w-5 h-5 cursor-pointer" 
-                        onClick={()=>handleview(item.id)}/>
+                        <Eye
+                          className="w-5 h-5 cursor-pointer"
+                          onClick={() => handleview(item.id)}
+                        />
                       </div>
                     </td>
                   </>
@@ -169,7 +176,7 @@ const Table = ({
         </table>
 
         <div className="pagination-container flex items-center justify-between mt-4 flex-wrap gap-4">
-          <div className="showing-container text-[#660F5D] font-medium text-[12px]">
+          <div className="showing-container text-[#71717A] font-medium text-[12px]">
             Showing {String(page).padStart(2, "0")} of{" "}
             {String(totalPages).padStart(2, "0")}
           </div>
