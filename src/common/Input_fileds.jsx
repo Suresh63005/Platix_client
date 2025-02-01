@@ -16,19 +16,24 @@ export const Header = ({ name }) => (
 );
 
 // Input Field Component
-export const InputField = ({ label, type, placeholder, value, onChange, name }) => (
+
+
+export const InputField = React.forwardRef(({ label, type, placeholder, name, error, ...props }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <input
       type={type}
       name={name}
       placeholder={placeholder}
-      value={value}
-      onChange={onChange}
+      ref={ref} // Assign the ref here
       className="w-full border border-[#EAEAFF] font-medium focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md p-2 text-[12px] h-[42px]  text-[#757575] font-['Montserrat', sans-serif]"
+      {...props} // Spread other props like value and onChange
     />
+    {error && <span className="text-red-500 text-xs">{error.message}</span>}
   </div>
-);
+));
+
+
 
 // Select Field Component using react-select
 export const SelectField = ({ label, options, value, onChange, name,defaultplaceholder }) => (

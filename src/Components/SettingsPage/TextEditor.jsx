@@ -18,7 +18,7 @@ const TextEditor = ({ onChange, value }) => {
   const [localValue, setLocalValue] = useState(value || "");
 
   const config = {
-    readonly: false, // Enable editing
+    readonly: false,
     placeholder: "Write something...",
     height: 300,
     buttons: [
@@ -51,26 +51,22 @@ const TextEditor = ({ onChange, value }) => {
     toolbarSticky: true,
     showCharsCounter: false,
     showWordsCounter: false,
-    disablePlugins: ['poweredByJodit'],
+    disablePlugins: ["poweredByJodit"],
   };
 
-  useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.focus(); // Auto-focus when the component mounts
-    }
-  }, []);
-
   const debouncedOnChange = useDebounce((newContent) => {
+    console.log("Editor Content:", newContent); // Debugging
     setLocalValue(newContent);
     if (onChange) {
-      onChange(newContent); // Call parent onChange after debounce
+      onChange(newContent);
     }
-  }, 500); // Debounce time in milliseconds
+  }, 500);
 
   const handleBlur = (content) => {
+    console.log("Editor Blur Content:", content); // Debugging
     setLocalValue(content);
     if (onChange) {
-      onChange(content); // Update on blur to avoid unnecessary updates
+      onChange(content);
     }
   };
 
@@ -81,7 +77,7 @@ const TextEditor = ({ onChange, value }) => {
         value={localValue}
         config={config}
         onBlur={handleBlur}
-        onChange={debouncedOnChange} // Use debounced onChange
+        onChange={debouncedOnChange}
       />
     </div>
   );

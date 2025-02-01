@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Swal from "sweetalert2"; // Import SweetAlert
+import Swal from "sweetalert2";
 import UserServices from "../../common/UserServices";
 import {
   InputField,
@@ -14,7 +14,7 @@ import PageNavigation from "../../common/PageNavigation";
 import TickSquare from "../../assets/images/TickSquare.svg";
 import { organizationsData } from "../../Data/data";
 import { ReactComponent as Cancelbtnicon } from "../../assets/images/Cancel_button_icon.svg";
-import { useForm } from "react-hook-form"; // Import useForm
+import { useForm, Controller } from "react-hook-form";
 
 const CreateOrganization = () => {
   const location = useLocation();
@@ -23,18 +23,7 @@ const CreateOrganization = () => {
   const { id, mode: initialMode } = location.state || {};
   const [mode, setMode] = useState(initialMode || "create");
   const [organization, setOrganization] = useState(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    type: "",
-    address: "",
-    description: "",
-    email: "",
-    whatsapp: "",
-    mobile: "",
-    Longitude: "",
-  });
 
-  // Initialize form with useForm hook
   const { register, handleSubmit, setValue, watch, control, reset } = useForm();
 
   useEffect(() => {
@@ -46,7 +35,7 @@ const CreateOrganization = () => {
         setMode("view");
       }
     } else {
-      setMode("create"); // Default to create if no mode provided
+      setMode("create");
     }
   }, [location.state]);
 
@@ -54,22 +43,21 @@ const CreateOrganization = () => {
     if (id) {
       const org = organizationsData.find((org) => org.id === id);
       setOrganization(org);
-      setFormData({ ...org }); // Pre-fill the form with organization data if editing
+      reset(org); // Pre-fill the form with organization data if editing
     }
   }, [id, reset]);
 
   const handleBackClick = () => {
-    navigate(-1); // Navigate to the previous page
+    navigate(-1);
   };
 
   const onSubmit = (data) => {
-    // SweetAlert after form submission
     Swal.fire({
       text:
         mode === "edit"
           ? "Organization Updated Successfully"
           : "Organization Added successfully",
-      imageUrl: TickSquare, // Add image for success icon
+      imageUrl: TickSquare,
       imageWidth: 50,
       imageHeight: 50,
       background: "white",
@@ -78,18 +66,13 @@ const CreateOrganization = () => {
       showCloseButton: false,
       customClass: {
         popup: "swal-popup-custom",
-        image: "swal-image-custom", // Apply custom styling for image
-        title: "swal-no-gap", // Apply custom styling for text
+        image: "swal-image-custom",
+        title: "swal-no-gap",
       },
       willClose: () => {
         navigate("/organizationlist");
       },
     });
-  };
-
-  const handleSelectChange = (value, name) => {
-    setValue(name, value); // Update form data in react-hook-form
-    setFormData((prev) => ({ ...prev, [name]: value })); // Ensure UI updates properly
   };
 
   return (
@@ -125,31 +108,34 @@ const CreateOrganization = () => {
                 type={"text"}
                 placeholder={"Enter Organization Name"}
                 {...register("name")}
-                value={formData.name || ""}
-                className="p-1"
                 readOnly={mode === "view"}
               />
-              <SelectField
-                label="Organization Type"
-                defaultplaceholder={"Select Role"}
-                options={[
-                  { value: "Dentist", label: "Dentist" },
-                  { value: "Radiology", label: "Radiology" },
-                  { value: "Material Supplier", label: "Material Supplier" },
-                  { value: "Dental Laboratory", label: "Dental Laboratory" },
-                ]}
-                value={formData.type || ""}
-                onChange={(value) => handleSelectChange(value, "type")}
-                className="p-1 w-full"
-                readOnly={mode === "view"}
+              <Controller
+                name="type"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <SelectField
+                    label="Organization Type"
+                    defaultplaceholder={"Select Role"}
+                    options={[
+                      { value: "Dentist", label: "Dentist" },
+                      { value: "Radiology", label: "Radiology" },
+                      { value: "Material Supplier", label: "Material Supplier" },
+                      { value: "Dental Laboratory", label: "Dental Laboratory" },
+                    ]}
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                    className="p-1 w-full"
+                    readOnly={mode === "view"}
+                  />
+                )}
               />
               <InputField
                 label={"Address"}
                 type={"text"}
                 placeholder={"Enter Address"}
                 {...register("address")}
-                value={formData.address || ""}
-                className="p-1"
                 disabled={mode === "view"}
               />
               <div className="flex flex-col p-1 mt-[-5px]">
@@ -164,33 +150,36 @@ const CreateOrganization = () => {
                     type={"text"}
                     placeholder={"Latitude"}
                     {...register("googleCoordinates.latitude")}
-                    value={formData.googleCoordinates?.latitude || ""}
-                    className="p-1"
                     disabled={mode === "view"}
                   />
                   <InputField
                     type={"text"}
                     placeholder={"Longitude"}
                     {...register("googleCoordinates.longitude")}
-                    value={formData.googleCoordinates?.longitude || ""}
-                    className="p-1"
                     disabled={mode === "view"}
                   />
                 </div>
               </div>
-              <PhoneNumberInput
-                label={"Mobile Number"}
-                value={formData.mobile || ""}
-                onChange={(value) => setValue("mobile", value)}
-                defaultCountry={"IN"}
-                className="p-1"
-                disabled={mode === "view"}
+              <Controller
+                name="mobile"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <PhoneNumberInput
+                    label={"Mobile Number"}
+                    value={field.value}
+                    onChange={(value) => field.onChange(value)}
+                    defaultCountry={"IN"}
+                    className="p-1"
+                    disabled={mode === "view"}
+                  />
+                )}
               />
-              <WhatsAppInput
+              <InputField
                 label={"WhatsApp Number"}
-                value={formData.whatsapp || ""}
-                onChange={(e) => setValue("whatsapp", e.target.value)}
-                className="p-1"
+                type={"text"}
+                placeholder={"Enter WhatsApp Number"}
+                {...register("whatsapp")}
                 disabled={mode === "view"}
               />
               <InputField
@@ -198,8 +187,6 @@ const CreateOrganization = () => {
                 type={"email"}
                 placeholder={"Enter Email"}
                 {...register("email")}
-                value={formData.email || ""}
-                className="p-1"
                 disabled={mode === "view"}
               />
               <InputField
@@ -207,51 +194,49 @@ const CreateOrganization = () => {
                 type={"text"}
                 placeholder={"Enter Description"}
                 {...register("description")}
-                value={formData.description || ""}
-                className="p-1"
                 disabled={mode === "view"}
               />
             </div>
 
-            {/* GST Number Field (Common for all roles except Dentist) */}
-            {formData.type !== "Dentist" && (
+            {watch("type") !== "Dentist" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
                   label="GST"
                   type="text"
                   placeholder="Enter GST Number"
                   {...register("gstNumber")}
-                  value={formData.gstNumber || ""}
-                  className="p-1"
                   disabled={mode === "view"}
                 />
-                <SelectField
-                  label="Designation"
-                  defaultplaceholder={"Select Designation"}
-                  options={[
-                    { value: "Owner", label: "Owner" },
-                    { value: "Technician", label: "Technician" },
-                    { value: "Delivery Boy", label: "Delivery Boy" },
-                  ]}
-                  value={formData.designation || ""}
-                  onChange={(e) => handleSelectChange(e, "designation")}
-                  className="p-1"
-                  disabled={mode === "view"}
+                <Controller
+                  name="designation"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <SelectField
+                      label="Designation"
+                      defaultplaceholder={"Select Designation"}
+                      options={[
+                        { value: "Owner", label: "Owner" },
+                        { value: "Technician", label: "Technician" },
+                        { value: "Delivery Boy", label: "Delivery Boy" },
+                      ]}
+                      value={field.value}
+                      onChange={(value) => field.onChange(value)}
+                      className="p-1"
+                      disabled={mode === "view"}
+                    />
+                  )}
                 />
               </div>
-              
             )}
-           
-            {/* Dentist-specific fields */}
-            {formData.type === "Dentist" && (
+
+            {watch("type") === "Dentist" && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
                   label="Business Name"
                   type="text"
                   placeholder="Enter Business Name"
                   {...register("businessName")}
-                  value={formData.businessName || ""}
-                  className="p-1"
                   disabled={mode === "view"}
                 />
                 <InputField
@@ -259,42 +244,65 @@ const CreateOrganization = () => {
                   type="text"
                   placeholder="Enter Registration ID"
                   {...register("registrationId")}
-                  value={formData.registrationId || ""}
-                  className="p-1"
                   disabled={mode === "view"}
                 />
-                <SelectField
-                  label="Designation"
-                  defaultplaceholder={"Select Designation"}
-                  options={[
-                    { value: "Dentist", label: "Dentist" },
-                    { value: "Orthodontist", label: "Orthodontist" },
-                    { value: "Prosthodontist", label: "Prosthodontist" },
-                    { value: "Oral surgeon", label: "Oral surgeon" },
-                    { value: "Periodontist", label: "Periodontist" },
-                    { value: "Implantologist", label: "Implantologist" },
-                    { value: "Oral Pathologist", label: "Oral Pathologist" },
-                    {
-                      value: "Oral Medicine & Radiologist",
-                      label: "Oral Medicine & Radiologist",
-                    },
-                    { value: "Community dentist", label: "Community dentist" },
-                    { value: "Paeddontist", label: "Paeddontist" },
-                  ]}
-                  value={formData.designation || ""}
-                  onChange={(value) => handleSelectChange(value, "designation")}
-                  className="p-1"
-                  disabled={mode === "view"}
+                <Controller
+                  name="designation"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <SelectField
+                      label="Designation"
+                      defaultplaceholder={"Select Designation"}
+                      options={[
+                        { value: "Dentist", label: "Dentist" },
+                        { value: "Orthodontist", label: "Orthodontist" },
+                        { value: "Prosthodontist", label: "Prosthodontist" },
+                        { value: "Oral surgeon", label: "Oral surgeon" },
+                        { value: "Periodontist", label: "Periodontist" },
+                        { value: "Implantologist", label: "Implantologist" },
+                        { value: "Oral Pathologist", label: "Oral Pathologist" },
+                        {
+                          value: "Oral Medicine & Radiologist",
+                          label: "Oral Medicine & Radiologist",
+                        },
+                        { value: "Community dentist", label: "Community dentist" },
+                        { value: "Paeddontist", label: "Paeddontist" },
+                      ]}
+                      value={field.value}
+                      onChange={(value) => field.onChange(value)}
+                      className="p-1"
+                      disabled={mode === "view"}
+                    />
+                  )}
                 />
               </div>
             )}
 
-            {/* Dental Laboratory-specific fields */}
-           
-
-            <FileUpload className="p-1" disabled={mode === "view"} />
-            <FileUpload className="p-1" disabled={mode === "view"} />
-           
+            <Controller
+              name="file1"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <FileUpload
+                  onChange={(file) => field.onChange(file)}
+                  className="p-1"
+                  disabled={mode === "view"}
+                />
+              )}
+            />
+            <Controller
+              name="file2"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <FileUpload
+                  onChange={(file) => field.onChange(file)}
+                  className="p-1"
+                  disabled={mode === "view"}
+                />
+              )}
+            />
 
             {mode !== "view" && (
               <div className="flex justify-end gap-3 mt-4">
@@ -302,7 +310,7 @@ const CreateOrganization = () => {
                   type="reset"
                   className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
                 >
-                  <Cancelbtnicon className="w-4 h-4" /> {/* Icon added here */}
+                  <Cancelbtnicon className="w-4 h-4" />
                   Cancel
                 </button>
                 <button
@@ -317,9 +325,9 @@ const CreateOrganization = () => {
           </form>
         </div>
 
-        {(formData.type === "Radiology" ||
-          formData.type === "Material Supplier" ||
-          formData.type === "Dental Laboratory") && (
+        {(watch("type") === "Radiology" ||
+          watch("type") === "Material Supplier" ||
+          watch("type") === "Dental Laboratory") && (
           <div className="bg-white shadow-md rounded-lg p-6">
             <UserServices />
           </div>

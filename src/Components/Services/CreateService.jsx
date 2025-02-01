@@ -13,41 +13,43 @@ const CreateService = () => {
   const location = useLocation();
 
   const { id, mode: initialMode } = location.state || {};
-  const [mode, setMode] = useState(initialMode || "create");
+  const mode = initialMode || "create";
 
-  const { register, handleSubmit, setValue, watch, reset } = useForm();
-
-  const formData = watch();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
   useEffect(() => {
     if (id) {
       const service = servicesData.find((service) => service.id === id);
       if (service) {
-        reset({ ...service });
+        reset({
+          name: service.name,
+          description: service.description,
+          fromdate: service.fromdate,
+          todate: service.todate,
+        });
       }
     }
   }, [id, reset]);
 
   const handleBackClick = () => {
-    navigate(-1); // Go to the previous page
+    navigate(-1);
   };
 
   const onSubmit = (data) => {
     Swal.fire({
-      text:
-        mode === "edit"
-          ? "Service updated successfully"
-          : "Service created successfully",
+      text: mode === "edit" ? "Service updated successfully" : "Service created successfully",
       imageUrl: TickSquare,
       imageWidth: 50,
       imageHeight: 50,
       background: "white",
       color: "black",
       showConfirmButton: false,
-      showCloseButton: false,
-      customClass: {
-        popup: "swal-popup-custom",
-      },
+      timer: 1500,
       willClose: () => {
         navigate("/services");
       },
@@ -61,63 +63,53 @@ const CreateService = () => {
 
       {/* Page Navigation */}
       <PageNavigation
-        title={
-          mode === "edit"
-            ? "Edit Service"
-            : mode === "view"
-            ? "View Service"
-            : "Create Service"
-        }
+        title={mode === "edit" ? "Edit Service" : mode === "view" ? "View Service" : "Create Service"}
         onBackClick={handleBackClick}
       />
 
       {/* Form Card */}
       <div className="bg-white shadow-lg rounded-lg p-4 mt-0 m-[12px] border">
         <h3 className="form-title p-2 pb-3 font-bold">
-          {mode === "edit" ? "Edit Service" : "Create Service"}
+          {mode === "edit" ? "Edit Service" : mode === "view" ? "View Service" : "Create Service"}
         </h3>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {/* Service Name */}
             <InputField
-              label={"Service Name"}
-              type={"text"}
-              placeholder={"Enter Service Name"}
-              {...register("name")}
-              value={formData.name || ""}
-              className="w-full focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D] p-2"
-              disabled={mode === "view"}
+              label="Service Name"
+              type="text"
+              placeholder="Enter Service Name"
+              {...register("name", { required: "Service Name is required" })}
+              error={errors.name}
+              readOnly={mode === "view"}
             />
 
             {/* Service Description */}
             <InputField
-              label={"Service Description"}
-              type={"text"}
-              placeholder={"Enter Service Description"}
-              {...register("description")}
-              value={formData.description || ""}
-              className="w-full focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D] p-2"
-              disabled={mode === "view"}
+              label="Service Description"
+              type="text"
+              placeholder="Enter Service Description"
+              {...register("description", { required: "Description is required" })}
+              error={errors.description}
+              readOnly={mode === "view"}
             />
 
             {/* From Date */}
             <InputField
-              label={"From Date"}
-              type={"date"}
-              {...register("fromdate")}
-              value={formData.fromdate || ""}
-              className="w-full focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D] p-2"
-              disabled={mode === "view"}
+              label="From Date"
+              type="date"
+              {...register("fromdate", { required: "From Date is required" })}
+              error={errors.fromdate}
+              readOnly={mode === "view"}
             />
 
             {/* To Date */}
             <InputField
-              label={"To Date"}
-              type={"date"}
-              {...register("todate")}
-              value={formData.todate || ""}
-              className="w-full focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D] p-2"
-              disabled={mode === "view"}
+              label="To Date"
+              type="date"
+              {...register("todate", { required: "To Date is required" })}
+              error={errors.todate}
+              readOnly={mode === "view"}
             />
           </div>
 
@@ -130,11 +122,7 @@ const CreateService = () => {
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                name="submit"
-                className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm"
-              >
+              <button type="submit" className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm">
                 {mode === "edit" ? "Update" : "Save"}
               </button>
             </div>

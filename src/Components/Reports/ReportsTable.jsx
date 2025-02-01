@@ -111,8 +111,13 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
 
         {/* Pagination */}
         <div className="pagination-container flex items-center justify-between mt-4 flex-wrap gap-4 w-full">
-          <div className="showing-container text-gray-700 font-medium text-[12px]">
-            Showing page {currentPage} of {totalPages}
+        <div className="showing-container text-[#71717A] font-medium text-[12px]">
+            Showing{" "}
+            <span className="text-black">{String(currentPage).padStart(2, "0")}</span>{" "}
+            of{" "}
+            <span className="text-black">
+              {String(totalPages).padStart(2, "0")}
+            </span>
           </div>
           <div className="flex items-center font-medium text-[12px] gap-4">
             <button

@@ -43,7 +43,7 @@ const ReportsTitle = ({
               onChange={onFromDateChange}
 
               {...register("fromDate", { required: "From Date is required" })}
-              className="p-2 pl-12  border rounded w-full h-[40px] text-[14px] shadow-md"
+              className="p-2 pl-12  w-full border border-[#EAEAFF] font-medium focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md text-[12px] h-[42px]  text-[#757575] font-['Montserrat', sans-serif]"
             />
 
           </div>
@@ -58,7 +58,7 @@ const ReportsTitle = ({
               onChange={onToDateChange}
 
               {...register("toDate", { required: "To Date is required" })}
-              className="p-2 pl-12  border rounded w-full h-[40px] text-[14px] shadow-md"
+              className="p-2 pl-12  w-full border border-[#EAEAFF] font-medium focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md text-[12px] h-[42px]  text-[#757575] font-['Montserrat', sans-serif]"
             />
 
           </div>
@@ -68,7 +68,8 @@ const ReportsTitle = ({
         <div className="relative w-full sm:w-[250px]"> {/* Responsive width */}
           <input
             type="text"
-            className="p-2 border rounded w-full h-[40px] text-[14px] searchbar-w shadow-md pr-10"
+            className="p-2 border border-[#EAE5FF] searchbar-w rounded w-full h-[40px] text-[12px] shadow-[ 0px 0px 4px 1px #00000033] pr-10 focus:border-2 focus:ring-[#660F5D] focus:border-[#660F5D] focus:outline-none"
+            
             placeholder={searchPlaceholder || "Search"}
             onChange={onSearch}
           />

@@ -110,7 +110,7 @@ const Sidenavbar = () => {
   return (
     <div className="flex">
 <div
-  className={`fixed sm:static top-0 left-0 w-[20vw] bg-[#660F5D] text-white transform ${
+  className={`fixed sm:static top-0 left-0 w-[250px] bg-[#660F5D] text-white transform ${
     isSidebarOpen
       ? "translate-x-0"
       : "-translate-x-full overflow-y-auto scrollbar-hidden"
