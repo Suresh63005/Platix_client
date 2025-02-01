@@ -75,10 +75,15 @@ const Table = ({
               <th className="p-2 font-medium text-left">Sr</th>
               {columns.map((column, index) => {
                 // Extract label and style if column is an object
-                const label = typeof column === "object" ? column.label : column;
+                const label =
+                  typeof column === "object" ? column.label : column;
                 const style = typeof column === "object" ? column.style : {};
                 return (
-                  <th key={index} className="p-2 font-medium text-left" style={style}>
+                  <th
+                    key={index}
+                    className="p-2 font-medium text-left"
+                    style={style}
+                  >
                     {label}
                   </th>
                 );
@@ -177,9 +182,14 @@ const Table = ({
 
         <div className="pagination-container flex items-center justify-between mt-4 flex-wrap gap-4">
           <div className="showing-container text-[#71717A] font-medium text-[12px]">
-            Showing {String(page).padStart(2, "0")} of{" "}
-            {String(totalPages).padStart(2, "0")}
+            Showing{" "}
+            <span className="text-black">{String(page).padStart(2, "0")}</span>{" "}
+            of{" "}
+            <span className="text-black">
+              {String(totalPages).padStart(2, "0")}
+            </span>
           </div>
+
           <div className="flex items-center font-medium text-[12px] gap-4">
             <button
               className={`previous-container flex items-center gap-2 bg-[#F3E6F2] p-2 rounded cursor-pointer ${

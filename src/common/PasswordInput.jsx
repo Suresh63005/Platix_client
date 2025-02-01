@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 
-const PasswordInput = ({ label, placeholder, onChange }) => {
+const PasswordInput = React.forwardRef(({ label, placeholder, onChange }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -15,6 +15,7 @@ const PasswordInput = ({ label, placeholder, onChange }) => {
       </label>
       <div className="flex items-center border border-gray-300 rounded-lg focus-within:border-[#660F5D] relative">
         <input
+          ref={ref}
           type={showPassword ? "text" : "password"}
           className="w-full rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D] font-medium"
           placeholder={placeholder}
@@ -29,6 +30,6 @@ const PasswordInput = ({ label, placeholder, onChange }) => {
       </div>
     </div>
   );
-};
+});
 
 export default PasswordInput;
