@@ -121,8 +121,14 @@ const CreateOrganization = () => {
                     options={[
                       { value: "Dentist", label: "Dentist" },
                       { value: "Radiology", label: "Radiology" },
-                      { value: "Material Supplier", label: "Material Supplier" },
-                      { value: "Dental Laboratory", label: "Dental Laboratory" },
+                      {
+                        value: "Material Supplier",
+                        label: "Material Supplier",
+                      },
+                      {
+                        value: "Dental Laboratory",
+                        label: "Dental Laboratory",
+                      },
                     ]}
                     value={field.value}
                     onChange={(value) => field.onChange(value)}
@@ -175,12 +181,19 @@ const CreateOrganization = () => {
                   />
                 )}
               />
-              <InputField
-                label={"WhatsApp Number"}
-                type={"text"}
-                placeholder={"Enter WhatsApp Number"}
-                {...register("whatsapp")}
-                disabled={mode === "view"}
+              <Controller
+                name="whatsapp"
+                control={control}
+                defaultValue=""
+                render={({ field }) => (
+                  <WhatsAppInput
+                    label={"WhatsApp Number"}
+                    value={field.value}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    className="p-1"
+                    disabled={mode === "view"}
+                  />
+                )}
               />
               <InputField
                 label={"Email"}
@@ -261,12 +274,18 @@ const CreateOrganization = () => {
                         { value: "Oral surgeon", label: "Oral surgeon" },
                         { value: "Periodontist", label: "Periodontist" },
                         { value: "Implantologist", label: "Implantologist" },
-                        { value: "Oral Pathologist", label: "Oral Pathologist" },
+                        {
+                          value: "Oral Pathologist",
+                          label: "Oral Pathologist",
+                        },
                         {
                           value: "Oral Medicine & Radiologist",
                           label: "Oral Medicine & Radiologist",
                         },
-                        { value: "Community dentist", label: "Community dentist" },
+                        {
+                          value: "Community dentist",
+                          label: "Community dentist",
+                        },
                         { value: "Paeddontist", label: "Paeddontist" },
                       ]}
                       value={field.value}
