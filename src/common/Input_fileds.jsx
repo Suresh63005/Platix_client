@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import { WhatsApp } from "@mui/icons-material";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -8,38 +8,35 @@ import { ReactComponent as Whatsappicon } from "../assets/images/whatsapp_icon.s
 import { ReactComponent as DownArrow } from "../assets/images/Down Arrow.svg";
 import Select from "react-select"; // Import react-select
 
-// Header Component
-export const Header = ({ name }) => (
-  <header className="bg-white p-4 shadow-md">
+// Header Component with forwardRef
+export const Header = forwardRef(({ name }, ref) => (
+  <header ref={ref} className="bg-white p-4 shadow-md">
     <h1 className="text-xl font-semibold">{name}</h1>
   </header>
-);
+));
 
-// Input Field Component
-
-
-export const InputField = React.forwardRef(({ label, type, placeholder, name, error, ...props }, ref) => (
+// Input Field Component with forwardRef
+export const InputField = forwardRef(({ label, type, placeholder, value, onChange, name }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <input
+      ref={ref}
       type={type}
       name={name}
       placeholder={placeholder}
-      ref={ref} // Assign the ref here
+      value={value}
+      onChange={onChange}
       className="w-full border border-[#EAEAFF] font-medium focus:outline-none focus:ring-2 focus-visible:ring-[#660F5D] rounded-md p-2 text-[12px] h-[42px]  text-[#757575] font-['Montserrat', sans-serif]"
-      {...props} // Spread other props like value and onChange
     />
-    {error && <span className="text-red-500 text-xs">{error.message}</span>}
   </div>
 ));
 
-
-
-// Select Field Component using react-select
-export const SelectField = ({ label, options, value, onChange, name,defaultplaceholder }) => (
+// Select Field Component using react-select with forwardRef
+export const SelectField = forwardRef(({ label, options, value, onChange, name, defaultplaceholder }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <Select
+      ref={ref}
       value={
         value ? options.find((option) => option.value === value) : { value: "", label: defaultplaceholder, isDisabled: true }
       }
@@ -85,16 +82,11 @@ export const SelectField = ({ label, options, value, onChange, name,defaultplace
           fontWeight: "100",
           cursor: "pointer",
           fontSize: "12px", // Option font size
-           // Fixed option width
           "&:hover": {
             backgroundColor: "#660F5D", // Apply hover effect
             color: "white", // Change text color to white on hover
           },
         }),
-        // menu: (base) => ({
-        //   ...base,
-        //   width: "150px", // Fixed dropdown menu width
-        // }),
       }}
       components={{
         DropdownIndicator: () => (
@@ -104,15 +96,15 @@ export const SelectField = ({ label, options, value, onChange, name,defaultplace
       }}
     />
   </div>
-);
+));
 
-
-// Phone Input Component
-export const PhoneNumberInput = ({ label, value, onChange, defaultCountry, name }) => (
+// Phone Input Component with forwardRef
+export const PhoneNumberInput = forwardRef(({ label, value, onChange, defaultCountry, name }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <div className="flex items-center rounded-md border border-[#EAEAFF] focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] overflow-hidden font-medium text-[#757575]">
       <PhoneInput
+        ref={ref}
         placeholder="Enter phone number"
         name={name}
         value={value}
@@ -126,17 +118,18 @@ export const PhoneNumberInput = ({ label, value, onChange, defaultCountry, name 
       />
     </div>
   </div>
-);
+));
 
-// WhatsApp Input Component
-export const WhatsAppInput = ({ label, value, onChange, name }) => (
+// WhatsApp Input Component with forwardRef
+export const WhatsAppInput = forwardRef(({ label, value, onChange, name }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <div className="flex items-center rounded-md border border-[#EAEAFF] focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] overflow-hidden font-medium text-[#757575]">
       <Whatsappicon color="success" className="ml-2" fontSize="small" />
       <input
+        ref={ref}
         type="text"
-        name = {name}
+        name={name}
         placeholder="Enter WhatsApp number"
         value={value}
         onChange={onChange}
@@ -144,12 +137,10 @@ export const WhatsAppInput = ({ label, value, onChange, name }) => (
       />
     </div>
   </div>
-);
+));
 
-// File Upload Component
- // Assuming you have these icons imported
-
-export const FileUpload = () => {
+// File Upload Component with forwardRef
+export const FileUpload = forwardRef((props, ref) => {
   const [files, setFiles] = useState([]);
 
   const handleFileChange = (event) => {
@@ -167,8 +158,7 @@ export const FileUpload = () => {
   };
 
   return (
-    <div className="mt-4">
-      {/* File Upload Input */}
+    <div ref={ref} className="mt-4">
       <div className="flex flex-wrap gap-4 mb-4 items-center">
         <input
           type="file"
@@ -185,7 +175,6 @@ export const FileUpload = () => {
         </button>
       </div>
 
-      {/* Uploaded Files List */}
       <div className="flex flex-col gap-2">
         {files.map((file, index) => (
           <div
@@ -206,11 +195,10 @@ export const FileUpload = () => {
       </div>
     </div>
   );
-};
+});
 
-
-// Service Management Component
-export const ServiceForm = () => {
+// Service Form Component with forwardRef
+export const ServiceForm = forwardRef((props, ref) => {
   const [serviceList, setServiceList] = useState([]);
   const [serviceName, setServiceName] = useState("");
   const [servicePrice, setServicePrice] = useState("");
@@ -246,7 +234,7 @@ export const ServiceForm = () => {
   };
 
   return (
-    <div className="p-4">
+    <div ref={ref} className="p-4">
       <div className="space-y-4">
         {serviceList.map((service, index) => (
           <div
@@ -301,4 +289,4 @@ export const ServiceForm = () => {
       </div>
     </div>
   );
-};
+});

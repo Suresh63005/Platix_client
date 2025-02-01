@@ -67,7 +67,7 @@ const Userspage = () => {
           filterValue={userTypeFilter}
           onFilterChange={handleFilterChange}
           options={["Owner", "Technician", "Delivery Boy", "Dentist"]}
-          searchPlaceholder="Search users..."
+          searchPlaceholder="Search"
           onSearch={handleSearch}
           filterPlaceholder={"Filter"}
         />
