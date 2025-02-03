@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
-import { organizationTypesData } from "../../Data/data";
+import { organizationTypesData } from "../../Data/data"; 
 
 // Debounced hook for search or filter
 const useDebounce = (value, delay) => {
@@ -22,8 +22,7 @@ const useDebounce = (value, delay) => {
   return debouncedValue;
 };
 
-const OrganizationList = () => {
-  
+const OrganizationTypelist = () => {
   const [organizationTypes, setOrganizationTypes] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -115,4 +114,4 @@ const OrganizationList = () => {
   );
 };
 
-export default OrganizationList;
+export default OrganizationTypelist;

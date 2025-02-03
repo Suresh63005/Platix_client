@@ -14,7 +14,7 @@ const CreateOrganizationType = () => {
   const navigate = useNavigate();
   const { id, mode: initialMode } = location.state || {};
   const mode = initialMode || "create";
-
+  console.log(id)
   const {
     register,
     handleSubmit,
