@@ -6,8 +6,7 @@ import './Login.css'
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState(""); // State for email input
-  const [password, setPassword] = useState(""); // State for password input
+  const [formData, setFormData] = useState({"email":"","password":""}); // State for email input
   const [error, setError] = useState(""); // State for error messages
   const navigate = useNavigate(); // Hook to navigate programmatically
 
@@ -15,11 +14,15 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleChange=()=>{
+    
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent form from reloading the page
 
     try {
-      const response = await axios.post("http://localhost:5000/api/admin/login", { email, password });
+      const response = await axios.post("http://localhost:5000/api/admin/login", formData);
       // If login is successful, store the token and navigate to the dashboard
       localStorage.setItem("token", response.data.token); // Save token in localStorage
       navigate("/organizationlist"); 
@@ -63,8 +66,8 @@ const Login = () => {
                 <input
                   type="email"
                   id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)} // Set email value
+                  value={formData.email}
+                  onChange={handleChange} // Set email value
                   className="w-full email py-3 px-0 text-[12px] text-black focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="eg : platix@gmail.com"
                 />
@@ -85,8 +88,8 @@ const Login = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)} // Set password value
+                  value={formData.password}
+                  onChange={handleChange} // Set password value
                   className="w-full password py-3 px-0 text-[12px]  focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="Password"
                 />
