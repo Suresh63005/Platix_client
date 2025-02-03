@@ -3,8 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
+
 import axios from "axios";
 // import { organizationTypesData } from "../../Data/data";
+
 
 // Debounced hook for search or filter
 const useDebounce = (value, delay) => {
@@ -124,4 +126,3 @@ const OrganizationTypelist = () => {
 };
 
 export default OrganizationTypelist;
-

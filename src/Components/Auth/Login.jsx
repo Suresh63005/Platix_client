@@ -1,33 +1,47 @@
 import React, { useState } from "react";
+import { useForm } from "react-hook-form"; // Import useForm hook
 import { Icon } from "@iconify/react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
-import axios from "axios"; // Import axios for API calls
-import './Login.css'
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Cookies from "js-cookie";
+import "./Login.css";
 
 const Login = () => {
+  const { register, handleSubmit, setValue } = useForm(); // Initialize useForm
   const [showPassword, setShowPassword] = useState(false);
+
   const [formData, setFormData] = useState({"email":"","password":""}); // State for email input
   const [error, setError] = useState(""); // State for error messages
   const navigate = useNavigate(); // Hook to navigate programmatically
 
+  // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleChange=()=>{
-    
-  }
+
+  // Handle input change manually (if needed)
+  const handleChange = (e) => {
+    setValue(e.target.name, e.target.value);
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent form from reloading the page
 
+  // Handle form submission
+  const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/admin/login", formData);
-      // If login is successful, store the token and navigate to the dashboard
-      localStorage.setItem("token", response.data.token); // Save token in localStorage
-      navigate("/organizationlist"); 
+
+      const response = await axios.post("http://localhost:5000/admin/login", data);
+  
+      // Store token in cookies (expires in 1 hour)
+      Cookies.set("token", response.data.token, { expires: 1, secure: true, sameSite: "Strict" });
+  
+      navigate("/organizationlist");
+
     } catch (error) {
-      setError(error.response?.data?.message || "Something went wrong"); // Show error message
+      setError(error.response?.data?.message || "Something went wrong");
     }
   };
 
@@ -36,27 +50,16 @@ const Login = () => {
       <div className="flex items-center justify-center flex-grow">
         <div className="w-full max-w-sm px-4">
           <div className="flex justify-center mb-4">
-            <img
-              src="/assets/images/logo2.png"
-              alt="Logo"
-              className="w-22 h-20"
-            />
+            <img src="/assets/images/logo2.png" alt="Logo" className="w-22 h-20" />
           </div>
           <h3 className="text-xl text-[#131313] font-extrabold mb-6 text-center">
             Login with Email
           </h3>
-          {error && (
-            <div className="mb-4 text-red-500 text-sm text-center">
-              {error} {/* Display error message */}
-            </div>
-          )}
-          <form onSubmit={handleSubmit} className="font-['poppins', sans-serif]">
+          {error && <div className="mb-4 text-red-500 text-sm text-center">{error}</div>}
+          <form onSubmit={handleSubmit(onSubmit)} className="font-['poppins', sans-serif]">
             {/* Email Field */}
             <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block text-[#131313] text-sm font-bold mb-[12px]"
-              >
+              <label htmlFor="email" className="block text-[#131313] text-sm font-bold mb-[12px]">
                 Email
               </label>
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-[#860579]">
@@ -66,8 +69,10 @@ const Login = () => {
                 <input
                   type="email"
                   id="email"
+                  name="email"
+                  {...register("email")}
+                  onChange={handleChange}
                   value={formData.email}
-                  onChange={handleChange} // Set email value
                   className="w-full email py-3 px-0 text-[12px] text-black focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="eg : platix@gmail.com"
                 />
@@ -75,44 +80,34 @@ const Login = () => {
             </div>
             {/* Password Field */}
             <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="block text-sm text-[#131313] font-bold mb-[12px]"
-              >
+              <label htmlFor="password" className="block text-sm text-[#131313] font-bold mb-[12px]">
                 Password
               </label>
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-[#860579]">
-                <span className="px-3 passwordicon  border-none">
+                <span className="px-3 passwordicon border-none">
                   <Icon icon="solar:lock-password-unlocked-outline" className="text-[#3030304D]" width={20} />
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
+                  name="password"
+                  {...register("password")}
+                  onChange={handleChange}
+                  className="w-full password py-3 px-0 text-[12px] focus:outline-none focus:ring-0 focus:border-none"
                   value={formData.password}
-                  onChange={handleChange} // Set password value
-                  className="w-full password py-3 px-0 text-[12px]  focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="Password"
                 />
-                <span
-                  className="px-3 text-gray-500 cursor-pointer border-none"
-                  onClick={togglePasswordVisibility}
-                >
-                  <Icon
-                    icon={showPassword ? "mdi:eye" : "mdi:eye-off"}
-                    width={20}
-                  />
+                <span className="px-3 text-gray-500 cursor-pointer border-none" onClick={togglePasswordVisibility}>
+                  <Icon icon={showPassword ? "mdi:eye" : "mdi:eye-off"} width={20} />
                 </span>
               </div>
               <h4 className="text-[12px] text-[#131313] text-right mt-1 cursor-pointer font-semibold">
-                <Link to="/forgotpass">Forgot Password?</Link> {/* Add Link */}
+                <Link to="/forgotpass">Forgot Password?</Link>
               </h4>
             </div>
             {/* Login Button */}
             <div className="mt-[32px]">
-              <button
-                type="submit"
-                className="w-full py-3 bg-[#860579] text-white font-semibold rounded-lg hover:bg-[#860579] focus:outline-none focus:ring focus:ring-[#860579]"
-              >
+              <button type="submit" className="w-full py-3 bg-[#860579] text-white font-semibold rounded-lg hover:bg-[#860579] focus:outline-none focus:ring focus:ring-[#860579]">
                 Login
               </button>
             </div>
@@ -121,7 +116,7 @@ const Login = () => {
       </div>
       {/* Copyright Text */}
       <div className="flex justify-center py-4 mt-auto bg-white">
-        <h4 className="text-sm text-[#25064C] font-medium ">© Copyright 2025 Platix Admin portal</h4>
+        <h4 className="text-sm text-[#25064C] font-medium">© Copyright 2025 Platix Admin Portal</h4>
       </div>
     </div>
   );
