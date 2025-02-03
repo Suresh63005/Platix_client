@@ -3,7 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
-import { organizationTypesData } from "../../Data/data"; 
+
+import axios from "axios";
+// import { organizationTypesData } from "../../Data/data";
+
 
 // Debounced hook for search or filter
 const useDebounce = (value, delay) => {
@@ -37,25 +40,32 @@ const OrganizationTypelist = () => {
   const debouncedFilter = useDebounce(filter, 500);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  // Dummy organization types data (replace with actual data from your API)
+  // Load data from API
   const loadOrganizationsForPage = (page, filter, searchQuery) => {
     const start = (page - 1) * orgsPerPage;
-    let filteredOrgs = organizationTypesData;
-
-    if (filter) {
-      filteredOrgs = filteredOrgs.filter((org) => org.type === filter);
-    }
-
-    if (searchQuery) {
-      filteredOrgs = filteredOrgs.filter((org) =>
-        org.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    const paginatedOrgs = filteredOrgs.slice(start, start + orgsPerPage);
-
-    setOrganizationTypes(paginatedOrgs);
-    setTotalPages(Math.ceil(filteredOrgs.length / orgsPerPage));
+    
+    // Set your API endpoint
+    const apiUrl = "http://localhost:5000/organization/getall";
+    
+    axios
+      .get(apiUrl, {
+        params: {
+          page,
+          limit: orgsPerPage,
+          filter,
+          search: searchQuery
+        },
+      })
+      .then((response) => {
+        const { data } = response;
+        // console.log("API Response:", data); // Log response for debugging
+        const filteredOrgs = data.results; 
+        setOrganizationTypes(filteredOrgs);
+        setTotalPages(Math.ceil(data.totalCount / orgsPerPage));
+      })
+      .catch((error) => {
+        console.error("Error fetching organizations:", error);
+      });
   };
 
   useEffect(() => {
@@ -75,12 +85,13 @@ const OrganizationTypelist = () => {
   const handleCreateOrganizationType = () => {
     navigate("/createorganizationtype");
   };
-  const handleEdit = (id)=>{
-    navigate("/createorganizationtype",{state: {id,mode:"edit"}})
-  }
-  const handleview = (id)=>{
-    navigate("/createorganizationtype",{state: {id,mode:"view"}})
-  }
+  const handleEdit = (id) => {
+    navigate("/createorganizationtype", { state: { id, mode: "edit" } });
+  };
+  const handleView = (id) => {
+    navigate("/createorganizationtype", { state: { id, mode: "view" } });
+  };
+
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100">
       <div className="organization-list-container w-full md:pl-0 flex flex-col">
@@ -100,14 +111,14 @@ const OrganizationTypelist = () => {
 
         <Table
           columns={["Organization Type", "From Date", "To Date"]}
-          fields={["type", "fromdate", "todate"]}
+          fields={["organizationType", "fromDate", "toDate"]}
           data={organizationTypes}
           page={page}
           totalPages={totalPages}
           setPage={setPage}
           setData={setOrganizationTypes}
           handleEdit={handleEdit}
-          handleview={handleview}
+          handleView={handleView}
         />
       </div>
     </div>

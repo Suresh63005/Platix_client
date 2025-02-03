@@ -9,28 +9,37 @@ import "./Login.css";
 const Login = () => {
   const { register, handleSubmit, setValue } = useForm(); // Initialize useForm
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({"email":"","password":""}); // State for email input
+  const [error, setError] = useState(""); // State for error messages
+  const navigate = useNavigate(); // Hook to navigate programmatically
 
   // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+
   // Handle input change manually (if needed)
   const handleChange = (e) => {
     setValue(e.target.name, e.target.value);
   };
 
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent form from reloading the page
+
   // Handle form submission
   const onSubmit = async (data) => {
     try {
+
       const response = await axios.post("http://localhost:5000/admin/login", data);
   
       // Store token in cookies (expires in 1 hour)
       Cookies.set("token", response.data.token, { expires: 1, secure: true, sameSite: "Strict" });
   
       navigate("/organizationlist");
+
     } catch (error) {
       setError(error.response?.data?.message || "Something went wrong");
     }
@@ -63,6 +72,7 @@ const Login = () => {
                   name="email"
                   {...register("email")}
                   onChange={handleChange}
+                  value={formData.email}
                   className="w-full email py-3 px-0 text-[12px] text-black focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="eg : platix@gmail.com"
                 />
@@ -84,6 +94,7 @@ const Login = () => {
                   {...register("password")}
                   onChange={handleChange}
                   className="w-full password py-3 px-0 text-[12px] focus:outline-none focus:ring-0 focus:border-none"
+                  value={formData.password}
                   placeholder="Password"
                 />
                 <span className="px-3 text-gray-500 cursor-pointer border-none" onClick={togglePasswordVisibility}>
