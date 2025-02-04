@@ -7,6 +7,7 @@ import UserICon from "../../assets/images/Users icon.svg";
 import { organizationsData } from "../../Data/data";
 import { Class, Label } from "@mui/icons-material";
 import { ClassNames } from "@emotion/react";
+import axios from "axios";
 
 const OrganizationList = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -26,22 +27,25 @@ const OrganizationList = () => {
 
   const loadOrganizationsForPage = (page, filter, searchQuery) => {
     const start = (page - 1) * orgsPerPage;
-    let filteredOrgs = organizationsData;
-
-    if (filter) {
-      filteredOrgs = filteredOrgs.filter((org) => org.type === filter);
-    }
-
-    if (searchQuery) {
-      filteredOrgs = filteredOrgs.filter((org) =>
-        org.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    const paginatedOrgs = filteredOrgs.slice(start, start + orgsPerPage);
-
-    setOrganizations(paginatedOrgs);
-    setTotalPages(Math.ceil(filteredOrgs.length / orgsPerPage));
+    const apiUrl="http://localhost:5000/api/organization/all";
+    axios.get(apiUrl, {
+      params: {
+        page,
+        limit: orgsPerPage,
+        filter,
+        search: searchQuery,
+      },
+    })
+    .then((response) => {
+      const { data } = response;
+      const filteredOrgs = data.data || []; 
+      setOrganizations(filteredOrgs);
+      setTotalPages(Math.ceil(data.pagination.total / orgsPerPage)); 
+    })
+    .catch((error) => {
+      console.error(error);
+      setOrganizations([]); 
+    });
   };
 
   useEffect(() => {
@@ -83,6 +87,7 @@ const OrganizationList = () => {
   const handleView = (id) => {
     navigate("/createorganization", { state: { id, mode: "view" } });
   };
+
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
