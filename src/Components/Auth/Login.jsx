@@ -26,8 +26,8 @@ const Login = () => {
   };
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent form from reloading the page
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault(); // Prevent form from reloading the page
 
   // Handle form submission
   const onSubmit = async (data) => {
@@ -72,7 +72,7 @@ const Login = () => {
                   name="email"
                   {...register("email")}
                   onChange={handleChange}
-                  value={formData.email}
+                  // value={formData.email}
                   className="w-full email py-3 px-0 text-[12px] text-black focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="eg : platix@gmail.com"
                 />
@@ -94,7 +94,7 @@ const Login = () => {
                   {...register("password")}
                   onChange={handleChange}
                   className="w-full password py-3 px-0 text-[12px] focus:outline-none focus:ring-0 focus:border-none"
-                  value={formData.password}
+                  // value={formData.password}
                   placeholder="Password"
                 />
                 <span className="px-3 text-gray-500 cursor-pointer border-none" onClick={togglePasswordVisibility}>

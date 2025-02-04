@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 
@@ -7,26 +8,40 @@ const Rolespage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const rolesPerPage = 10;
-  const totalRoles = 50;
 
   useEffect(() => {
-    setTotalPages(Math.ceil(totalRoles / rolesPerPage));
-  }, [totalRoles]);
-
-  const loadRolesForPage = (page) => {
-    const start = (page - 1) * rolesPerPage;
-    const newRoles = Array.from({ length: rolesPerPage }, (_, index) => ({
-      name: `Role ${start + index + 1}`,
-      fromDate: new Date().toLocaleDateString(),
-      toDate: new Date().toLocaleDateString(),
-      id: start + index + 1,
-    }));
-    setRoles(newRoles);
-  };
-
-  useEffect(() => {
-    loadRolesForPage(page);
+    fetchRoles(page);
   }, [page]);
+
+  const fetchRoles = async (page) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/admin/viewrole?page=${page}&limit=${rolesPerPage}`);
+      const fetchedRoles = response.data.roles;
+      const totalRoles = response.data.totalRoles; // Get total roles from API
+  
+      if (!Array.isArray(fetchedRoles)) {
+        console.error("Error: Invalid roles data", fetchedRoles);
+        return;
+      }
+  
+      setRoles(
+        fetchedRoles.map((role) => ({
+          name: role.rolename,
+          fromDate: role.fromdate,
+          toDate: role.todate,
+          id: role.id,
+        }))
+      );
+  
+      if (typeof totalRoles === "number" && totalRoles > 0) {
+        setTotalPages(Math.ceil(totalRoles / rolesPerPage));
+      } else {
+        setTotalPages(1); // Default to 1 if totalRoles is missing
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100">
@@ -41,14 +56,14 @@ const Rolespage = () => {
 
         {/* Roles Table */}
         <Table
-  columns={["Role Name", "From Date", "To Date"]}
-  fields={["name", "fromDate", "toDate"]}
-  data={roles}
-  page={page}
-  totalPages={totalPages}
-  setPage={setPage}
-  showActions={false}  // Hide actions and view columns on Rolespage
-/>
+          columns={["Role Name", "From Date", "To Date"]}
+          fields={["name", "fromDate", "toDate"]}
+          data={roles}
+          page={page}
+          totalPages={totalPages}
+          setPage={setPage}
+          showActions={false} // Hide actions and view columns on Rolespage
+        />
       </div>
     </div>
   );

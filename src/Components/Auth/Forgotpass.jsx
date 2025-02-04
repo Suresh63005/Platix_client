@@ -3,27 +3,35 @@ import { useForm } from "react-hook-form";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie";  // Import Cookies for storing email
 
 const Forgotpass = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();  // useForm hook
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();  // Initialize useNavigate
+  const navigate = useNavigate();
 
   // Handle form submission
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/forgotpassword", data);
+      const response = await axios.post("http://localhost:5000/admin/forgotpassword", data, {
+        withCredentials: true  // Ensure cookies are sent/received
+      });
 
       if (response.status === 200) {
         setSuccess("A password reset link has been sent to your email.");
         setError("");  // Clear previous errors
+
+        // Store email in cookies for later use
+        Cookies.set("reset_email", data.email, { expires: 1 });  // Expires in 1 day
+
         setTimeout(() => {
-          navigate("/createnewpass"); // Redirect to /createnewpass
-        }, 3000); // Wait for 3 seconds before redirecting
+          navigate("/"); // Redirect after 3 seconds
+        }, 3000);
       }
     } catch (err) {
-      setError("Error sending reset link");
+      console.error("Error Response:", err.response?.data || err.message);  // Log full error
+      setError(err.response?.data?.message || "Error sending reset link. Please try again."); 
       setSuccess("");  // Clear previous success message
     }
   };
@@ -61,7 +69,7 @@ const Forgotpass = () => {
               </label>
               <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:border-[#860579]">
                 <span className="px-3 emailicon border-none">
-                  <Icon icon="material-symbols-light:mail-outline" className="text-[#3030304D]"width={20} />
+                  <Icon icon="material-symbols-light:mail-outline" className="text-[#3030304D]" width={20} />
                 </span>
                 <input
                   type="email"
@@ -69,11 +77,11 @@ const Forgotpass = () => {
                   name="email"
                   className="w-full py-3 email px-0 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="eg: platix@gmail.com"
-                  {...register("email", { required: "Email is required" })} // Hook form registration
+                  {...register("email", { required: "Email is required" })}
                 />
               </div>
               {errors.email && (
-                <p className="text-red-500 text-xs">{errors.email.message}</p>  // Error handling
+                <p className="text-red-500 text-xs">{errors.email.message}</p>
               )}
             </div>
 
@@ -85,7 +93,7 @@ const Forgotpass = () => {
                 Send
               </button>
               <div className="text-center mt-2">
-                <span className="text-[#860579] text-[12px]">Didn't get link? </span>
+                <span className="text-[#860579] text-[12px]">Didn't get the link? </span>
                 <span className="text-black font-semibold cursor-pointer text-[12px]">
                   Resend
                 </span>
