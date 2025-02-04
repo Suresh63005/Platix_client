@@ -140,21 +140,43 @@ export const WhatsAppInput = forwardRef(({ label, value, onChange, name }, ref) 
 ));
 
 // File Upload Component with forwardRef
-export const FileUpload = forwardRef((props, ref) => {
+export const FileUpload = forwardRef(({ name, onChange, multiple = false }, ref) => {
   const [files, setFiles] = useState([]);
 
   const handleFileChange = (event) => {
     const newFiles = Array.from(event.target.files);
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+
+    const updatedFiles = multiple ? [...files, ...newFiles] : newFiles;
+    setFiles(updatedFiles);
+
+    // Pass the files to the parent form
+    if (onChange) {
+      onChange({
+        target: {
+          name,
+          files: updatedFiles,
+        },
+      });
+    }
   };
 
   const handleDelete = (fileToDelete) => {
-    setFiles((prevFiles) =>
-      prevFiles.filter(
-        (file) =>
-          file.name !== fileToDelete.name || file.lastModified !== fileToDelete.lastModified
-      )
+    const updatedFiles = files.filter(
+      (file) =>
+        file.name !== fileToDelete.name ||
+        file.lastModified !== fileToDelete.lastModified
     );
+    setFiles(updatedFiles);
+
+    // Update parent form after deletion
+    if (onChange) {
+      onChange({
+        target: {
+          name,
+          files: updatedFiles,
+        },
+      });
+    }
   };
 
   return (
@@ -162,7 +184,8 @@ export const FileUpload = forwardRef((props, ref) => {
       <div className="flex flex-wrap gap-4 mb-4 items-center">
         <input
           type="file"
-          multiple
+          name={name} // Add name attribute
+          multiple={multiple}
           onChange={handleFileChange}
           className="w-full sm:w-[350px] border border-gray-300 rounded-md p-1 text-sm"
         />

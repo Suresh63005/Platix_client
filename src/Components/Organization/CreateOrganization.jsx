@@ -15,35 +15,51 @@ import TickSquare from "../../assets/images/TickSquare.svg";
 import { organizationsData } from "../../Data/data";
 import { ReactComponent as Cancelbtnicon } from "../../assets/images/Cancel_button_icon.svg";
 import { useForm, Controller } from "react-hook-form";
+import axios from "axios";
 
 const CreateOrganization = () => {
   const location = useLocation();
+  // const id=location.state ? location.state.id : null;
   const navigate = useNavigate();
-
   const { id, mode: initialMode } = location.state || {};
+  // console.log(id)
   const [mode, setMode] = useState(initialMode || "create");
   const [organization, setOrganization] = useState(null);
-
   const { register, handleSubmit, setValue, watch, control, reset } = useForm();
+  const [PImages, setPImages] = useState([]);
+  const [formData, setFormData] = useState({ id: id || null, address: '', businessName: null, file1: null,file2:null,imgPreview:null,description:'',designation:'',email:'',googleCoordinates:{latitude:'',longitude:''},gstNumber:null,mobile:'',name:'',registrationId:null,type:'',whatsapp:'' });
 
   useEffect(() => {
-    if (location.state) {
-      const { mode, id } = location.state;
-      if (mode === "edit") {
-        setMode("edit");
-      } else if (mode === "view") {
-        setMode("view");
-      }
+    if (id && (mode === "edit" || mode === "view")) {
+      axios.get(`http://localhost:5000/api/organization/getby/${id}`)
+        .then((response) => {
+          const orgData = response.data.data;
+          // console.log(orgData)
+          setOrganization(orgData);
+  
+          // Populate form fields
+          Object.keys(orgData).forEach((key) => {
+            if (orgData[key] !== null && typeof orgData[key] === "object") {
+              Object.keys(orgData[key]).forEach((nestedKey) => {
+                setValue(`${key}.${nestedKey}`, orgData[key][nestedKey]);
+              });
+            } else {
+              setValue(key, orgData[key]);
+            }
+          });
+        })
+        .catch((error) => console.error("Error fetching organization data:", error));
     } else {
-      setMode("create");
+      setMode("create"); 
     }
-  }, [location.state]);
+  }, [id, mode, setValue]);
+  
 
   useEffect(() => {
     if (id) {
       const org = organizationsData.find((org) => org.id === id);
       setOrganization(org);
-      reset(org); // Pre-fill the form with organization data if editing
+      reset(org);
     }
   }, [id, reset]);
 
@@ -51,30 +67,80 @@ const CreateOrganization = () => {
     navigate(-1);
   };
 
-  const onSubmit = (data) => {
-    Swal.fire({
-      text:
-        mode === "edit"
-          ? "Organization Updated Successfully"
-          : "Organization Added successfully",
-      imageUrl: TickSquare,
-      imageWidth: 50,
-      imageHeight: 50,
-      background: "white",
-      color: "black",
-      showConfirmButton: false,
-      showCloseButton: false,
-      customClass: {
-        popup: "swal-popup-custom",
-        image: "swal-image-custom",
-        title: "swal-no-gap",
-      },
-      willClose: () => {
-        navigate("/organizationlist");
-      },
-    });
+  const handleChange = (e) => {
+    const { name, files } = e.target;
+    if (files && files.length > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files[0],
+      }));
+      setValue(name, files[0]); 
+    }
   };
-
+  
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    setPImages(files);
+    setValue("file2", files); 
+  };  
+  
+  const onSubmit = async (data) => {
+    try {
+      console.log("Form Data Submitted:", data);
+      const form = new FormData();
+      form.append('name', data.name);
+      form.append('type', data.type);
+      form.append('address', data.address);
+      form.append('googleCoordinates', JSON.stringify(data.googleCoordinates));
+      form.append('mobile', data.mobile);
+      form.append('whatsapp', data.whatsapp);
+      form.append('email', data.email);
+      form.append('description', data.description);
+      form.append('gstNumber', data.gstNumber);
+      form.append('designation', data.designation);
+      form.append('businessName', data.businessName);
+      form.append('registrationId', data.registrationId);
+  
+      if (id) {
+        form.append('id', id);
+      }
+  
+      // Append single file (file1)
+      if (data.file1) {
+        form.append('file1', data.file1);  // Single file
+      }
+      
+      if (PImages.length > 0) {
+        PImages.forEach((file, index) => {
+          form.append(`file2`, file);      // Multiple files under the same key
+        });
+      }    
+  
+      // Send the data via axios
+      const response = await axios.post('http://localhost:5000/api/organization/upsert', form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      if (response.status === 201) {
+        Swal.fire({
+          text: mode === 'edit' ? 'Organization Updated Successfully' : 'Organization Added Successfully',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        reset();
+      }
+    } catch (error) {
+      Swal.fire({
+        text: 'Error submitting the form.',
+        icon: 'error',
+      });
+      console.error('Form submission error:', error);
+    }
+  };
+  
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <div className="bg-gray-100">
@@ -110,6 +176,7 @@ const CreateOrganization = () => {
                 {...register("name")}
                 readOnly={mode === "view"}
               />
+              
               <Controller
                 name="type"
                 control={control}
@@ -121,22 +188,18 @@ const CreateOrganization = () => {
                     options={[
                       { value: "Dentist", label: "Dentist" },
                       { value: "Radiology", label: "Radiology" },
-                      {
-                        value: "Material Supplier",
-                        label: "Material Supplier",
-                      },
-                      {
-                        value: "Dental Laboratory",
-                        label: "Dental Laboratory",
-                      },
+                      { value: "Material Supplier", label: "Material Supplier" },
+                      { value: "Dental Laboratory", label: "Dental Laboratory" },
                     ]}
                     value={field.value}
-                    onChange={(value) => field.onChange(value)}
+                    onChange={field.onChange} // Pass onChange to the SelectField component
                     className="p-1 w-full"
                     readOnly={mode === "view"}
                   />
                 )}
               />
+
+              
               <InputField
                 label={"Address"}
                 type={"text"}
@@ -144,6 +207,7 @@ const CreateOrganization = () => {
                 {...register("address")}
                 disabled={mode === "view"}
               />
+
               <div className="flex flex-col p-1 mt-[-5px]">
                 <label
                   htmlFor="google-coordinates"
@@ -166,6 +230,7 @@ const CreateOrganization = () => {
                   />
                 </div>
               </div>
+              
               <Controller
                 name="mobile"
                 control={control}
@@ -181,6 +246,7 @@ const CreateOrganization = () => {
                   />
                 )}
               />
+              
               <Controller
                 name="whatsapp"
                 control={control}
@@ -195,6 +261,7 @@ const CreateOrganization = () => {
                   />
                 )}
               />
+              
               <InputField
                 label={"Email"}
                 type={"email"}
@@ -202,6 +269,7 @@ const CreateOrganization = () => {
                 {...register("email")}
                 disabled={mode === "view"}
               />
+              
               <InputField
                 label={"Description"}
                 type={"text"}
@@ -274,18 +342,9 @@ const CreateOrganization = () => {
                         { value: "Oral surgeon", label: "Oral surgeon" },
                         { value: "Periodontist", label: "Periodontist" },
                         { value: "Implantologist", label: "Implantologist" },
-                        {
-                          value: "Oral Pathologist",
-                          label: "Oral Pathologist",
-                        },
-                        {
-                          value: "Oral Medicine & Radiologist",
-                          label: "Oral Medicine & Radiologist",
-                        },
-                        {
-                          value: "Community dentist",
-                          label: "Community dentist",
-                        },
+                        { value: "Oral Pathologist", label: "Oral Pathologist" },
+                        { value: "Oral Medicine & Radiologist", label: "Oral Medicine & Radiologist" },
+                        { value: "Community dentist", label: "Community dentist" },
                         { value: "Paeddontist", label: "Paeddontist" },
                       ]}
                       value={field.value}
@@ -301,28 +360,30 @@ const CreateOrganization = () => {
             <Controller
               name="file1"
               control={control}
-              defaultValue=""
+              defaultValue={[]}
               render={({ field }) => (
                 <FileUpload
-                  onChange={(file) => field.onChange(file)}
-                  className="p-1"
-                  disabled={mode === "view"}
-                />
-              )}
-            />
-            <Controller
-              name="file2"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <FileUpload
-                  onChange={(file) => field.onChange(file)}
-                  className="p-1"
-                  disabled={mode === "view"}
+                  name="file1"
+                  multiple={false}
+                  onChange={handleChange}
                 />
               )}
             />
 
+            <Controller
+              name="file2"
+              control={control}
+              defaultValue={[]}
+              render={({ field }) => (
+                <FileUpload
+                  name="file2"
+                  multiple={true}
+                  onChange={handleImageUpload}
+                />
+              )}
+            />
+
+            
             {mode !== "view" && (
               <div className="flex justify-end gap-3 mt-4">
                 <button
@@ -342,6 +403,7 @@ const CreateOrganization = () => {
               </div>
             )}
           </form>
+
         </div>
 
         {(watch("type") === "Radiology" ||
