@@ -25,10 +25,6 @@ const Login = () => {
     setValue(e.target.name, e.target.value);
   };
 
-
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent form from reloading the page
-
   // Handle form submission
   const onSubmit = async (data) => {
     try {
