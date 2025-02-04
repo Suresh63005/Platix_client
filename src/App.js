@@ -41,7 +41,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Login />} />
           <Route path="/forgotpass" element={<Forgotpass />} />
-          <Route path="/createnewpass" element={<Createnewpass />} />
+          <Route path="/createnewpass/:token" element={<Createnewpass />} />
 
           {/* Protected Route with Sidebar Layout */}
           <Route

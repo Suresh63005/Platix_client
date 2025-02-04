@@ -16,27 +16,27 @@ const Createnewpass = () => {
   const onSubmit = async (data) => {
     const { newPassword, confirmPassword } = data;
 
+    // Check if passwords match
     if (newPassword !== confirmPassword) {
       setError("confirmPassword", { message: "Passwords do not match" });
       return;
     }
 
     try {
-      const token = new URLSearchParams(window.location.search).get("token");
+      // Extract the token from the URL parameter (not from the query string)
+      const token = window.location.pathname.split("/").pop(); // Get the last part of the path as token
 
       if (!token) {
         setErrorState("Token is missing. Please use the link sent to your email.");
         return;
       }
 
+      // Send request to backend to update password
       const response = await axios.post(
-        "http://localhost:5000/api/createnewpass",
-        { newPassword, confirmPassword },
+        `http://localhost:5000/admin/createnewpass/${token}`, // Token in URL
+        { newPassword },  // Send only newPassword
         {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
@@ -44,9 +44,9 @@ const Createnewpass = () => {
       setErrorState("");
     } catch (error) {
       if (error.response?.status === 400) {
-        setErrorState(error.response.data || "Invalid or expired token.");
+        setErrorState(error.response.data.message || "Invalid or expired token.");
       } else if (error.response?.status === 404) {
-        setErrorState("User not found.");
+        setErrorState("Admin not found.");
       } else {
         setErrorState("Server error. Please try again later.");
       }

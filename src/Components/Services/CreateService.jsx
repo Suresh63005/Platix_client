@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useForm } from "react-hook-form"; // Import useFormhook 
+import { useForm } from "react-hook-form"; // Import useForm hook
 import Header from "../../common/Header";
 import PageNavigation from "../../common/PageNavigation";
 import { InputField } from "../../common/Input_fileds";
 import TickSquare from "../../assets/images/TickSquare.svg"; // Import the success icon
-import { servicesData } from "../../Data/data";
+import axios from "axios"; // Import axios for making API requests
 
 const CreateService = () => {
   const navigate = useNavigate();
@@ -23,38 +23,55 @@ const CreateService = () => {
   } = useForm();
 
   useEffect(() => {
-    if (id) {
-      const service = servicesData.find((service) => service.id === id);
-      if (service) {
-        reset({
-          name: service.name,
-          description: service.description,
-          fromdate: service.fromdate,
-          todate: service.todate,
-        });
-      }
-    }
+    // if (id) {
+    //   const service = servicesData.find((service) => service.id === id);
+    //   if (service) {
+    //     reset({
+    //       name: service.name,
+    //       description: service.description,
+    //       fromdate: service.fromdate,
+    //       todate: service.todate,
+    //     });
+    //   }
+    // }
   }, [id, reset]);
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
-  const onSubmit = (data) => {
-    Swal.fire({
-      text: mode === "edit" ? "Service updated successfully" : "Service created successfully",
-      imageUrl: TickSquare,
-      imageWidth: 50,
-      imageHeight: 50,
-      background: "white",
-      color: "black",
-      showConfirmButton: false,
-      timer: 1500,
-      willClose: () => {
-        navigate("/services");
-      },
-    });
+  const onSubmit = async (data) => {
+    const {name,description,fromdate,todate} = data
+    try {
+      const response = mode === "edit" 
+        ? await axios.put(`http://localhost:5000/admin/createservice/${id}`, data)
+        : await axios.post("http://localhost:5000/admin/createservice", data);
+        
+      console.log("API response:", response);  // Log the response to see if it's successful
+  
+      Swal.fire({
+        text: mode === "edit" ? "Service updated successfully" : "Service created successfully",
+        imageUrl: TickSquare,
+        imageWidth: 50,
+        imageHeight: 50,
+        background: "white",
+        color: "black",
+        showConfirmButton: false,
+        timer: 1500,
+        willClose: () => {
+          navigate("/services");
+        },
+      });
+    } catch (error) {
+      console.error("Error creating/updating service:", error);
+      Swal.fire({
+        text: "An error occurred. Please try again.",
+        icon: "error",
+        showConfirmButton: true,
+      });
+    }
   };
+  
 
   return (
     <div className="bg-gray-100 h-full">
