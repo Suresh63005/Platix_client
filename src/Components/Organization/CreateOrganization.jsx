@@ -100,6 +100,11 @@ const CreateOrganization = () => {
       form.append('designation', data.designation);
       form.append('businessName', data.businessName);
       form.append('registrationId', data.registrationId);
+      form.append('bankName', data.bankName);  // Bank Name
+      form.append('accountNumber', data.accountNumber);  // Account Number
+      form.append('accountHolder', data.accountHolder);  // Account Holder Name
+      form.append('ifscCode', data.ifscCode);  // IFSC Code
+      form.append('upiId', data.upiId);  // UPI ID
   
       if (id) {
         form.append('id', id);
@@ -356,7 +361,22 @@ const CreateOrganization = () => {
                 />
               </div>
             )}
-
+            {/* Organization Account Details */}
+            <h3 className="text-lg font-bold mb-4 mt-6">Organization Account Details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <InputField label={"Bank Name"} type={"text"} placeholder={"Enter Bank Name"} {...register("bankName")} disabled={mode === "view"} />
+              <InputField label={"Organization Account Number"} type={"text"} placeholder={"Enter Account Number"} {...register("accountNumber")} disabled={mode === "view"} />
+              <InputField label={"Account Holder Name"} type={"text"} placeholder={"Enter Account Holder Name"} {...register("accountHolder")} disabled={mode === "view"} />
+              <InputField label={"IFSC Code"} type={"text"} placeholder={"Enter IFSC Code"} {...register("ifscCode")} disabled={mode === "view"} />
+              <InputField label={"UPI ID"} type={"text"} placeholder={"Enter UPI ID"} {...register("upiId")} disabled={mode === "view"} />
+            </div>
+            {(watch("type") === "Radiology" ||
+          watch("type") === "Material Supplier" ||
+          watch("type") === "Dental Laboratory") && (
+          <div className="">
+            <UserServices />
+          </div>
+        )}
             <Controller
               name="file1"
               control={control}
@@ -406,13 +426,7 @@ const CreateOrganization = () => {
 
         </div>
 
-        {(watch("type") === "Radiology" ||
-          watch("type") === "Material Supplier" ||
-          watch("type") === "Dental Laboratory") && (
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <UserServices />
-          </div>
-        )}
+        
       </div>
     </div>
   );
