@@ -16,6 +16,7 @@ const Table = ({
   showActions = true,
   handleEdit,
   handleview,
+  handleDelete
 }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
@@ -49,10 +50,7 @@ const Table = ({
     }
   };
 
-  const handleDelete = (itemId) => {
-    const updatedData = data.filter((item) => item.id !== itemId);
-    setData(updatedData);
-  };
+  
 
   const handleSave = (itemId) => {
     setEditingItem(null);

@@ -44,7 +44,7 @@ const UserServices = () => {
   };
 
   return (
-    <div className="p-6 rounded-lg bg-white">
+    <div>
       <h3 className="text-lg font-semibold mb-4">User Services</h3>
       <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
         {/* Replace the native select with react-select */}
@@ -62,16 +62,19 @@ const UserServices = () => {
             placeholder="Select service"
             className="text-[12px]" // Additional classes
             styles={{
-              control: (base, { isFocused }) => ({
+              control: (base, {isFocused}) => ({
                 ...base,
-                border: isFocused ? "2px solid #660F5D" : "1px solid #EAEAFF",
-                boxShadow: isFocused ? "none" : "none",
+                border: isFocused ? "2px solid #660F5D" : " 1px solid #EAEAFF",
+                boxShadow: isFocused ? 'none':'none',
                 borderRadius: "5px",
                 padding: "2px",
                 fontSize: "12px", // Consistent font size
                 color: "#757575",
-                height: "42px",
-                "&:hover": {},
+                height:"42px",
+                
+                "&:hover":{
+                  
+                }
               }),
               placeholder: (base) => ({
                 ...base,
@@ -120,26 +123,26 @@ const UserServices = () => {
         </div>
         <div className="flex gap-2">
           {editingIndex === null ? (
-            <button
-              onClick={handleAddService}
-              className="px-7 py-1 bg-[#660F5D] text-white text-[12px] rounded-md"
-            >
-              Add
-            </button>
+           <span
+           onClick={handleAddService}
+           className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
+         >
+           Add
+         </span>
           ) : (
-            <button
+            <span
               onClick={handleSaveService}
-              className="px-4 py-1 bg-[#660F5D] text-white rounded-md"
+              className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
             >
               Save
-            </button>
+            </span>
           )}
-          <button
+          <span
             onClick={() => setNewService({ name: "", price: "" })}
-            className="px-7 py-1 bg-white text-gray-400 border-gray-700 border rounded-md"
+            className="px-7 py-1 bg-white text-gray-400 border-gray-700 border rounded-md cursor-pointer"
           >
             Clear
-          </button>
+          </span>
         </div>
       </div>
       <hr />
@@ -147,7 +150,7 @@ const UserServices = () => {
         {services.map((service, index) => (
           <div
             key={index}
-            className="flex flex-col sm:flex-row items-center gap-4 p-4 rounded-md"
+            className="flex flex-col sm:flex-row items-center gap-4 p-4"
           >
             <input
               type="text"
@@ -164,27 +167,21 @@ const UserServices = () => {
                 className="w-full pl-16 px-3 py-2 border rounded-md bg-white focus:outline-none"
               />
             </div>
-            <button
+            <span
               onClick={() => handleEditService(index)}
-              className="flex items-center gap-1 px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md"
+              className="flex items-center gap-1 px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer"
             >
               <Edit fontSize="small" />
               <span>Edit</span>
-            </button>
-            <button
+            </span>
+            <span
               onClick={() => handleDeleteService(index)}
-              className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md"
+              className="flex items-center gap-1 px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer"
             >
               <span>Delete</span>
-            </button>
+            </span>
           </div>
         ))}
-      </div>
-      <div className="flex justify-end gap-4 mt-6">
-        <button className="px-7 py-1 border rounded-md">Cancel</button>
-        <button className="px-7 py-1 bg-[#660F5D] text-white text-[12px] rounded-md">
-          Save
-        </button>
       </div>
     </div>
   );

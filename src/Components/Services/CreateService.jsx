@@ -1,54 +1,77 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useForm } from "react-hook-form"; // Import useForm hook
+import { useForm } from "react-hook-form";
 import Header from "../../common/Header";
 import PageNavigation from "../../common/PageNavigation";
 import { InputField } from "../../common/Input_fileds";
-import TickSquare from "../../assets/images/TickSquare.svg"; // Import the success icon
-import axios from "axios"; // Import axios for making API requests
+import TickSquare from "../../assets/images/TickSquare.svg";
+import axios from "axios";
 
 const CreateService = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const { id, mode: initialMode } = location.state || {};
-  const mode = initialMode || "create";
-
+  console.log("Received ID:", id); // Debugging ID value
+  const [mode, setMode] = useState(initialMode || "create");
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
     reset,
   } = useForm();
+  const [formData,setFormData]=useState({id:null || id,servicename:"",servicedescription:"",fromdate:"",todate:""})
 
   useEffect(() => {
-    // if (id) {
-    //   const service = servicesData.find((service) => service.id === id);
-    //   if (service) {
-    //     reset({
-    //       name: service.name,
-    //       description: service.description,
-    //       fromdate: service.fromdate,
-    //       todate: service.todate,
-    //     });
-    //   }
-    // }
-  }, [id, reset]);
+    if (id && (mode === "edit" || mode === "view")) {
+      axios
+        .get(`http://localhost:5000/admin/getbyid/${id}`)
+        .then((response) => {
+          const servicedata = response.data.data; // Correctly access `data`
+          console.log("Fetched Data:", servicedata); // Debugging API response
+  
+          Object.keys(servicedata).forEach((key)=>{
+            if(servicedata[key] !== null && typeof servicedata[key] === "object"){
+              Object.keys(servicedata[key]).forEach((nestedkey)=>{
+                setValue(`${key}.${nestedkey}`,servicedata[key][nestedkey])
+              })
+            }else{
+              setValue(key,servicedata[key])
+            }
+          })
+        })
+        .catch((error) => console.error("Error fetching service data:", error));
+    } else {
+      setMode("create");
+    }
+  }, [id, mode, setValue, location.state]);
+   // Added `location.state` dependency
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const onSubmit = async (data) => {
-    const {name,description,fromdate,todate} = data
+    console.log("Form Data:", data); // Debugging form submission
+    const serviceData = {
+      servicename: data.servicename,
+      servicedescription: data.servicedescription,
+      fromdate: data.fromdate,
+      todate: data.todate,
+    };
+
+    // If there's an ID (for edit), include it in the payload
+    if (id) {
+      serviceData.id = data.id;
+    }
+
     try {
-      const response = mode === "edit" 
-        ? await axios.put(`http://localhost:5000/admin/createservice/${id}`, data)
-        : await axios.post("http://localhost:5000/admin/createservice", data);
+      // Send data as JSON, not FormData
+      const response = await axios.post(`http://localhost:5000/admin/createservice`, serviceData, {
         
-      console.log("API response:", response);  // Log the response to see if it's successful
-  
+      });
+      console.log(response.data);
       Swal.fire({
         text: mode === "edit" ? "Service updated successfully" : "Service created successfully",
         imageUrl: TickSquare,
@@ -62,6 +85,7 @@ const CreateService = () => {
           navigate("/services");
         },
       });
+      reset(); // Reset form values after submission
     } catch (error) {
       console.error("Error creating/updating service:", error);
       Swal.fire({
@@ -70,48 +94,41 @@ const CreateService = () => {
         showConfirmButton: true,
       });
     }
-  };
-  
+};
 
   return (
     <div className="bg-gray-100 h-full">
-      {/* Header */}
       <Header name={"Services"} />
 
-      {/* Page Navigation */}
       <PageNavigation
         title={mode === "edit" ? "Edit Service" : mode === "view" ? "View Service" : "Create Service"}
         onBackClick={handleBackClick}
       />
 
-      {/* Form Card */}
       <div className="bg-white shadow-lg rounded-lg p-4 mt-0 m-[12px] border">
         <h3 className="form-title p-2 pb-3 font-bold">
           {mode === "edit" ? "Edit Service" : mode === "view" ? "View Service" : "Create Service"}
         </h3>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {/* Service Name */}
             <InputField
               label="Service Name"
               type="text"
               placeholder="Enter Service Name"
-              {...register("name", { required: "Service Name is required" })}
-              error={errors.name}
+              {...register("servicename", { required: "Service Name is required" })}
+              error={errors.servicename}
               readOnly={mode === "view"}
             />
 
-            {/* Service Description */}
             <InputField
               label="Service Description"
               type="text"
               placeholder="Enter Service Description"
-              {...register("description", { required: "Description is required" })}
-              error={errors.description}
+              {...register("servicedescription", { required: "Description is required" })}
+              error={errors.servicedescription}
               readOnly={mode === "view"}
             />
 
-            {/* From Date */}
             <InputField
               label="From Date"
               type="date"
@@ -120,7 +137,6 @@ const CreateService = () => {
               readOnly={mode === "view"}
             />
 
-            {/* To Date */}
             <InputField
               label="To Date"
               type="date"
@@ -130,13 +146,9 @@ const CreateService = () => {
             />
           </div>
 
-          {/* Submit and Cancel Buttons */}
           {mode !== "view" && (
             <div className="flex justify-end gap-3 mt-4">
-              <button
-                type="reset"
-                className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm"
-              >
+              <button type="reset" className="bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm">
                 Cancel
               </button>
               <button type="submit" className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm">
