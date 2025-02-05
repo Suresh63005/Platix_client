@@ -5,14 +5,16 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import "./Login.css";
+import { Vortex } from 'react-loader-spinner';
+import { toast, Toaster } from 'react-hot-toast';
 
 const Login = () => {
   const { register, handleSubmit, setValue } = useForm(); // Initialize useForm
   const [showPassword, setShowPassword] = useState(false);
-
   const [formData, setFormData] = useState({"email":"","password":""}); // State for email input
   const [error, setError] = useState(""); // State for error messages
   const navigate = useNavigate(); // Hook to navigate programmatically
+  const [loading, setloading] = useState(false)
 
   // Toggle password visibility
   const togglePasswordVisibility = () => {
@@ -27,17 +29,24 @@ const Login = () => {
 
   // Handle form submission
   const onSubmit = async (data) => {
+    setloading(true)
     try {
-
       const response = await axios.post("http://localhost:5000/admin/login", data);
-  
+      toast.dismiss();
+      toast.success('Login successful!');
       // Store token in cookies (expires in 1 hour)
       Cookies.set("token", response.data.token, { expires: 1, secure: true, sameSite: "Strict" });
   
-      navigate("/organizationlist");
+      setTimeout(() => {
+        navigate("/organizationlist");
+      }, 2000);
 
     } catch (error) {
+      toast.dismiss();
+      toast.error(error.response?.data?.error || "Something went wrong!");
       setError(error.response?.data?.message || "Something went wrong");
+    }finally{
+      setloading(false)
     }
   };
 
@@ -103,8 +112,20 @@ const Login = () => {
             </div>
             {/* Login Button */}
             <div className="mt-[32px]">
-              <button type="submit" className="w-full py-3 bg-[#860579] text-white font-semibold rounded-lg hover:bg-[#860579] focus:outline-none focus:ring focus:ring-[#860579]">
-                Login
+              <button type="submit" className="w-full py-3 bg-[#860579] text-white font-semibold rounded-lg hover:bg-[#860579] focus:outline-none focus:ring focus:ring-[#860579]" disabled={loading}>
+              {loading ? (
+                  <Vortex
+                    visible={true}
+                    height="25"
+                    width="350"
+                    ariaLabel="vortex-loading"
+                    wrapperStyle={{}}
+                    wrapperClass="vortex-wrapper"
+                    colors={['white', 'white', 'white', 'white', 'white', 'white']}
+                  />
+                ) : (
+                  "Login"
+                )}
               </button>
             </div>
           </form>
@@ -114,6 +135,7 @@ const Login = () => {
       <div className="flex justify-center py-4 mt-auto bg-white">
         <h4 className="text-sm text-[#25064C] font-medium">© Copyright 2025 Platix Admin Portal</h4>
       </div>
+      <Toaster position="top-right" reverseOrder={false} toastOptions={{duration: 2000, }}/>
     </div>
   );
 };

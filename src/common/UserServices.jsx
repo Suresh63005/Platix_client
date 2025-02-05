@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Edit } from "@mui/icons-material";
-import Select from "react-select"; // Import react-select
+import Select from "react-select";
 import { ReactComponent as DownArrow } from "../assets/images/Down Arrow.svg";
 
 const UserServices = () => {
   const [services, setServices] = useState([]);
   const [newService, setNewService] = useState({ name: "", price: "" });
-  const [editingIndex, setEditingIndex] = useState(null); // To track the editing state
+  const [editingIndex, setEditingIndex] = useState(null);
 
   // Service options for the dropdown
   const serviceOptions = [
@@ -17,15 +17,15 @@ const UserServices = () => {
 
   // Add a new service
   const handleAddService = () => {
-    if (!newService.name || !newService.price) return; // Prevent empty input
+    if (!newService.name || !newService.price) return; 
     setServices([...services, newService]);
-    setNewService({ name: "", price: "" }); // Reset input fields
+    setNewService({ name: "", price: "" }); 
   };
 
   // Edit an existing service
   const handleEditService = (index) => {
-    setEditingIndex(index); // Set the index for the service being edited
-    setNewService({ ...services[index] }); // Populate the fields with the current values
+    setEditingIndex(index); 
+    setNewService({ ...services[index] }); 
   };
 
   // Save edited service
@@ -34,7 +34,7 @@ const UserServices = () => {
     updatedServices[editingIndex] = newService;
     setServices(updatedServices);
     setEditingIndex(null); // Exit edit mode
-    setNewService({ name: "", price: "" }); // Reset input fields
+    setNewService({ name: "", price: "" }); 
   };
 
   // Delete a service

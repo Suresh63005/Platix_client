@@ -20,6 +20,7 @@ import PaymentsReports from "./Components/Reports/PaymentsReports";
 import RevenueReports from "./Components/Reports/RevenueReports";
 import Settings from "./Components/SettingsPage/Settings";
 import Account from "./Components/Account/Account";
+import ProtectedRoute from "./ProtectedRoute";
 // Custom hook to use Auth Context
 // const useAuth = () => useContext(AuthContext);
 
@@ -46,130 +47,146 @@ function App() {
           {/* Protected Route with Sidebar Layout */}
           <Route
             path="/userpage"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <Userspage />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/createuser"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <Createuser />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/roles-list"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <Rolespage />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/createorganization"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <CreateOrganization />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/createorganization/:id"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <CreateOrganization />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/organizationlist"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <Organizationlist />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/organizationtypelist"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <OrganizationTypelist />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/createorganizationtype"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <CreateOrganizationType />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/services"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <Services />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/createservice"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <CreateService />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/userreports"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <UserReports />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/orderreports"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <OrderReports />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/paymentreports"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <PaymentsReports />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/revenuereports"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <RevenueReports />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/settings"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <Settings />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/account"
-            element={
+            element={<ProtectedRoute >
               <LayoutSidebar>
                 <Account />
               </LayoutSidebar>
+              </ProtectedRoute>
             }
           />
         </Routes>
