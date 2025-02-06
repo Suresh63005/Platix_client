@@ -1,4 +1,4 @@
-import React, { useState, forwardRef } from "react";
+import React, { useState, forwardRef,useRef } from "react";
 import { WhatsApp } from "@mui/icons-material";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -142,6 +142,7 @@ export const WhatsAppInput = forwardRef(({ label, value, onChange, name }, ref) 
 // File Upload Component with forwardRef
 export const FileUpload = forwardRef(({ name, onChange, multiple = false }, ref) => {
   const [files, setFiles] = useState([]);
+  const fileInputRef = useRef(null); // Reference to the file input
 
   const handleFileChange = (event) => {
     const newFiles = Array.from(event.target.files);
@@ -177,25 +178,31 @@ export const FileUpload = forwardRef(({ name, onChange, multiple = false }, ref)
         },
       });
     }
+
+    // Clear the file input after deleting
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Reset the file input value
+    }
   };
 
   return (
     <div ref={ref} className="mt-4">
       <div className="flex flex-wrap gap-4 mb-4 items-center">
         <input
+          ref={fileInputRef} // Add the reference to the file input
           type="file"
-          name={name} // Add name attribute
+          name={name}
           multiple={multiple}
           onChange={handleFileChange}
           className="w-full sm:w-[350px] border border-gray-300 rounded-md p-1 text-sm"
         />
-        <button
+        {/* <button
           className="flex items-center gap-1 bg-[#660F5D] text-white px-7 py-1 rounded-md text-[12px]"
           onClick={(e) => e.preventDefault()}
         >
           <UploadIcon className="w-[15px]" />
           Upload
-        </button>
+        </button> */}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -219,7 +226,6 @@ export const FileUpload = forwardRef(({ name, onChange, multiple = false }, ref)
     </div>
   );
 });
-
 // Service Form Component with forwardRef
 export const ServiceForm = forwardRef((props, ref) => {
   const [serviceList, setServiceList] = useState([]);
