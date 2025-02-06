@@ -28,7 +28,7 @@ const Settings = () => {
     const fetchSettings = async () => {
       const token = Cookies.get("token");
       try {
-        const response = await axios.get("http://localhost:5000/admin/getsettings/:id", {
+        const response = await axios.get("http://localhost:5000/admin/getsettings", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -55,9 +55,7 @@ const Settings = () => {
     fetchSettings();
   }, [reset]); // Depend on reset to ensure fields update correctly
 
-  const handlechange=(e)=>{
-    const {name,vale} = e.target
-  }
+
   // Handle form submission
   const onSubmit = async (formData) => {
     setLoading(true);
@@ -69,17 +67,21 @@ const Settings = () => {
     try {
       const data = new FormData();
       if (websiteImage) data.append("websiteImage", websiteImage);
-      data.append("notificationApiKey", formData.notificationApiKey);
-      data.append("smsApiKey", formData.smsApiKey);
-      data.append("paymentApiKey", formData.paymentApiKey);
-      data.append("emailApiKey", formData.emailApiKey);
-      data.append("whatsappApiKey", formData.whatsappApiKey);
-      data.append("privacyContent", privacyContent);
-      data.append("termsContent", termsContent);
-
+      data.append("notificationApiKey", formData.notificationApiKey || "");
+      data.append("smsApiKey", formData.smsApiKey || "");
+      data.append("paymentApiKey", formData.paymentApiKey || "");
+      data.append("emailApiKey", formData.emailApiKey || "");
+      data.append("whatsappApiKey", formData.whatsappApiKey || "");
+      data.append("privacyContent", privacyContent || "");
+      data.append("termsContent", termsContent || "");
+      
       await axios.put("http://localhost:5000/admin/updatesettings", data, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"  // This is important for FormData
+        },
       });
+      
 
       Swal.fire({
         text: "Settings updated successfully",
