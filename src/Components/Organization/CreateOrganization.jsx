@@ -83,7 +83,7 @@ const CreateOrganization = () => {
     }
 
      // Fetch services dynamically
-     axios.get("http://localhost:5000/admin/viewserivce")
+     axios.get("http://localhost:5000/admin/allservices")
   .then((response) => {
     const servicesData = response.data.services;
     setAvailableServices(servicesData.map((service) => ({
