@@ -45,7 +45,7 @@ const CreateUserPage = () => {
   }, [id, initialMode, reset]);
 
   const handleRoleChange = (selectedRole) => {
-    setValue("role", selectedRole);
+    setValue("role_id", selectedRole);
     switch (selectedRole) {
       case "Dentist":
         setDesignationOptions([
@@ -74,26 +74,42 @@ const CreateUserPage = () => {
     }
   };
 
-  const onSubmit = (data) => {
-    const message =
-      mode === "edit" ? "User updated successfully" : "User created successfully";
+  const onSubmit = async (data) => {
+    try {
+      const response = await fetch("http://localhost:5000/user/upsert", {
+        method: mode === "edit" ? "POST" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    Swal.fire({
-      text: message,
-      imageUrl: TickSquare,
-      imageWidth: 50,
-      imageHeight: 50,
-      background: "white",
-      color: "black",
-      showConfirmButton: false,
-      showCloseButton: false,
-      customClass: {
-        popup: "swal-popup-custom",
-      },
-      willClose: () => {
-        navigate("/userpage");
-      },
-    });
+      const result = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          text: mode === "edit" ? "User updated successfully" : "User created successfully",
+          imageUrl: TickSquare,
+          imageWidth: 50,
+          imageHeight: 50,
+          background: "white",
+          color: "black",
+          showConfirmButton: false,
+          showCloseButton: false,
+          timer: 2000,
+          customClass: {
+            popup: "swal-popup-custom",
+          },
+        }).then(() => navigate("/userpage"));
+      } else {
+        throw new Error(result.message || "Something went wrong");
+      }
+    } catch (error) {
+      Swal.fire({
+        text: `Error: ${error.message}`,
+        icon: "error",
+      });
+    }
   };
 
   const handleBackClick = () => {
@@ -123,7 +139,7 @@ const CreateUserPage = () => {
                 <SelectField
                   label="Prefix*"
                   defaultplaceholder="Select Prefix"
-                  options={[{ value: "Mr", label: "Mr" }, { value: "Mrs", label: "Mrs" }]}
+                  options={[{ value: "mr", label: "Mr" }, { value: "mrs", label: "Mrs" }]}
                   value={field.value}
                   onChange={(value) => field.onChange(value)}
                   disabled={mode === "view"}
@@ -131,7 +147,7 @@ const CreateUserPage = () => {
               )}
             />
             <Controller
-              name="role"
+              name="role_id"
               control={control}
               defaultValue=""
               render={({ field }) => (
@@ -210,7 +226,7 @@ const CreateUserPage = () => {
               )}
             />
             <Controller
-              name="phoneNumber"
+              name="mobileNo"
               control={control}
               defaultValue=""
               render={({ field }) => (
@@ -224,7 +240,7 @@ const CreateUserPage = () => {
               )}
             />
             <Controller
-              name="whatsAppNumber"
+              name="whatsappNo"
               control={control}
               defaultValue=""
               render={({ field }) => (
@@ -254,7 +270,7 @@ const CreateUserPage = () => {
                 />
               )}
             />
-            <Controller
+            {/* <Controller
               name="organization"
               control={control}
               defaultValue=""
@@ -266,7 +282,7 @@ const CreateUserPage = () => {
                   disabled={mode === "view"}
                 />
               )}
-            />
+            /> */}
           </div>
 
           {mode !== "view" && (
