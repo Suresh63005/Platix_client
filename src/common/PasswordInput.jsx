@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 
-const PasswordInput = React.forwardRef(({ label, placeholder, onChange }, ref) => {
+const PasswordInput = React.forwardRef(({ label, placeholder, onChange,value,name }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -19,6 +19,8 @@ const PasswordInput = React.forwardRef(({ label, placeholder, onChange }, ref) =
           type={showPassword ? "text" : "password"}
           className="w-full rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D] font-medium"
           placeholder={placeholder}
+          name={name}
+          value={value}
           onChange={onChange}
         />
         <span
