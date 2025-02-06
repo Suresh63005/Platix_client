@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
-import UserServices from "../../common/UserServices";
 import {
   InputField,
   SelectField,
@@ -11,32 +10,57 @@ import {
 } from "../../common/Input_fileds";
 import Header from "../../common/Header";
 import PageNavigation from "../../common/PageNavigation";
-import TickSquare from "../../assets/images/TickSquare.svg";
-import { organizationsData } from "../../Data/data";
 import { ReactComponent as Cancelbtnicon } from "../../assets/images/Cancel_button_icon.svg";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
+import { Edit } from "@mui/icons-material";
+import Select from "react-select";
+import { ReactComponent as DownArrow } from "../../assets/images/Down Arrow.svg";
 
 const CreateOrganization = () => {
   const location = useLocation();
-  // const id=location.state ? location.state.id : null;
   const navigate = useNavigate();
   const { id, mode: initialMode } = location.state || {};
-  // console.log(id)
   const [mode, setMode] = useState(initialMode || "create");
   const [organization, setOrganization] = useState(null);
   const { register, handleSubmit, setValue, watch, control, reset } = useForm();
   const [PImages, setPImages] = useState([]);
-  const [formData, setFormData] = useState({ id: id || null, address: '', businessName: null, file1: null,file2:null,imgPreview:null,description:'',designation:'',email:'',googleCoordinates:{latitude:'',longitude:''},gstNumber:null,mobile:'',name:'',registrationId:null,type:'',whatsapp:'' });
+  const [formData, setFormData] = useState({
+    id: id || null,
+    address: '',
+    businessName: null,
+    file1: null,
+    file2: null,
+    imgPreview: null,
+    description: '',
+    designation: '',
+    email: '',
+    googleCoordinates: { latitude: '', longitude: '' },
+    gstNumber: null,
+    mobile: '',
+    name: '',
+    registrationId: null,
+    type: '',
+    whatsapp: '',
+    services: [],
+    bankName: '',
+    accountNumber: '',
+    accountHolder: '',
+    ifscCode: '',
+    upiId: ''
+  });
+  const [availableServices, setAvailableServices] = useState([]); // For fetched services
+  const [userServices, setUserServices] = useState([]);           // For added services
+  const [newService, setNewService] = useState({ name: "", price: "" });
+  const [editingIndex, setEditingIndex] = useState(null);
 
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
       axios.get(`http://localhost:5000/api/organization/getby/${id}`)
         .then((response) => {
           const orgData = response.data.data;
-          // console.log(orgData)
           setOrganization(orgData);
-  
+
           // Populate form fields
           Object.keys(orgData).forEach((key) => {
             if (orgData[key] !== null && typeof orgData[key] === "object") {
@@ -47,21 +71,31 @@ const CreateOrganization = () => {
               setValue(key, orgData[key]);
             }
           });
+
+          // Set services if available
+          if (orgData.services) {
+            setUserServices(orgData.services);
+          }
         })
         .catch((error) => console.error("Error fetching organization data:", error));
     } else {
-      setMode("create"); 
+      setMode("create");
     }
-  }, [id, mode, setValue]);
-  
 
-  useEffect(() => {
-    if (id) {
-      const org = organizationsData.find((org) => org.id === id);
-      setOrganization(org);
-      reset(org);
-    }
-  }, [id, reset]);
+     // Fetch services dynamically
+     axios.get("http://localhost:5000/admin/viewserivce")
+  .then((response) => {
+    const servicesData = response.data.services;
+    setAvailableServices(servicesData.map((service) => ({
+      id: service.id,
+      name: service.servicename,
+    })));
+  })
+  .catch((error) => {
+    console.error("Error fetching services:", error);
+  });
+
+  }, [id, mode, setValue]);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -74,19 +108,56 @@ const CreateOrganization = () => {
         ...prev,
         [name]: files[0],
       }));
-      setValue(name, files[0]); 
+      setValue(name, files[0]);
     }
   };
-  
+
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
     setPImages(files);
-    setValue("file2", files); 
-  };  
+    setValue("file2", files);
+  };
+
+  const handleAddService = () => {
+    if (newService.id && newService.price) {
+      setUserServices([...userServices, newService]); // Store service ID instead of name
+      setNewService({ id: "", name: "", price: "" }); // Reset input
+    } else {
+      Swal.fire({
+        icon: "warning",
+        text: "Please select a service and enter a price!",
+      });
+    }
+  };
   
+  
+  const handleSaveService = () => {
+    if (editingIndex !== null) {
+      const updatedServices = [...userServices];
+      updatedServices[editingIndex] = newService;
+      setUserServices(updatedServices);
+      setEditingIndex(null);
+      setNewService({ id: "", name: "", price: "" });
+    }
+  };
+  
+  
+  const handleEditService = (index) => {
+    setEditingIndex(index);
+    setNewService({ ...userServices[index] }); // Maintain service ID
+  };
+  
+  
+  const handleDeleteService = (index) => {
+    const updatedServices = userServices.filter((_, i) => i !== index);  // Use userServices
+    setUserServices(updatedServices);                                    // Use setUserServices
+  };
+   
+
   const onSubmit = async (data) => {
     try {
-      console.log("Form Data Submitted:", data);
+      console.log("Services before submission:", userServices); // Log the services
+      console.log(data)
       const form = new FormData();
       form.append('name', data.name);
       form.append('type', data.type);
@@ -100,28 +171,29 @@ const CreateOrganization = () => {
       form.append('designation', data.designation);
       form.append('businessName', data.businessName);
       form.append('registrationId', data.registrationId);
-      form.append('bankName', data.bankName);  // Bank Name
-      form.append('accountNumber', data.accountNumber);  // Account Number
-      form.append('accountHolder', data.accountHolder);  // Account Holder Name
-      form.append('ifscCode', data.ifscCode);  // IFSC Code
-      form.append('upiId', data.upiId);  // UPI ID
+      form.append('bankName', data.bankName);
+      form.append('accountNumber', data.accountNumber);
+      form.append('accountHolder', data.accountHolder);
+      form.append('ifscCode', data.ifscCode);
+      form.append('upiId', data.upiId);
+      
+      // Add services to FormData
+      form.append("services", JSON.stringify(userServices)); 
   
       if (id) {
         form.append('id', id);
       }
   
-      // Append single file (file1)
       if (data.file1) {
-        form.append('file1', data.file1);  // Single file
+        form.append('file1', data.file1);
       }
-      
-      if (PImages.length > 0) {
-        PImages.forEach((file, index) => {
-          form.append(`file2`, file);      // Multiple files under the same key
-        });
-      }    
   
-      // Send the data via axios
+      if (PImages.length > 0) {
+        PImages.forEach((file) => {
+          form.append('file2', file);
+        });
+      }
+      console.log(form)
       const response = await axios.post('http://localhost:5000/api/organization/upsert', form, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -372,11 +444,133 @@ const CreateOrganization = () => {
             </div>
             {(watch("type") === "Radiology" ||
           watch("type") === "Material Supplier" ||
-          watch("type") === "Dental Laboratory") && (
-          <div className="">
-            <UserServices />
-          </div>
-        )}
+              watch("type") === "Dental Laboratory") && (
+              <div className="">
+                {/* <UserServices /> */}
+                <h3 className="text-lg font-semibold mb-4">User Services</h3>
+                <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
+                  {/* Replace the native select with react-select */}
+                  <div className="w-full sm:w-1/2">
+                    <Select
+                      value={
+                        newService.id
+                          ? availableServices.find((option) => option.id === newService.id)
+                          : null
+                      }
+                      onChange={(selectedOption) =>
+                        setNewService({ ...newService,id: selectedOption.id, name: selectedOption.label })
+                      }
+                      options={availableServices.map((service) => ({
+                        id: service.id,
+                        value: service.name, // The display value of the option
+                        label: service.name, // This will display as the label
+                      }))}
+                      placeholder="Select service"
+                      className="text-[12px]" // Additional classes
+                      styles={{
+                        control: (base, {isFocused}) => ({
+                          ...base,
+                          border: isFocused ? "2px solid #660F5D" : " 1px solid #EAEAFF",
+                          boxShadow: isFocused ? 'none':'none',
+                          borderRadius: "5px",
+                          padding: "2px",
+                          fontSize: "12px", // Consistent font size
+                          color: "#757575",
+                          height:"42px",
+                          
+                          "&:hover":{
+                            
+                          }
+                        }),
+                        placeholder: (base) => ({
+                          ...base,
+                          color: "#757575",
+                          fontSize: "12px", // Placeholder font size
+                        }),
+                        singleValue: (base) => ({
+                          ...base,
+                          fontSize: "12px",
+                          fontWeight: "600",
+                          color: "#757575",
+                          fontFamily: "Montserrat, sans-serif",
+                        }),
+                        option: (base) => ({
+                          ...base,
+                          backgroundColor: "white", // No background color change for selected state
+                          color: "#757575", // Default text color
+                          fontWeight: "100",
+                          cursor: "pointer",
+                          fontSize: "12px", // Option font size
+                          "&:hover": {
+                            backgroundColor: "#660F5D", // Apply hover effect
+                            color: "white", // Change text color to white on hover
+                          },
+                        }),
+                      }}
+                      components={{
+                        DropdownIndicator: () => (
+                          <DownArrow className="w-[16px] h-[16px] pr-1" /> // Use the custom DownArrow icon
+                        ),
+                        IndicatorSeparator: () => null, // Remove indicator separator
+                      }}
+                    />
+                  </div>
+                  <div className="w-full sm:w-1/4 relative">
+                    <span className="absolute top-2 left-2 text-gray-500">Price:</span>
+                    <input
+                      type="number"
+                      placeholder="Price"
+                      value={newService.price}
+                      onChange={(e) =>
+                        setNewService({ ...newService, price: e.target.value })
+                      }
+                      className="w-full pl-16 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#660F5D]"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    {editingIndex === null ? (
+                    <span
+                    onClick={handleAddService}
+                    className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
+                  >
+                    Add
+                  </span>
+                    ) : (
+                      <span
+                        onClick={handleSaveService}
+                        className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
+                      >
+                        Save
+                      </span>
+                    )}
+                    <span
+                      onClick={() => setNewService({ name: "", price: "" })}
+                      className="px-7 py-1 bg-white text-gray-400 border-gray-700 border rounded-md cursor-pointer"
+                    >
+                      Clear
+                    </span>
+                  </div>
+                </div>
+                <hr />
+                <div className="space-y-4">
+                {userServices.map((service, index) => (
+  <div key={service.id} className="flex flex-col sm:flex-row items-center gap-4 p-4">
+    <input type="hidden" value={service.id} /> {/* Keep ID for reference */}
+    <input type="text" value={service.name} readOnly className="flex-1 px-3 py-2 border rounded-md bg-white" />
+    <div className="w-full sm:w-1/4 relative">
+      <span className="absolute top-2 left-2 text-gray-500">Price:</span>
+      <input type="number" value={service.price} readOnly className="w-full pl-16 px-3 py-2 border rounded-md bg-white" />
+    </div>
+    <span onClick={() => handleEditService(index)} className="px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer">Edit</span>
+    <span onClick={() => handleDeleteService(index)} className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer">Delete</span>
+  </div>
+))}
+
+
+                </div>
+
+              </div>
+              )}
             <Controller
               name="file1"
               control={control}
