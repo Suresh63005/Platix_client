@@ -7,23 +7,15 @@ import Header from "../../common/Header";
 import TextEditor from "./TextEditor";
 import PasswordInput from "../../common/PasswordInput";
 import TickSquare from "../../assets/images/TickSquare.svg";
-import { data } from "react-router-dom";
 
 const Settings = () => {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset, // Used for setting default form values
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm();
 
   const [termsContent, setTermsContent] = useState("");
   const [privacyContent, setPrivacyContent] = useState("");
   const [websiteImage, setWebsiteImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch settings when component mounts
   useEffect(() => {
     const fetchSettings = async () => {
       const token = Cookies.get("token");
@@ -31,11 +23,11 @@ const Settings = () => {
         const response = await axios.get("http://localhost:5000/admin/getsettings", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
+  
         const data = response.data;
         console.log("Fetched Data:", data);
-
-        // Use reset to populate all fields at once
+  
+        // Reset the form with fetched data
         reset({
           notificationApiKey: data.notificationApiKey || "",
           smsApiKey: data.smsApiKey || "",
@@ -43,20 +35,19 @@ const Settings = () => {
           emailApiKey: data.emailApiKey || "",
           whatsappApiKey: data.whatsappApiKey || "",
         });
-
-        // Set state for editors separately
+  
         setTermsContent(data.termsContent || "");
         setPrivacyContent(data.privacyContent || "");
+  
       } catch (error) {
         console.error("Error fetching settings:", error);
       }
     };
-
+  
     fetchSettings();
-  }, [reset]); // Depend on reset to ensure fields update correctly
+  }, [reset]); // Ensure reset is included in dependencies
+  
 
-
-  // Handle form submission
   const onSubmit = async (formData) => {
     setLoading(true);
     console.log("Final Terms Content:", termsContent);
@@ -74,14 +65,13 @@ const Settings = () => {
       data.append("whatsappApiKey", formData.whatsappApiKey || "");
       data.append("privacyContent", privacyContent || "");
       data.append("termsContent", termsContent || "");
-      
+
       await axios.put("http://localhost:5000/admin/updatesettings", data, {
         headers: { 
           "Authorization": `Bearer ${token}`,
-          "Content-Type": "multipart/form-data"  // This is important for FormData
+          "Content-Type": "multipart/form-data"
         },
       });
-      
 
       Swal.fire({
         text: "Settings updated successfully",
@@ -103,7 +93,7 @@ const Settings = () => {
     } finally {
       setLoading(false);
     }
-    console.log(formData)
+    console.log(formData);
   };
 
   return (
@@ -114,7 +104,6 @@ const Settings = () => {
           <form className="space-y-6 px-6 py-4" onSubmit={handleSubmit(onSubmit)}>
             <h3 className="font-bold text-lg">Settings Details</h3>
 
-            {/* Grid for Inputs */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-normal mb-[4px]">Website Image</label>
@@ -125,14 +114,14 @@ const Settings = () => {
                 />
               </div>
 
-              {/* Password Inputs with Controlled Values */}
               <PasswordInput
-                label="Notification API key"
-                placeholder="Enter API key"
-                {...register("notificationApiKey", { required: "API key is required" })}
-                onChange={(e) => setValue("notificationApiKey", e.target.value)}
-                error={errors.notificationApiKey}
-              />
+  label="Notification API Key"
+  placeholder="Enter API Key"
+  {...register("notificationApiKey", { required: "API key is required" })} 
+  defaultValue={watch("notificationApiKey")} // ✅ Fix: Use watch() to get the value
+  error={errors.notificationApiKey}
+/>
+
               <PasswordInput
                 label="SMS Gateway API key"
                 placeholder="Enter API key"
@@ -163,7 +152,6 @@ const Settings = () => {
               />
             </div>
 
-            {/* Jodit Editor for Terms and Privacy */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               <div>
                 <label className="block text-gray-700 text-[12px] font-normal mb-2">
@@ -180,7 +168,6 @@ const Settings = () => {
               </div>
             </div>
 
-            {/* Update Button */}
             <div className="text-right">
               <button
                 type="submit"

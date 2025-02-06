@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 
-const PasswordInput = React.forwardRef(({ label, placeholder, onChange,value,name }, ref) => {
+const PasswordInput = React.forwardRef(({ label, placeholder, defaultValue, ...rest }, ref) => {
   const [showPassword, setShowPassword] = useState(false);
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
 
   return (
     <div>
@@ -19,13 +15,12 @@ const PasswordInput = React.forwardRef(({ label, placeholder, onChange,value,nam
           type={showPassword ? "text" : "password"}
           className="w-full rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D] font-medium"
           placeholder={placeholder}
-          name={name}
-          value={value}
-          onChange={onChange}
+          defaultValue={defaultValue} // Ensures the input displays initial values
+          {...rest}
         />
         <span
           className="px-3 text-gray-500 cursor-pointer absolute right-[10px]"
-          onClick={togglePasswordVisibility}
+          onClick={() => setShowPassword((prev) => !prev)}
         >
           <Icon icon={showPassword ? "mdi:eye" : "mdi:eye-off"} width={20} />
         </span>
@@ -33,5 +28,6 @@ const PasswordInput = React.forwardRef(({ label, placeholder, onChange,value,nam
     </div>
   );
 });
+
 
 export default PasswordInput;
