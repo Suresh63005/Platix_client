@@ -40,7 +40,7 @@ const CreateOrganization = () => {
     mobile: '',
     name: '',
     registrationId: null,
-    type: '',
+    organizationType_id: '',
     whatsapp: '',
     services: [],
     bankName: '',
@@ -53,6 +53,7 @@ const CreateOrganization = () => {
   const [userServices, setUserServices] = useState([]);           // For added services
   const [newService, setNewService] = useState({ name: "", price: "" });
   const [editingIndex, setEditingIndex] = useState(null);
+  const [orgType,setOrgTYpe]=useState([])
 
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
@@ -89,6 +90,19 @@ const CreateOrganization = () => {
     setAvailableServices(servicesData.map((service) => ({
       id: service.id,
       name: service.servicename,
+    })));
+  })
+  .catch((error) => {
+    console.error("Error fetching services:", error);
+  });
+
+  axios.get("http://localhost:5000/organization/getall")
+  .then((response) => {
+    const OrgData = response.data.results;
+    console.log(OrgData)
+    setOrgTYpe(OrgData.map((org) => ({
+      value: org.id, // Set id as value
+      label: org.organizationType, // Set organizationType as label
     })));
   })
   .catch((error) => {
@@ -160,7 +174,7 @@ const CreateOrganization = () => {
       console.log(data)
       const form = new FormData();
       form.append('name', data.name);
-      form.append('type', data.type);
+      form.append('organizationType_id', data.organizationType_id);
       form.append('address', data.address);
       form.append('googleCoordinates', JSON.stringify(data.googleCoordinates));
       form.append('mobile', data.mobile);
@@ -255,19 +269,14 @@ const CreateOrganization = () => {
               />
               
               <Controller
-                name="type"
+                name="organizationType_id"
                 control={control}
                 defaultValue=""
                 render={({ field }) => (
                   <SelectField
                     label="Organization Type"
                     defaultplaceholder={"Select Role"}
-                    options={[
-                      { value: "Dentist", label: "Dentist" },
-                      { value: "Radiology", label: "Radiology" },
-                      { value: "Material Supplier", label: "Material Supplier" },
-                      { value: "Dental Laboratory", label: "Dental Laboratory" },
-                    ]}
+                    options={orgType}
                     value={field.value}
                     onChange={field.onChange} // Pass onChange to the SelectField component
                     className="p-1 w-full"
