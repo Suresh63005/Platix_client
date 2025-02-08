@@ -1,59 +1,77 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
-import { usersData } from "../../Data/data"; // Import user data from the data file
+import { deleteItem } from "../../utils/delteEntity";
 
 const Userspage = () => {
+  const location=useLocation();
+  const { organizationType_id } = location.state || {};
+  // console.log(organizationType_id)
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [usernameFilter, setUsernameFilter] = useState(""); // Username filter state
   const [userTypeFilter, setUserTypeFilter] = useState(""); // User type filter state
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const usersPerPage = 10; // Number of users per page
   const navigate = useNavigate();
 
-  const loadUsersForPage = (page, userTypeFilter, usernameFilter, searchQuery) => {
-    // Apply filters to usersData
-    const filteredUsers = usersData.filter((user) =>
-      (!userTypeFilter || user.type === userTypeFilter) &&
-      (!usernameFilter || user.username.toLowerCase().includes(usernameFilter.toLowerCase())) &&
-      (!searchQuery || user.username.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+  // Fetch users from API
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/user/all");
+      const allUsers = response.data.users; 
 
-    // Apply pagination
-    const startIndex = (page - 1) * usersPerPage;
-    const paginatedUsers = filteredUsers.slice(startIndex, startIndex + usersPerPage);
+      // Apply filters
+      const filteredUsers = allUsers.filter((user) =>
+        (!userTypeFilter || user.type === userTypeFilter) &&
+        (!usernameFilter || user.username.toLowerCase().includes(usernameFilter.toLowerCase())) &&
+        (!searchQuery || user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
 
-    setUsers(paginatedUsers);
+      // Pagination
+      const startIndex = (page - 1) * usersPerPage;
+      const paginatedUsers = filteredUsers.slice(startIndex, startIndex + usersPerPage);
+
+      setUsers(paginatedUsers);
+      setTotalPages(Math.ceil(filteredUsers.length / usersPerPage));
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
 
+  // Fetch users when filters or pagination change
   useEffect(() => {
-    loadUsersForPage(page, userTypeFilter, usernameFilter, searchQuery);
+    fetchUsers();
   }, [page, userTypeFilter, usernameFilter, searchQuery]);
 
   const handleCreateUserClick = () => {
-    navigate("/createuser");
+    navigate("/createuser",{state:{organizationType_id}});
   };
 
   const handleSearch = (event) => {
     setSearchQuery(event.target.value);
-    setPage(1); // Reset to the first page when search query changes
+    setPage(1); // Reset to first page when search query changes
   };
 
   const handleFilterChange = (event) => {
     setUserTypeFilter(event.target.value);
-    setPage(1); // Reset to the first page when filter changes
+    setPage(1); // Reset to first page when filter changes
   };
 
   const handleEdit = (id) => {
-    navigate("/createuser", { state: { id,mode:"edit" } });
+    navigate("/createuser", { state: { id, mode: "edit" } });
   };
 
-  const handleview = (id) => {
+  const handleView = (id) => {
     navigate("/createuser", { state: { id, mode: "view" } });
   };
+  const handleDelete=async(id,forceDelete=false)=>{
+    deleteItem("http://localhost:5000/user/delete", id, setUsers, forceDelete);
+  }
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -74,19 +92,14 @@ const Userspage = () => {
 
         <Table
           columns={["Username", "Type of User", "Mobile No", "Starting Date"]}
-          fields={["firstName", "role", "phoneNumber", "startDate"]}
+          fields={["Username", "type", "mobileNo", "createdAt"]}
           data={users}
           page={page}
-          totalPages={Math.ceil(
-            usersData.filter((user) =>
-              (!userTypeFilter || user.type === userTypeFilter) &&
-              (!usernameFilter || user.username.toLowerCase().includes(usernameFilter.toLowerCase())) &&
-              (!searchQuery || user.username.toLowerCase().includes(searchQuery.toLowerCase()))
-            ).length / usersPerPage
-          )}
+          totalPages={totalPages}
           setPage={setPage}
           handleEdit={handleEdit}
-          handleview={handleview}
+          handleView={handleView}
+          handleDelete={handleDelete}
         />
       </div>
     </div>

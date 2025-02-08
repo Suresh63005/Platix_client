@@ -15,7 +15,7 @@ const Table = ({
   setData,
   showActions = true,
   handleEdit,
-  handleview,
+  handleView,
   handleDelete
 }) => {
   const [selectedItems, setSelectedItems] = useState([]);
@@ -167,7 +167,7 @@ const Table = ({
                       <div className="flex justify-center items-center h-full">
                         <Eye
                           className="w-5 h-5 cursor-pointer"
-                          onClick={() => handleview(item.id)}
+                          onClick={() => handleView(item.id)}
                         />
                       </div>
                     </td>

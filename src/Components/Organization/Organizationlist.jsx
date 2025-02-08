@@ -26,8 +26,8 @@ const OrganizationList = () => {
   ];
 
   const loadOrganizationsForPage = (page, filter, searchQuery) => {
-    const start = (page - 1) * orgsPerPage;
-    const apiUrl="http://localhost:5000/api/organization/all";
+    const apiUrl = "http://localhost:5000/api/organization/all";
+  
     axios.get(apiUrl, {
       params: {
         page,
@@ -37,30 +37,36 @@ const OrganizationList = () => {
       },
     })
     .then((response) => {
+      console.log("API Response in Frontend:", response.data); // ✅ Log response
+  
       const { data } = response;
       const filteredOrgs = data.data || []; 
+  
+      console.log("Processed Organizations Data:", filteredOrgs); // ✅ Log data after processing
+  
       setOrganizations(filteredOrgs);
       setTotalPages(Math.ceil(data.pagination.total / orgsPerPage)); 
     })
     .catch((error) => {
-      console.error(error);
+      console.error("API Fetch Error:", error);
       setOrganizations([]); 
     });
   };
+  
 
   useEffect(() => {
     loadOrganizationsForPage(page, filter, searchQuery);
   }, [page, filter, searchQuery]);
 
-  const handleIconClick = () => {
-    navigate(`/userpage`);
+  const handleIconClick = (organizationType_id) => {
+    navigate(`/userpage`,{state:{organizationType_id}});
   };
 
-  const renderUserIcon = () => (
+  const renderUserIcon = (organizationType_id) => (
     <div
       className="flex items-center justify-center py-2 px-7 rounded-[10px] cursor-pointer"
       style={{ backgroundColor: "#660F5D1A" }}
-      onClick={handleIconClick}
+      onClick={()=>{handleIconClick(organizationType_id)}}
     >
       <img src={UserICon} alt="User Icon" className="w-5 h-5" />
     </div>
@@ -112,10 +118,10 @@ const OrganizationList = () => {
             "Mobile No",
             { label: "Users", style: { textAlign: "center" } }, 
           ]}
-          fields={["name", "type", "mobile", "icon"]}
+          fields={["name", "organizationType?.organizationType", "mobile", "icon"]}
           data={organizations.map((org) => ({
             ...org,
-            icon: renderUserIcon(),
+            icon: renderUserIcon(org.organizationType_id),
           }))}
           page={page}
           totalPages={totalPages}

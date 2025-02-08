@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: react-platix
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/react-platix
+      - /react-platix/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    restart: always
+    stdin_open: true
+    tty: true
