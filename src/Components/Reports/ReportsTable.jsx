@@ -7,13 +7,47 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const paginatedData = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  // Function to convert data to CSV and trigger download
+  const downloadCSV = (data, filename) => {
+    if (!data.length) {
+      alert("No data available for download!");
+      return;
+    }
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [Object.keys(data[0]).join(","), ...data.map(row => Object.values(row).join(","))].join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Single Row Download
+  const handleSingleDownload = (item) => {
+    downloadCSV([item], `Report_${item.id}.csv`);
+  };
+
+  // Bulk Download (Selected Rows or All)
+  // const handleBulkDownload = () => {
+  //   const filteredData = selectedItems.length
+  //     ? data.filter(item => selectedItems.includes(item.id)) // Download only selected rows
+  //     : data; // Download all if none selected
+
+  //   downloadCSV(filteredData, "All_Reports.csv");
+  // };
+
+  // Select all items on current page
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       const allItems = paginatedData.map((item) => item.id);
@@ -26,6 +60,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
     }
   };
 
+  // Select individual item
   const handleSelectItem = (event, itemId) => {
     if (event.target.checked) {
       setSelectedItems((prevState) => [...prevState, itemId]);
@@ -44,7 +79,17 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
 
   return (
     <div className="reports-container p-4 flex-1">
-      <div className="table-container bg-white border border-[#EAEAFF]  shadow-sm rounded-md p-4 max-w-[77vw]">
+      <div className="table-container bg-white border border-[#EAEAFF] shadow-sm rounded-md p-4 max-w-[77vw]">
+        {/* Download All Button */}
+        {/* <div className="flex justify-end mb-4">
+          <button
+            className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+            onClick={handleBulkDownload}
+          >
+            Download All
+          </button>
+        </div> */}
+
         <div className="w-full max-h-[400px] overflow-auto scrollbar-color">
           <table className="text-sm min-w-full table-auto">
             <thead className="text-[12px]">
@@ -93,14 +138,17 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
                     <td
                       key={colIndex}
                       className="p-2 text-left text-[12px] font-medium text-gray-500"
-                      style={{ minWidth: "120px" }} // Adjust minWidth as needed
+                      style={{ minWidth: "120px" }}
                     >
                       {item[columnKeyMapping[col]] || "-"}
                     </td>
                   ))}
                   <td className="p-2 text-center">
                     <div className="flex justify-center">
-                      <Download className="w-5 h-5 text-blue-600 cursor-pointer" />
+                      <Download 
+                        className="w-5 h-5 text-blue-600 cursor-pointer" 
+                        onClick={() => handleSingleDownload(item)} 
+                      />
                     </div>
                   </td>
                 </tr>
@@ -111,7 +159,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
 
         {/* Pagination */}
         <div className="pagination-container flex items-center justify-between mt-4 flex-wrap gap-4 w-full">
-        <div className="showing-container text-[#71717A] font-medium text-[12px]">
+          <div className="showing-container text-[#71717A] font-medium text-[12px]">
             Showing{" "}
             <span className="text-black">{String(currentPage).padStart(2, "0")}</span>{" "}
             of{" "}

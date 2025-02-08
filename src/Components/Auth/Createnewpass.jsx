@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import api from "../../utils/api";
 
 const Createnewpass = () => {
   const { register, handleSubmit, watch, setError, formState: { errors } } = useForm();
@@ -32,8 +33,8 @@ const Createnewpass = () => {
       }
 
       // Send request to backend to update password
-      const response = await axios.post(
-        `http://localhost:5000/admin/createnewpass/${token}`, // Token in URL
+      const response = await api.post(
+        `admin/createnewpass/${token}`, // Token in URL
         { newPassword },  // Send only newPassword
         {
           headers: { "Content-Type": "application/json" },

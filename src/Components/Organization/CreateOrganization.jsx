@@ -16,6 +16,8 @@ import axios from "axios";
 import { Edit } from "@mui/icons-material";
 import Select from "react-select";
 import { ReactComponent as DownArrow } from "../../assets/images/Down Arrow.svg";
+import { Vortex } from 'react-loader-spinner';
+import api from "../../utils/api";
 
 const CreateOrganization = () => {
   const location = useLocation();
@@ -25,6 +27,7 @@ const CreateOrganization = () => {
   const [organization, setOrganization] = useState(null);
   const { register, handleSubmit, setValue, watch, control, reset } = useForm();
   const [PImages, setPImages] = useState([]);
+  const [loading, setloading] = useState(false)
   const [formData, setFormData] = useState({
     id: id || null,
     address: '',
@@ -57,7 +60,7 @@ const CreateOrganization = () => {
 
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
-      axios.get(`http://localhost:5000/api/organization/getby/${id}`)
+      api.get(`api/organization/getby/${id}`)
         .then((response) => {
           const orgData = response.data.data;
           setOrganization(orgData);
@@ -84,7 +87,7 @@ const CreateOrganization = () => {
     }
 
      // Fetch services dynamically
-     axios.get("http://localhost:5000/admin/allservices")
+     api.get("admin/allservices")
   .then((response) => {
     const servicesData = response.data.services;
     setAvailableServices(servicesData.map((service) => ({
@@ -96,7 +99,7 @@ const CreateOrganization = () => {
     console.error("Error fetching services:", error);
   });
 
-  axios.get("http://localhost:5000/organization/getall")
+  api.get("organization/getall")
   .then((response) => {
     const OrgData = response.data.results;
     console.log(OrgData)
@@ -169,6 +172,7 @@ const CreateOrganization = () => {
    
 
   const onSubmit = async (data) => {
+    setloading(true)
     try {
       console.log("Services before submission:", userServices); // Log the services
       console.log(data)
@@ -208,27 +212,36 @@ const CreateOrganization = () => {
         });
       }
       console.log(form)
-      const response = await axios.post('http://localhost:5000/api/organization/upsert', form, {
+      const response = await api.post('api/organization/upsert', form, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
   
-      if (response.status === 201) {
-        Swal.fire({
-          text: mode === 'edit' ? 'Organization Updated Successfully' : 'Organization Added Successfully',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        reset();
-      }
+      setTimeout(() => {
+        if (response.status === 201 || response.status === 200) {
+          Swal.fire({
+            text: mode === 'edit' ? 'Organization Updated Successfully' : 'Organization Added Successfully',
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false,
+            willClose: () => {
+              navigate("/organizationlist");
+            },
+          });
+          // reset();
+         
+        }
+      }, 2000);
+      
     } catch (error) {
       Swal.fire({
         text: 'Error submitting the form.',
         icon: 'error',
       });
       console.error('Form submission error:', error);
+    }finally{
+      setloading(false)
     }
   };
   
@@ -621,7 +634,19 @@ const CreateOrganization = () => {
                   name="submit"
                   className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm"
                 >
-                  {mode === "edit" ? "Update" : "Save"}
+                  {loading ? (
+                    <Vortex  
+                      visible={true}
+                      height="25"
+                      width="50"
+                      ariaLabel="vortex-loading"
+                      wrapperStyle={{}}
+                      wrapperClass="vortex-wrapper"
+                      colors={['white', 'white', 'white', 'white', 'white', 'white']}
+                    />
+                  ):(
+                    mode === "edit" ? "Update" : "Save"
+                  )}
                 </button>
               </div>
             )}

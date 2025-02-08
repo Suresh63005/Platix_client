@@ -7,6 +7,7 @@ import Header from "../../common/Header";
 import TextEditor from "./TextEditor";
 import PasswordInput from "../../common/PasswordInput";
 import TickSquare from "../../assets/images/TickSquare.svg";
+import api from "../../utils/api";
 
 const Settings = () => {
   const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm();
@@ -20,7 +21,7 @@ const Settings = () => {
     const fetchSettings = async () => {
       const token = Cookies.get("token");
       try {
-        const response = await axios.get("http://localhost:5000/admin/getsettings", {
+        const response = await api.get("admin/getsettings", {
           headers: { Authorization: `Bearer ${token}` },
         });
   
@@ -66,7 +67,7 @@ const Settings = () => {
       data.append("privacyContent", privacyContent || "");
       data.append("termsContent", termsContent || "");
 
-      await axios.put("http://localhost:5000/admin/updatesettings", data, {
+      await api.put("admin/updatesettings", data, {
         headers: { 
           "Authorization": `Bearer ${token}`,
           "Content-Type": "multipart/form-data"

@@ -12,6 +12,7 @@ import Header from "../../common/Header";
 import PageNavigation from "../../common/PageNavigation";
 import TickSquare from "../../assets/images/TickSquare.svg";
 import axios from "axios";
+import api from "../../utils/api";
 
 const CreateUserPage = () => {
   const location = useLocation();
@@ -40,7 +41,7 @@ const CreateUserPage = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/admin/viewrole");
+        const response = await api.get("admin/viewrole");
         const result = response.data.roles;
 
         if (result) {
@@ -63,8 +64,8 @@ const CreateUserPage = () => {
   // Fetch user data if editing
   useEffect(() => {
     if (id  && (mode === "edit" || mode === "view")) {
-      axios
-        .get(`http://localhost:5000/user/getbyid/${id}`) // Make sure you have the correct endpoint here
+      api
+        .get(`user/getbyid/${id}`) // Make sure you have the correct endpoint here
         .then((response) => {
           const userData = response.data.user;
           reset(userData); // Reset the form with fetched user data
@@ -114,7 +115,7 @@ const CreateUserPage = () => {
       const requestData = { ...data, organizationType_id };
       console.log(requestData);
 
-      const response = await axios.post("http://localhost:5000/user/upsert", requestData, {
+      const response = await api.post("user/upsert", requestData, {
         headers: {
           "Content-Type": "application/json",
         },

@@ -8,13 +8,16 @@ import Swal from "sweetalert2"; // Import SweetAlert
 import TickSquare from "../../assets/images/TickSquare.svg"; // Success icon
 import { ReactComponent as Cancelbtnicon } from "../../assets/images/Cancel_button_icon.svg";
 import axios from "axios";
+import { Vortex } from 'react-loader-spinner';
+import api from "../../utils/api";
 
 const CreateOrganizationType = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { id, mode: initialMode } = location.state || {};
   const mode = initialMode || "create";
-
+  const [loading, setloading] = useState(false)
+  
   const {
     register,
     handleSubmit,
@@ -26,8 +29,8 @@ const CreateOrganizationType = () => {
   // Fetch organization type details if in edit or view mode
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
-      axios
-        .get(`http://localhost:5000/organization/getbyid/${id}`)
+
+      api.get(`organization/getbyid/${id}`)
         .then((response) => {
           const orgData = response.data.data;
           // Pre-fill form fields
@@ -47,34 +50,36 @@ const CreateOrganizationType = () => {
   };
 
   const onSubmit = async (data) => {
+    setloading(true)
     try {
-      const url = "http://localhost:5000/organization/organization-type";
-      const method ="post";
+      const url = "organization/organization-type";
 
-      const response = await axios({
+      const response = await api({
         method: "post", // Always "post"
         url: url,
         data: id ? { id, ...data } : data, 
       });
       
 
-      if (response.status === 200 || response.status === 201) {
-        Swal.fire({
-          text: id
-            ? "Organization Type Updated Successfully"
-            : "Organization Type Created Successfully",
-          imageUrl: TickSquare,
-          imageWidth: 50,
-          imageHeight: 50,
-          background: "white",
-          color: "black",
-          showConfirmButton: false,
-          timer: 1500,
-          willClose: () => {
-            navigate("/organizationtypelist");
-          },
-        });
-      }
+      setTimeout(() => {
+        if (response.status === 200 || response.status === 201) {
+          Swal.fire({
+            text: id
+              ? "Organization Type Updated Successfully"
+              : "Organization Type Created Successfully",
+            imageUrl: TickSquare,
+            imageWidth: 50,
+            imageHeight: 50,
+            background: "white",
+            color: "black",
+            showConfirmButton: false,
+            timer: 1500,
+            willClose: () => {
+              navigate("/organizationtypelist");
+            },
+          });
+        }
+      }, 2000);
     } catch (error) {
       console.error("Error submitting form:", error);
       Swal.fire({
@@ -83,6 +88,8 @@ const CreateOrganizationType = () => {
         background: "white",
         color: "black",
       });
+    }finally{
+      setloading(false)
     }
   };
 
@@ -156,7 +163,19 @@ const CreateOrganizationType = () => {
                 Cancel
               </button>
               <button type="submit" className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm">
-                {mode === "edit" ? "Update" : "Save"}
+              {loading ? (
+                  <Vortex
+                    visible={true}
+                    height="25"
+                    width="50"
+                    ariaLabel="vortex-loading"
+                    wrapperStyle={{}}
+                    wrapperClass="vortex-wrapper"
+                    colors={['white', 'white', 'white', 'white', 'white', 'white']}
+                  />
+                ) : (
+                  mode === "edit" ? "Update" : "Save"
+                )}
               </button>
             </div>
           )}

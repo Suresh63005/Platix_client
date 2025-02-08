@@ -5,6 +5,7 @@ import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
 import { deleteItem } from "../../utils/delteEntity";
+import api from "../../utils/api";
 
 const Userspage = () => {
   const location=useLocation();
@@ -22,7 +23,7 @@ const Userspage = () => {
   // Fetch users from API
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/user/all");
+      const response = await api.get("user/all");
       const allUsers = response.data.users; 
 
       // Apply filters

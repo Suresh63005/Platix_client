@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import "./Login.css";
 import { Vortex } from 'react-loader-spinner';
 import { toast, Toaster } from 'react-hot-toast';
+import api from "../../utils/api";
 
 const Login = () => {
   const { register, handleSubmit, setValue } = useForm(); // Initialize useForm
@@ -31,7 +32,7 @@ const Login = () => {
   const onSubmit = async (data) => {
     setloading(true)
     try {
-      const response = await axios.post("http://localhost:5000/admin/login", data);
+      const response = await api.post("admin/login", data);
       toast.dismiss();
       toast.success('Login successful!');
       // Store token in cookies (expires in 1 hour)
