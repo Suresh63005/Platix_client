@@ -224,7 +224,9 @@ const Account = () => {
                     label={"Password"}
                     name="password"
                     value={profile.password}
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      setProfile((prev) => ({ ...prev, password: e.target.value }))
+                    }
                     placeholder={"Password"}
                   />
                 </div>
@@ -233,7 +235,9 @@ const Account = () => {
                     label={"Confirm Password"}
                     name="confirmPassword"
                     value={profile.confirmPassword}
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      setProfile((prev) => ({ ...prev, confirmPassword: e.target.value }))
+                    }
                     placeholder={"Confirm Password"}
                   />
                 </div>
