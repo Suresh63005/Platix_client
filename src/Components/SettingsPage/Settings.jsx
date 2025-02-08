@@ -9,10 +9,15 @@ import PasswordInput from "../../common/PasswordInput";
 import TickSquare from "../../assets/images/TickSquare.svg";
 
 const Settings = () => {
-  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm();
 
-  const [termsContent, setTermsContent] = useState("");
-  const [privacyContent, setPrivacyContent] = useState("");
   const [websiteImage, setWebsiteImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -20,56 +25,49 @@ const Settings = () => {
     const fetchSettings = async () => {
       const token = Cookies.get("token");
       try {
-        const response = await axios.get("http://localhost:5000/admin/getsettings", {
+        const response = await axios.get("http://localhost:5000/admin/getbyid", {
           headers: { Authorization: `Bearer ${token}` },
         });
   
-        const data = response.data;
-        console.log("Fetched Data:", data);
+        if (response.data.settings) {
+          const data = response.data.settings; // Extract settings object
+          console.log("Fetched Settings:", data); // Debugging
   
-        // Reset the form with fetched data
-        reset({
-          notificationApiKey: data.notificationApiKey || "",
-          smsApiKey: data.smsApiKey || "",
-          paymentApiKey: data.paymentApiKey || "",
-          emailApiKey: data.emailApiKey || "",
-          whatsappApiKey: data.whatsappApiKey || "",
-        });
+          reset({
+            notificationApiKey: data?.notificationApiKey || "",
+            smsGatewayApiKey: data?.smsGatewayApiKey || "",
+            paymentGatewayApiKey: data?.paymentGatewayApiKey || "",
+            emailApiKey: data?.emailApiKey || "",
+            whatsappApiKey: data?.whatsappApiKey || "",
+          });
   
-        setTermsContent(data.termsContent || "");
-        setPrivacyContent(data.privacyContent || "");
-  
+          setValue("privacyPolicy", data?.privacyzPolicy || "");
+          setValue("termsAndConditions", data?.termsAndConditions || "");
+        } else {
+          console.error("Settings data not found in response:", response.data);
+        }
       } catch (error) {
         console.error("Error fetching settings:", error);
       }
     };
   
     fetchSettings();
-  }, [reset]); // Ensure reset is included in dependencies
-  
+  }, [reset, setValue]);
 
   const onSubmit = async (formData) => {
     setLoading(true);
-    console.log("Final Terms Content:", termsContent);
-    console.log("Final Privacy Content:", privacyContent);
-
     const token = Cookies.get("token");
-
     try {
       const data = new FormData();
       if (websiteImage) data.append("websiteImage", websiteImage);
-      data.append("notificationApiKey", formData.notificationApiKey || "");
-      data.append("smsApiKey", formData.smsApiKey || "");
-      data.append("paymentApiKey", formData.paymentApiKey || "");
-      data.append("emailApiKey", formData.emailApiKey || "");
-      data.append("whatsappApiKey", formData.whatsappApiKey || "");
-      data.append("privacyContent", privacyContent || "");
-      data.append("termsContent", termsContent || "");
+      Object.keys(formData).forEach((key) => {
+        data.append(key, formData[key] || "");
+      });
 
       await axios.put("http://localhost:5000/admin/updatesettings", data, {
-        headers: { 
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "multipart/form-data"
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -101,12 +99,17 @@ const Settings = () => {
       <Header name="Settings" />
       <div className="flex-1 bg-white rounded-lg shadow-md mx-4 mb-4 mt-4">
         <div className="h-[81vh] overflow-y-scroll scrollbar-color">
-          <form className="space-y-6 px-6 py-4" onSubmit={handleSubmit(onSubmit)}>
+          <form
+            className="space-y-6 px-6 py-4"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <h3 className="font-bold text-lg">Settings Details</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-normal mb-[4px]">Website Image</label>
+                <label className="block text-sm font-normal mb-[4px]">
+                  Website Image
+                </label>
                 <input
                   type="file"
                   onChange={(e) => setWebsiteImage(e.target.files[0])}
@@ -115,39 +118,47 @@ const Settings = () => {
               </div>
 
               <PasswordInput
-  label="Notification API Key"
-  placeholder="Enter API Key"
-  {...register("notificationApiKey", { required: "API key is required" })} 
-  defaultValue={watch("notificationApiKey")} // ✅ Fix: Use watch() to get the value
-  error={errors.notificationApiKey}
-/>
+                label="Notification API Key"
+                placeholder="Enter API Key"
+                {...register("notificationApiKey", {
+                  required: "API key is required",
+                })}
+                defaultValue={watch("notificationApiKey")}
+                error={errors.notificationApiKey}
+              />
 
               <PasswordInput
-                label="SMS Gateway API key"
-                placeholder="Enter API key"
-                {...register("smsApiKey", { required: "API key is required" })}
-                onChange={(e) => setValue("smsApiKey", e.target.value)}
-                error={errors.smsApiKey}
+                label="SMS Gateway API Key"
+                placeholder="Enter API Key"
+                {...register("smsGatewayApiKey", { required: "API key is required" })}
+                defaultValue={watch("smsGatewayApiKey")}
+                error={errors.smsGatewayApiKey}
               />
               <PasswordInput
-                label="Payment Gateway API key"
-                placeholder="Enter API key"
-                {...register("paymentApiKey", { required: "API key is required" })}
-                onChange={(e) => setValue("paymentApiKey", e.target.value)}
-                error={errors.paymentApiKey}
+                label="Payment Gateway API Key"
+                placeholder="Enter API Key"
+                {...register("paymentGatewayApiKey", {
+                  required: "API key is required",
+                })}
+                defaultValue={watch("paymentGatewayApiKey")}
+                error={errors.paymentGatewayApiKey}
               />
               <PasswordInput
-                label="Email API key"
-                placeholder="Enter API key"
-                {...register("emailApiKey", { required: "API key is required" })}
-                onChange={(e) => setValue("emailApiKey", e.target.value)}
+                label="Email API Key"
+                placeholder="Enter API Key"
+                {...register("emailApiKey", {
+                  required: "API key is required",
+                })}
+                defaultValue={watch("emailApiKey")}
                 error={errors.emailApiKey}
               />
               <PasswordInput
-                label="WhatsApp API key"
-                placeholder="Enter API key"
-                {...register("whatsappApiKey", { required: "API key is required" })}
-                onChange={(e) => setValue("whatsappApiKey", e.target.value)}
+                label="WhatsApp API Key"
+                placeholder="Enter API Key"
+                {...register("whatsappApiKey", {
+                  required: "API key is required",
+                })}
+                defaultValue={watch("whatsappApiKey")}
                 error={errors.whatsappApiKey}
               />
             </div>
@@ -157,14 +168,20 @@ const Settings = () => {
                 <label className="block text-gray-700 text-[12px] font-normal mb-2">
                   Privacy Policy
                 </label>
-                <TextEditor value={privacyContent} onChange={setPrivacyContent} />
+                <TextEditor
+                  value={watch("privacyPolicy")}
+                  onChange={(value) => setValue("privacyPolicy", value)}
+                />
               </div>
 
               <div>
                 <label className="block text-gray-700 text-[12px] font-normal mb-2">
                   Terms And Conditions
                 </label>
-                <TextEditor value={termsContent} onChange={setTermsContent} />
+                <TextEditor
+                  value={watch("termsAndConditions")}
+                  onChange={(value) => setValue("termsAndConditions", value)}
+                />
               </div>
             </div>
 
