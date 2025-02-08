@@ -3,8 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
-
+import Swal from "sweetalert2"; // Import SweetAlert
 import axios from "axios";
+import TickSquare from "../../assets/images/TickSquare.svg";
+import { deleteItem } from "../../utils/delteEntity";
 // import { organizationTypesData } from "../../Data/data";
 
 
@@ -92,6 +94,9 @@ const OrganizationTypelist = () => {
     navigate("/createorganizationtype", { state: { id, mode: "view" } });
   };
 
+  const handleDelete = (id, forceDelete = false) => {
+    deleteItem("http://localhost:5000/organization/delete", id, setOrganizationTypes, forceDelete);
+  };
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100">
       <div className="organization-list-container w-full md:pl-0 flex flex-col">
@@ -119,6 +124,7 @@ const OrganizationTypelist = () => {
           setData={setOrganizationTypes}
           handleEdit={handleEdit}
           handleView={handleView}
+          handleDelete={handleDelete}
         />
       </div>
     </div>

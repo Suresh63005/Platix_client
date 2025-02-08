@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Header from "../../common/Header";
@@ -6,15 +6,15 @@ import PageNavigation from "../../common/PageNavigation";
 import { InputField } from "../../common/Input_fileds";
 import Swal from "sweetalert2"; // Import SweetAlert
 import TickSquare from "../../assets/images/TickSquare.svg"; // Success icon
-import { organizationTypesData } from "../../Data/data";
 import { ReactComponent as Cancelbtnicon } from "../../assets/images/Cancel_button_icon.svg";
+import axios from "axios";
 
 const CreateOrganizationType = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { id, mode: initialMode } = location.state || {};
   const mode = initialMode || "create";
-  console.log(id)
+
   const {
     register,
     handleSubmit,
@@ -23,61 +23,91 @@ const CreateOrganizationType = () => {
     reset,
   } = useForm();
 
+  // Fetch organization type details if in edit or view mode
   useEffect(() => {
-    if (id) {
-      const orgType = organizationTypesData.find((org) => org.id === id);
-      if (orgType) {
-        reset({
-          organizationType: orgType.type,
-          description: orgType.description,
-          fromDate: orgType.fromdate,
-          toDate: orgType.todate,
+    if (id && (mode === "edit" || mode === "view")) {
+      axios
+        .get(`http://localhost:5000/organization/getbyid/${id}`)
+        .then((response) => {
+          const orgData = response.data.data;
+          // Pre-fill form fields
+          setValue("organizationType", orgData.organizationType || "");
+          setValue("description", orgData.description || "");
+          setValue("fromDate", orgData.fromDate?.split("T")[0] || "");
+          setValue("toDate", orgData.toDate?.split("T")[0] || "");
+        })
+        .catch((error) => {
+          console.error("Error fetching organization type:", error);
         });
-      }
     }
-  }, [id, reset]);
-
-  useEffect(() => {
-    if (location.state) {
-      const { mode } = location.state;
-      setValue("mode", mode || "create");
-    }
-  }, [location.state, setValue]);
+  }, [id, mode, setValue]);
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
-  const onSubmit = (data) => {
-    console.log(mode === "edit" ? "Editing organization type:" : "Creating new organization type:", data);
+  const onSubmit = async (data) => {
+    try {
+      const url = "http://localhost:5000/organization/organization-type";
+      const method ="post";
 
-    Swal.fire({
-      text: mode === "edit" ? "Organization Type Updated Successfully" : "Organization Type Created Successfully",
-      imageUrl: TickSquare,
-      imageWidth: 50,
-      imageHeight: 50,
-      background: "white",
-      color: "black",
-      showConfirmButton: false,
-      timer: 1500,
-      willClose: () => {
-        navigate("/organizationtypelist");
-      },
-    });
+      const response = await axios({
+        method: "post", // Always "post"
+        url: url,
+        data: id ? { id, ...data } : data, 
+      });
+      
+
+      if (response.status === 200 || response.status === 201) {
+        Swal.fire({
+          text: id
+            ? "Organization Type Updated Successfully"
+            : "Organization Type Created Successfully",
+          imageUrl: TickSquare,
+          imageWidth: 50,
+          imageHeight: 50,
+          background: "white",
+          color: "black",
+          showConfirmButton: false,
+          timer: 1500,
+          willClose: () => {
+            navigate("/organizationtypelist");
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      Swal.fire({
+        text: "Something went wrong! Please try again.",
+        icon: "error",
+        background: "white",
+        color: "black",
+      });
+    }
   };
 
   return (
     <div className="create-organization-type-container flex flex-col min-h-screen bg-gray-100">
       <Header name="Organization Types" />
       <PageNavigation
-        title={mode === "edit" ? "Edit Organization Type" : mode === "view" ? "View Organization Type" : "Create Organization Type"}
+        title={
+          mode === "edit"
+            ? "Edit Organization Type"
+            : mode === "view"
+            ? "View Organization Type"
+            : "Create Organization Type"
+        }
         onBackClick={handleBackClick}
       />
 
       <div className="create-organization-form-container border border-[#EAEAFF] flex-1 bg-white px-6 py-4 rounded-lg shadow-md mx-4 mb-4 max-h-[max-content]">
         <form className="organization-form-container space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <h3 className="form-title p-2 font-bold">
-            {mode === "edit" ? "Edit Organization Type" : mode === "view" ? "View Organization Type" : "Create Organization Type"}
+            {mode === "edit"
+              ? "Edit Organization Type"
+              : mode === "view"
+              ? "View Organization Type"
+              : "Create Organization Type"}
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -118,7 +148,10 @@ const CreateOrganizationType = () => {
 
           {mode !== "view" && (
             <div className="flex justify-end gap-3 mt-4">
-              <button type="reset" className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2">
+              <button
+                type="reset"
+                className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
+              >
                 <Cancelbtnicon className="w-4 h-4" />
                 Cancel
               </button>

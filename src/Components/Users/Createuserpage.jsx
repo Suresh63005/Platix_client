@@ -11,15 +11,18 @@ import {
 import Header from "../../common/Header";
 import PageNavigation from "../../common/PageNavigation";
 import TickSquare from "../../assets/images/TickSquare.svg";
-import { usersData } from "../../Data/data";
+import axios from "axios";
 
 const CreateUserPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { id, mode: initialMode, organizationType_id } = location.state || {};
+  console.log(organizationType_id);
+  console.log(id);
 
-  const { id, mode: initialMode } = location.state || {};
   const [mode, setMode] = useState(initialMode || "create");
   const [designationOptions, setDesignationOptions] = useState([]);
+  const [roles, setRoles] = useState([]); // State to store fetched roles
 
   const {
     register,
@@ -33,20 +36,52 @@ const CreateUserPage = () => {
 
   const formData = watch();
 
+  // Fetch roles dynamically
   useEffect(() => {
-    if (id) {
-      const userData = usersData.find((user) => user.id === id);
-      if (userData) {
-        reset(userData);
-        handleRoleChange(userData.role);
+    const fetchRoles = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/admin/viewrole");
+        const result = response.data.roles;
+
+        if (result) {
+          const roleOptions = result.map((role) => ({
+            value: role.id,
+            label: role.rolename,
+          }));
+          setRoles(roleOptions);
+        } else {
+          console.error("Failed to fetch roles: No roles found");
+        }
+      } catch (error) {
+        console.error("Error fetching roles:", error);
       }
+    };
+
+    fetchRoles();
+  }, []);
+
+  // Fetch user data if editing
+  useEffect(() => {
+    if (id  && (mode === "edit" || mode === "view")) {
+      axios
+        .get(`http://localhost:5000/user/getbyid/${id}`) // Make sure you have the correct endpoint here
+        .then((response) => {
+          const userData = response.data.user;
+          reset(userData); // Reset the form with fetched user data
+          handleRoleChange(userData.role_id); // Ensure designation updates based on role
+        })
+        .catch((error) => console.error("Error fetching user data:", error));
     }
     setMode(initialMode || "create");
   }, [id, initialMode, reset]);
 
-  const handleRoleChange = (selectedRole) => {
-    setValue("role_id", selectedRole);
-    switch (selectedRole) {
+  const handleRoleChange = (selectedRoleId) => {
+    setValue("role_id", selectedRoleId);
+
+    const selectedRole = roles.find((role) => role.value === selectedRoleId);
+    if (!selectedRole) return;
+
+    switch (selectedRole.label) {
       case "Dentist":
         setDesignationOptions([
           { value: "General Dentist", label: "General Dentist" },
@@ -76,17 +111,18 @@ const CreateUserPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch("http://localhost:5000/user/upsert", {
-        method: mode === "edit" ? "POST" : "POST",
+      const requestData = { ...data, organizationType_id };
+      console.log(requestData);
+
+      const response = await axios.post("http://localhost:5000/user/upsert", requestData, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
       });
 
-      const result = await response.json();
+      const result = response.data;
 
-      if (response.ok) {
+      if (response.status === 200) {
         Swal.fire({
           text: mode === "edit" ? "User updated successfully" : "User created successfully",
           imageUrl: TickSquare,
@@ -97,9 +133,6 @@ const CreateUserPage = () => {
           showConfirmButton: false,
           showCloseButton: false,
           timer: 2000,
-          customClass: {
-            popup: "swal-popup-custom",
-          },
         }).then(() => navigate("/userpage"));
       } else {
         throw new Error(result.message || "Something went wrong");
@@ -154,12 +187,7 @@ const CreateUserPage = () => {
                 <SelectField
                   label="Role"
                   defaultplaceholder="Select Role"
-                  options={[
-                    { value: "Dentist", label: "Dentist" },
-                    { value: "Dental Laboratory", label: "Dental Laboratory" },
-                    { value: "Radiology center", label: "Radiology center" },
-                    { value: "Material Supplier", label: "Material Supplier" },
-                  ]}
+                  options={roles}
                   value={field.value}
                   onChange={(value) => {
                     field.onChange(value);
@@ -203,12 +231,7 @@ const CreateUserPage = () => {
               control={control}
               defaultValue=""
               render={({ field }) => (
-                <InputField
-                  label="Date of Birth"
-                  type="date"
-                  {...field}
-                  disabled={mode === "view"}
-                />
+                <InputField label="Date of Birth" type="date" {...field} disabled={mode === "view"} />
               )}
             />
             <Controller
@@ -270,19 +293,6 @@ const CreateUserPage = () => {
                 />
               )}
             />
-            {/* <Controller
-              name="organization"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <InputField
-                  label="Organization"
-                  placeholder="Enter Organization"
-                  {...field}
-                  disabled={mode === "view"}
-                />
-              )}
-            /> */}
           </div>
 
           {mode !== "view" && (

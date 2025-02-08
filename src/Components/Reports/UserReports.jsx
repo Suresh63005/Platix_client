@@ -30,7 +30,7 @@ const UserReports = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/user/getall');
+        const response = await fetch('http://localhost:5000/user/all');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -76,7 +76,7 @@ const UserReports = () => {
         <ReportsTable
           columns={columns}
           data={filteredData}
-          columnKeyMapping={columnKeyMapping}  // Pass column key mapping dynamically
+          columnKeyMapping={columnKeyMapping} 
         />
       </div>
     </div>
