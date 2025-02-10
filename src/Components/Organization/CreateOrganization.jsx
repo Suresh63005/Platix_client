@@ -16,7 +16,7 @@ import axios from "axios";
 import { Edit } from "@mui/icons-material";
 import Select from "react-select";
 import { ReactComponent as DownArrow } from "../../assets/images/Down Arrow.svg";
-import { Vortex } from 'react-loader-spinner';
+import { Vortex } from "react-loader-spinner";
 import api from "../../utils/api";
 
 const CreateOrganization = () => {
@@ -27,40 +27,41 @@ const CreateOrganization = () => {
   const [organization, setOrganization] = useState(null);
   const { register, handleSubmit, setValue, watch, control, reset } = useForm();
   const [PImages, setPImages] = useState([]);
-  const [loading, setloading] = useState(false)
+  const [loading, setloading] = useState(false);
   const [formData, setFormData] = useState({
     id: id || null,
-    address: '',
+    address: "",
     businessName: null,
     file1: null,
     file2: null,
     imgPreview: null,
-    description: '',
-    designation: '',
-    email: '',
-    googleCoordinates: { latitude: '', longitude: '' },
+    description: "",
+    designation: "",
+    email: "",
+    googleCoordinates: { latitude: "", longitude: "" },
     gstNumber: null,
-    mobile: '',
-    name: '',
+    mobile: "",
+    name: "",
     registrationId: null,
-    organizationType_id: '',
-    whatsapp: '',
+    organizationType_id: "",
+    whatsapp: "",
     services: [],
-    bankName: '',
-    accountNumber: '',
-    accountHolder: '',
-    ifscCode: '',
-    upiId: ''
+    bankName: "",
+    accountNumber: "",
+    accountHolder: "",
+    ifscCode: "",
+    upiId: "",
   });
   const [availableServices, setAvailableServices] = useState([]); // For fetched services
-  const [userServices, setUserServices] = useState([]);           // For added services
+  const [userServices, setUserServices] = useState([]); // For added services
   const [newService, setNewService] = useState({ name: "", price: "" });
   const [editingIndex, setEditingIndex] = useState(null);
-  const [orgType,setOrgTYpe]=useState([])
+  const [orgType, setOrgTYpe] = useState([]);
 
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
-      api.get(`api/organization/getby/${id}`)
+      api
+        .get(`api/organization/getby/${id}`)
         .then((response) => {
           const orgData = response.data.data;
           setOrganization(orgData);
@@ -81,37 +82,44 @@ const CreateOrganization = () => {
             setUserServices(orgData.services);
           }
         })
-        .catch((error) => console.error("Error fetching organization data:", error));
+        .catch((error) =>
+          console.error("Error fetching organization data:", error)
+        );
     } else {
       setMode("create");
     }
 
-     // Fetch services dynamically
-     api.get("admin/allservices")
-  .then((response) => {
-    const servicesData = response.data.services;
-    setAvailableServices(servicesData.map((service) => ({
-      id: service.id,
-      name: service.servicename,
-    })));
-  })
-  .catch((error) => {
-    console.error("Error fetching services:", error);
-  });
+    // Fetch services dynamically
+    api
+      .get("admin/allservices")
+      .then((response) => {
+        const servicesData = response.data.services;
+        setAvailableServices(
+          servicesData.map((service) => ({
+            id: service.id,
+            name: service.servicename,
+          }))
+        );
+      })
+      .catch((error) => {
+        console.error("Error fetching services:", error);
+      });
 
-  api.get("organization/getall")
-  .then((response) => {
-    const OrgData = response.data.results;
-    console.log(OrgData)
-    setOrgTYpe(OrgData.map((org) => ({
-      value: org.id, // Set id as value
-      label: org.organizationType, // Set organizationType as label
-    })));
-  })
-  .catch((error) => {
-    console.error("Error fetching services:", error);
-  });
-
+    api
+      .get("organization/getall")
+      .then((response) => {
+        const OrgData = response.data.results;
+        console.log(OrgData);
+        setOrgTYpe(
+          OrgData.map((org) => ({
+            value: org.id, // Set id as value
+            label: org.organizationType, // Set organizationType as label
+          }))
+        );
+      })
+      .catch((error) => {
+        console.error("Error fetching services:", error);
+      });
   }, [id, mode, setValue]);
 
   const handleBackClick = () => {
@@ -146,8 +154,7 @@ const CreateOrganization = () => {
       });
     }
   };
-  
-  
+
   const handleSaveService = () => {
     if (editingIndex !== null) {
       const updatedServices = [...userServices];
@@ -157,72 +164,72 @@ const CreateOrganization = () => {
       setNewService({ id: "", name: "", price: "" });
     }
   };
-  
-  
+
   const handleEditService = (index) => {
     setEditingIndex(index);
     setNewService({ ...userServices[index] }); // Maintain service ID
   };
-  
-  
+
   const handleDeleteService = (index) => {
-    const updatedServices = userServices.filter((_, i) => i !== index);  // Use userServices
-    setUserServices(updatedServices);                                    // Use setUserServices
+    const updatedServices = userServices.filter((_, i) => i !== index); // Use userServices
+    setUserServices(updatedServices); // Use setUserServices
   };
-   
 
   const onSubmit = async (data) => {
-    setloading(true)
+    setloading(true);
     try {
       console.log("Services before submission:", userServices); // Log the services
-      console.log(data)
+      console.log(data);
       const form = new FormData();
-      form.append('name', data.name);
-      form.append('organizationType_id', data.organizationType_id);
-      form.append('address', data.address);
-      form.append('googleCoordinates', JSON.stringify(data.googleCoordinates));
-      form.append('mobile', data.mobile);
-      form.append('whatsapp', data.whatsapp);
-      form.append('email', data.email);
-      form.append('description', data.description);
-      form.append('gstNumber', data.gstNumber);
-      form.append('designation', data.designation);
-      form.append('businessName', data.businessName);
-      form.append('registrationId', data.registrationId);
-      form.append('bankName', data.bankName);
-      form.append('accountNumber', data.accountNumber);
-      form.append('accountHolder', data.accountHolder);
-      form.append('ifscCode', data.ifscCode);
-      form.append('upiId', data.upiId);
-      
+      form.append("name", data.name);
+      form.append("organizationType_id", data.organizationType_id);
+      form.append("address", data.address);
+      form.append("googleCoordinates", JSON.stringify(data.googleCoordinates));
+      form.append("mobile", data.mobile);
+      form.append("whatsapp", data.whatsapp);
+      form.append("email", data.email);
+      form.append("description", data.description);
+      form.append("gstNumber", data.gstNumber);
+      form.append("designation", data.designation);
+      form.append("businessName", data.businessName);
+      form.append("registrationId", data.registrationId);
+      form.append("bankName", data.bankName);
+      form.append("accountNumber", data.accountNumber);
+      form.append("accountHolder", data.accountHolder);
+      form.append("ifscCode", data.ifscCode);
+      form.append("upiId", data.upiId);
+
       // Add services to FormData
-      form.append("services", JSON.stringify(userServices)); 
-  
+      form.append("services", JSON.stringify(userServices));
+
       if (id) {
-        form.append('id', id);
+        form.append("id", id);
       }
-  
+
       if (data.file1) {
-        form.append('file1', data.file1);
+        form.append("file1", data.file1);
       }
-  
+
       if (PImages.length > 0) {
         PImages.forEach((file) => {
-          form.append('file2', file);
+          form.append("file2", file);
         });
       }
-      console.log(form)
-      const response = await api.post('api/organization/upsert', form, {
+      console.log(form);
+      const response = await api.post("api/organization/upsert", form, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
-  
+
       setTimeout(() => {
         if (response.status === 201 || response.status === 200) {
           Swal.fire({
-            text: mode === 'edit' ? 'Organization Updated Successfully' : 'Organization Added Successfully',
-            icon: 'success',
+            text:
+              mode === "edit"
+                ? "Organization Updated Successfully"
+                : "Organization Added Successfully",
+            icon: "success",
             timer: 2000,
             showConfirmButton: false,
             willClose: () => {
@@ -230,21 +237,19 @@ const CreateOrganization = () => {
             },
           });
           // reset();
-         
         }
       }, 2000);
-      
     } catch (error) {
       Swal.fire({
-        text: 'Error submitting the form.',
-        icon: 'error',
+        text: "Error submitting the form.",
+        icon: "error",
       });
-      console.error('Form submission error:', error);
-    }finally{
-      setloading(false)
+      console.error("Form submission error:", error);
+    } finally {
+      setloading(false);
     }
   };
-  
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <div className="bg-gray-100">
@@ -280,7 +285,7 @@ const CreateOrganization = () => {
                 {...register("name")}
                 readOnly={mode === "view"}
               />
-              
+
               <Controller
                 name="organizationType_id"
                 control={control}
@@ -298,7 +303,6 @@ const CreateOrganization = () => {
                 )}
               />
 
-              
               <InputField
                 label={"Address"}
                 type={"text"}
@@ -329,7 +333,7 @@ const CreateOrganization = () => {
                   />
                 </div>
               </div>
-              
+
               <Controller
                 name="mobile"
                 control={control}
@@ -345,7 +349,7 @@ const CreateOrganization = () => {
                   />
                 )}
               />
-              
+
               <Controller
                 name="whatsapp"
                 control={control}
@@ -360,7 +364,7 @@ const CreateOrganization = () => {
                   />
                 )}
               />
-              
+
               <InputField
                 label={"Email"}
                 type={"email"}
@@ -368,7 +372,7 @@ const CreateOrganization = () => {
                 {...register("email")}
                 disabled={mode === "view"}
               />
-              
+
               <InputField
                 label={"Description"}
                 type={"text"}
@@ -441,9 +445,18 @@ const CreateOrganization = () => {
                         { value: "Oral surgeon", label: "Oral surgeon" },
                         { value: "Periodontist", label: "Periodontist" },
                         { value: "Implantologist", label: "Implantologist" },
-                        { value: "Oral Pathologist", label: "Oral Pathologist" },
-                        { value: "Oral Medicine & Radiologist", label: "Oral Medicine & Radiologist" },
-                        { value: "Community dentist", label: "Community dentist" },
+                        {
+                          value: "Oral Pathologist",
+                          label: "Oral Pathologist",
+                        },
+                        {
+                          value: "Oral Medicine & Radiologist",
+                          label: "Oral Medicine & Radiologist",
+                        },
+                        {
+                          value: "Community dentist",
+                          label: "Community dentist",
+                        },
                         { value: "Paeddontist", label: "Paeddontist" },
                       ]}
                       value={field.value}
@@ -456,16 +469,48 @@ const CreateOrganization = () => {
               </div>
             )}
             {/* Organization Account Details */}
-            <h3 className="text-lg font-bold mb-4 mt-6">Organization Account Details</h3>
+            <h3 className="text-lg font-bold mb-4 mt-6">
+              Organization Account Details
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <InputField label={"Bank Name"} type={"text"} placeholder={"Enter Bank Name"} {...register("bankName")} disabled={mode === "view"} />
-              <InputField label={"Organization Account Number"} type={"text"} placeholder={"Enter Account Number"} {...register("accountNumber")} disabled={mode === "view"} />
-              <InputField label={"Account Holder Name"} type={"text"} placeholder={"Enter Account Holder Name"} {...register("accountHolder")} disabled={mode === "view"} />
-              <InputField label={"IFSC Code"} type={"text"} placeholder={"Enter IFSC Code"} {...register("ifscCode")} disabled={mode === "view"} />
-              <InputField label={"UPI ID"} type={"text"} placeholder={"Enter UPI ID"} {...register("upiId")} disabled={mode === "view"} />
+              <InputField
+                label={"Bank Name"}
+                type={"text"}
+                placeholder={"Enter Bank Name"}
+                {...register("bankName")}
+                disabled={mode === "view"}
+              />
+              <InputField
+                label={"Organization Account Number"}
+                type={"text"}
+                placeholder={"Enter Account Number"}
+                {...register("accountNumber")}
+                disabled={mode === "view"}
+              />
+              <InputField
+                label={"Account Holder Name"}
+                type={"text"}
+                placeholder={"Enter Account Holder Name"}
+                {...register("accountHolder")}
+                disabled={mode === "view"}
+              />
+              <InputField
+                label={"IFSC Code"}
+                type={"text"}
+                placeholder={"Enter IFSC Code"}
+                {...register("ifscCode")}
+                disabled={mode === "view"}
+              />
+              <InputField
+                label={"UPI ID"}
+                type={"text"}
+                placeholder={"Enter UPI ID"}
+                {...register("upiId")}
+                disabled={mode === "view"}
+              />
             </div>
             {(watch("type") === "Radiology" ||
-          watch("type") === "Material Supplier" ||
+              watch("type") === "Material Supplier" ||
               watch("type") === "Dental Laboratory") && (
               <div className="">
                 {/* <UserServices /> */}
@@ -476,11 +521,17 @@ const CreateOrganization = () => {
                     <Select
                       value={
                         newService.id
-                          ? availableServices.find((option) => option.id === newService.id)
+                          ? availableServices.find(
+                              (option) => option.id === newService.id
+                            )
                           : null
                       }
                       onChange={(selectedOption) =>
-                        setNewService({ ...newService,id: selectedOption.id, name: selectedOption.label })
+                        setNewService({
+                          ...newService,
+                          id: selectedOption.id,
+                          name: selectedOption.label,
+                        })
                       }
                       options={availableServices.map((service) => ({
                         id: service.id,
@@ -490,19 +541,19 @@ const CreateOrganization = () => {
                       placeholder="Select service"
                       className="text-[12px]" // Additional classes
                       styles={{
-                        control: (base, {isFocused}) => ({
+                        control: (base, { isFocused }) => ({
                           ...base,
-                          border: isFocused ? "2px solid #660F5D" : " 1px solid #EAEAFF",
-                          boxShadow: isFocused ? 'none':'none',
+                          border: isFocused
+                            ? "2px solid #660F5D"
+                            : " 1px solid #EAEAFF",
+                          boxShadow: isFocused ? "none" : "none",
                           borderRadius: "5px",
                           padding: "2px",
                           fontSize: "12px", // Consistent font size
                           color: "#757575",
-                          height:"42px",
-                          
-                          "&:hover":{
-                            
-                          }
+                          height: "42px",
+
+                          "&:hover": {},
                         }),
                         placeholder: (base) => ({
                           ...base,
@@ -538,7 +589,9 @@ const CreateOrganization = () => {
                     />
                   </div>
                   <div className="w-full sm:w-1/4 relative">
-                    <span className="absolute top-2 left-2 text-gray-500">Price:</span>
+                    <span className="absolute top-2 left-2 text-gray-500">
+                      Price:
+                    </span>
                     <input
                       type="number"
                       placeholder="Price"
@@ -551,12 +604,12 @@ const CreateOrganization = () => {
                   </div>
                   <div className="flex gap-2">
                     {editingIndex === null ? (
-                    <span
-                    onClick={handleAddService}
-                    className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
-                  >
-                    Add
-                  </span>
+                      <span
+                        onClick={handleAddService}
+                        className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
+                      >
+                        Add
+                      </span>
                     ) : (
                       <span
                         onClick={handleSaveService}
@@ -575,24 +628,47 @@ const CreateOrganization = () => {
                 </div>
                 <hr />
                 <div className="space-y-4">
-                {userServices.map((service, index) => (
-  <div key={service.id} className="flex flex-col sm:flex-row items-center gap-4 p-4">
-    <input type="hidden" value={service.id} /> {/* Keep ID for reference */}
-    <input type="text" value={service.name} readOnly className="flex-1 px-3 py-2 border rounded-md bg-white" />
-    <div className="w-full sm:w-1/4 relative">
-      <span className="absolute top-2 left-2 text-gray-500">Price:</span>
-      <input type="number" value={service.price} readOnly className="w-full pl-16 px-3 py-2 border rounded-md bg-white" />
-    </div>
-    <span onClick={() => handleEditService(index)} className="px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer">Edit</span>
-    <span onClick={() => handleDeleteService(index)} className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer">Delete</span>
-  </div>
-))}
-
-
+                  {userServices.map((service, index) => (
+                    <div
+                      key={service.id}
+                      className="flex flex-col sm:flex-row items-center gap-4 p-4"
+                    >
+                      <input type="hidden" value={service.id} />{" "}
+                      {/* Keep ID for reference */}
+                      <input
+                        type="text"
+                        value={service.name}
+                        readOnly
+                        className="flex-1 px-3 py-2 border rounded-md bg-white"
+                      />
+                      <div className="w-full sm:w-1/4 relative">
+                        <span className="absolute top-2 left-2 text-gray-500">
+                          Price:
+                        </span>
+                        <input
+                          type="number"
+                          value={service.price}
+                          readOnly
+                          className="w-full pl-16 px-3 py-2 border rounded-md bg-white"
+                        />
+                      </div>
+                      <span
+                        onClick={() => handleEditService(index)}
+                        className="px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer"
+                      >
+                        Edit
+                      </span>
+                      <span
+                        onClick={() => handleDeleteService(index)}
+                        className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer"
+                      >
+                        Delete
+                      </span>
+                    </div>
+                  ))}
                 </div>
-
               </div>
-              )}
+            )}
             <Controller
               name="file1"
               control={control}
@@ -619,7 +695,6 @@ const CreateOrganization = () => {
               )}
             />
 
-            
             {mode !== "view" && (
               <div className="flex justify-end gap-3 mt-4">
                 <button
@@ -635,26 +710,32 @@ const CreateOrganization = () => {
                   className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm"
                 >
                   {loading ? (
-                    <Vortex  
+                    <Vortex
                       visible={true}
                       height="25"
                       width="50"
                       ariaLabel="vortex-loading"
                       wrapperStyle={{}}
                       wrapperClass="vortex-wrapper"
-                      colors={['white', 'white', 'white', 'white', 'white', 'white']}
+                      colors={[
+                        "white",
+                        "white",
+                        "white",
+                        "white",
+                        "white",
+                        "white",
+                      ]}
                     />
-                  ):(
-                    mode === "edit" ? "Update" : "Save"
+                  ) : mode === "edit" ? (
+                    "Update"
+                  ) : (
+                    "Save"
                   )}
                 </button>
               </div>
             )}
           </form>
-
         </div>
-
-        
       </div>
     </div>
   );
