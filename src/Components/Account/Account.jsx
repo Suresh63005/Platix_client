@@ -7,6 +7,7 @@ import { InputField, PhoneNumberInput } from "../../common/Input_fileds";
 import PasswordInput from "../../common/PasswordInput";
 import { Icon } from "@iconify/react";
 import ProfileICon from "../../assets/images/User-100.svg";
+import api from "../../utils/api";
 
 const API_BASE_URL = "http://localhost:5000/admin/profile/"; // Adjust as needed
 
@@ -43,8 +44,8 @@ const Account = () => {
 
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/admin/profile`,
+        const response = await api.get(
+          `admin/profile`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -118,8 +119,8 @@ const Account = () => {
     setLoading(true);
     try {
       
-      await axios.put(
-        `http://localhost:5000/admin/profile/update`,
+      await api.put(
+        `admin/profile/update`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },

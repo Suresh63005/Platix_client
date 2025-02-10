@@ -5,6 +5,7 @@ import Header from "../../common/Header";
 import Pagetitle from "../../common/pagetitle";
 import Table from "../../common/UserTable";
 import Swal from "sweetalert2";
+import api from "../../utils/api";
 
 const Services = () => {
   const navigate = useNavigate();
@@ -22,8 +23,8 @@ const Services = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:5000/admin/allservices",
+        const response = await api.get(
+          "admin/allservices",
           {
             params: {
               filter: selectedFilter,
@@ -80,8 +81,8 @@ const Services = () => {
   useEffect(() => {
     if (deleteServiceId) {
       // Make an API call to delete the service from the backend
-      axios
-        .delete(`http://localhost:5000/admin/deleteservice/${deleteServiceId}`)
+      api
+        .delete(`admin/deleteservice/${deleteServiceId}`)
         .then((response) => {
           // Handle successful deletion here
           Swal.fire("Deleted!", "Your service has been deleted.", "success");
@@ -106,7 +107,7 @@ const Services = () => {
  useEffect(()=>{
     const fetchroles = async()=>{
       try{
-        const response = await axios.get("http://localhost:5000/admin/viewrole")
+        const response = await api.get("admin/viewrole")
         console.log(response)
         if(response.data && Array.isArray(response.data.roles)){
           setRoleOptions(response.data.roles.map(role=>role.rolename))
@@ -138,8 +139,8 @@ const Services = () => {
       confirmButtonText: "Yes, Assign",
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .post("http://localhost:5000/admin/assignRole", {
+        api
+          .post("admin/assignRole", {
             role: selectedRole,
             services: services.map((s) => s.id), // Example: Assign to all services
           })

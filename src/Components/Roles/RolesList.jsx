@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
+import api from "../../utils/api";
 
 const Rolespage = () => {
   const [roles, setRoles] = useState([]);
@@ -15,7 +16,7 @@ const Rolespage = () => {
 
   const fetchRoles = async (page) => {
     try {
-      const response = await axios.get(`http://localhost:5000/admin/viewrole?page=${page}&limit=${rolesPerPage}`);
+      const response = await api.get(`admin/viewrole?page=${page}&limit=${rolesPerPage}`);
       const fetchedRoles = response.data.roles;
       const totalRoles = response.data.totalRoles; // Get total roles from API
   

@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";  // Import Cookies for storing email
+import api from "../../utils/api";
 
 const Forgotpass = () => {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -14,7 +15,7 @@ const Forgotpass = () => {
   // Handle form submission
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:5000/admin/forgotpassword", data, {
+      const response = await api.post("admin/forgotpassword", data, {
         withCredentials: true  // Ensure cookies are sent/received
       });
 

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../common/Header';
 import ReportsTable from './ReportsTable';
 import ReportsTitle from './ReportsTitle';
+import axios from 'axios';
+import api from '../../utils/api';
 
 const UserReports = () => {
   const columns = [
@@ -17,9 +19,9 @@ const UserReports = () => {
     "Username": "Username",
     "User ID": "id",
     "Role": "Role",
-    "Address": "Address",
-    "Mobile No.": "MobileNo",
-    "Starting Date": "StartDate",
+    "Address": "address",
+    "Mobile No.": "mobileNo",
+    "Starting Date": "startDate",
   };
 
   const [filteredData, setFilteredData] = useState([]);
@@ -30,21 +32,17 @@ const UserReports = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/user/all');
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        setFilteredData(data); // Assuming the API response is an array of users
+        const response = await api.get('user/all');
+        const data = await response.data.users;
+        setFilteredData(data);
       } catch (error) {
         setError(error.message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, []); // Empty dependency array to run this effect only once when the component mounts
+  }, []);
 
   const handleSearch = (query) => {
     const lowerCaseQuery = query.toLowerCase();
@@ -56,8 +54,36 @@ const UserReports = () => {
     setFilteredData(result);
   };
 
+  // Function to handle bulk download
+  const handleBulkDownload = () => {
+    console.log("Download button clicked!"); // ✅ Debugging log
+  
+    if (!filteredData.length) {
+      alert("No data available for download!");
+      return;
+    }
+  
+    const headers = Object.keys(columnKeyMapping);
+    const keys = Object.values(columnKeyMapping);
+  
+    const csvRows = [
+      headers.join(","), 
+      ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(",")) 
+    ];
+  
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
+  
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "User_Reports.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
   if (loading) {
-    return <div>Loading...</div>; // You can replace this with a loader component
+    return <div>Loading...</div>;
   }
 
   if (error) {
@@ -71,12 +97,14 @@ const UserReports = () => {
         title="User Reports"
         searchPlaceholder="Search"
         onSearch={(e) => handleSearch(e.target.value)}
+        onDownloadClick={()=>{handleBulkDownload()}} 
       />
+
       <div className="overflow-x-auto">
         <ReportsTable
           columns={columns}
           data={filteredData}
-          columnKeyMapping={columnKeyMapping} 
+          columnKeyMapping={columnKeyMapping}
         />
       </div>
     </div>

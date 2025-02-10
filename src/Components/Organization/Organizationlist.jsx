@@ -8,6 +8,7 @@ import { organizationsData } from "../../Data/data";
 import { Class, Label } from "@mui/icons-material";
 import { ClassNames } from "@emotion/react";
 import axios from "axios";
+import api from "../../utils/api";
 
 const OrganizationList = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -26,9 +27,9 @@ const OrganizationList = () => {
   ];
 
   const loadOrganizationsForPage = (page, filter, searchQuery) => {
-    const apiUrl = "http://localhost:5000/api/organization/all";
+    const apiUrl = "api/organization/all";
   
-    axios.get(apiUrl, {
+    api.get(apiUrl, {
       params: {
         page,
         limit: orgsPerPage,

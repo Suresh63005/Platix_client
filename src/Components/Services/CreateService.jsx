@@ -7,6 +7,7 @@ import PageNavigation from "../../common/PageNavigation";
 import { InputField } from "../../common/Input_fileds";
 import TickSquare from "../../assets/images/TickSquare.svg";
 import axios from "axios";
+import api from "../../utils/api";
 
 const CreateService = () => {
   const navigate = useNavigate();
@@ -25,8 +26,8 @@ const CreateService = () => {
 
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
-      axios
-        .get(`http://localhost:5000/admin/getbyid/${id}`)
+      api
+        .get(`admin/getbyid/${id}`)
         .then((response) => {
           const servicedata = response.data.data; // Correctly access `data`
           console.log("Fetched Data:", servicedata); // Debugging API response
@@ -68,7 +69,7 @@ const CreateService = () => {
 
     try {
       // Send data as JSON, not FormData
-      const response = await axios.post(`http://localhost:5000/admin/createservice`, serviceData, {
+      const response = await api.post(`admin/createservice`, serviceData, {
         
       });
       console.log(response.data);

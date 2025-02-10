@@ -7,6 +7,7 @@ import Swal from "sweetalert2"; // Import SweetAlert
 import axios from "axios";
 import TickSquare from "../../assets/images/TickSquare.svg";
 import { deleteItem } from "../../utils/delteEntity";
+import api from "../../utils/api";
 // import { organizationTypesData } from "../../Data/data";
 
 
@@ -47,9 +48,9 @@ const OrganizationTypelist = () => {
     const start = (page - 1) * orgsPerPage;
     
     // Set your API endpoint
-    const apiUrl = "http://localhost:5000/organization/getall";
+    const apiUrl = "organization/getall";
     
-    axios
+    api
       .get(apiUrl, {
         params: {
           page,
@@ -95,6 +96,7 @@ const OrganizationTypelist = () => {
   };
 
   const handleDelete = (id, forceDelete = false) => {
+    // const url=
     deleteItem("http://localhost:5000/organization/delete", id, setOrganizationTypes, forceDelete);
   };
   return (
