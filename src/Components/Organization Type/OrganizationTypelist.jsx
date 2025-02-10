@@ -97,7 +97,7 @@ const OrganizationTypelist = () => {
 
   const handleDelete = (id, forceDelete = false) => {
     // const url=
-    deleteItem("http://localhost:5000/organization/delete", id, setOrganizationTypes, forceDelete);
+    deleteItem("organization/delete", id, setOrganizationTypes, forceDelete);
   };
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100">

@@ -9,6 +9,7 @@ import { Class, Label } from "@mui/icons-material";
 import { ClassNames } from "@emotion/react";
 import axios from "axios";
 import api from "../../utils/api";
+import { deleteItem } from "../../utils/delteEntity";
 
 const OrganizationList = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -94,6 +95,9 @@ const OrganizationList = () => {
   const handleView = (id) => {
     navigate("/createorganization", { state: { id, mode: "view" } });
   };
+  const handleDelete = (id,forceDelete=false) => {
+    deleteItem("api/organization/delete",id,setOrganizations,forceDelete)
+  };
 
 
   return (
@@ -129,7 +133,8 @@ const OrganizationList = () => {
           setPage={setPage}
           setData={setOrganizations}
           handleEdit={handleEdit}
-          handleview={handleView}
+          handleView={handleView}
+          handleDelete={handleDelete}
         />
       </div>
     </div>
