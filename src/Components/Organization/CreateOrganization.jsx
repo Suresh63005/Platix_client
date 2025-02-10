@@ -64,7 +64,7 @@ const CreateOrganization = () => {
         .then((response) => {
           const orgData = response.data.data;
           setOrganization(orgData);
-
+          console.log(orgData)
           // Populate form fields
           Object.keys(orgData).forEach((key) => {
             if (orgData[key] !== null && typeof orgData[key] === "object") {
@@ -102,7 +102,7 @@ const CreateOrganization = () => {
   api.get("organization/getall")
   .then((response) => {
     const OrgData = response.data.results;
-    console.log(OrgData)
+    // console.log(OrgData)
     setOrgTYpe(OrgData.map((org) => ({
       value: org.id, // Set id as value
       label: org.organizationType, // Set organizationType as label
@@ -113,6 +113,11 @@ const CreateOrganization = () => {
   });
 
   }, [id, mode, setValue]);
+
+  const dentistId = orgType.find(option => option.label === "Dentist")?.value;
+const dynamicId = orgType
+  .filter(option => ["Dental Laboratory", "Material Supplier", "Radiology"].includes(option.label))
+  .map(option => option.value);  // This creates an array of values
 
   const handleBackClick = () => {
     navigate(-1);
@@ -378,7 +383,7 @@ const CreateOrganization = () => {
               />
             </div>
 
-            {watch("type") !== "Dentist" && (
+            {dynamicId.includes(watch("organizationType_id"))  && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
                   label="GST"
@@ -410,7 +415,7 @@ const CreateOrganization = () => {
               </div>
             )}
 
-            {watch("type") === "Dentist" && (
+            {watch("organizationType_id") === dentistId && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
                   label="Business Name"
@@ -464,14 +469,10 @@ const CreateOrganization = () => {
               <InputField label={"IFSC Code"} type={"text"} placeholder={"Enter IFSC Code"} {...register("ifscCode")} disabled={mode === "view"} />
               <InputField label={"UPI ID"} type={"text"} placeholder={"Enter UPI ID"} {...register("upiId")} disabled={mode === "view"} />
             </div>
-            {(watch("type") === "Radiology" ||
-          watch("type") === "Material Supplier" ||
-              watch("type") === "Dental Laboratory") && (
+            {dynamicId.includes(watch("organizationType_id")) && (
               <div className="">
-                {/* <UserServices /> */}
                 <h3 className="text-lg font-semibold mb-4">User Services</h3>
                 <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
-                  {/* Replace the native select with react-select */}
                   <div className="w-full sm:w-1/2">
                     <Select
                       value={
@@ -480,34 +481,29 @@ const CreateOrganization = () => {
                           : null
                       }
                       onChange={(selectedOption) =>
-                        setNewService({ ...newService,id: selectedOption.id, name: selectedOption.label })
+                        setNewService({ ...newService, id: selectedOption.id, name: selectedOption.label })
                       }
                       options={availableServices.map((service) => ({
                         id: service.id,
-                        value: service.name, // The display value of the option
-                        label: service.name, // This will display as the label
+                        value: service.name,
+                        label: service.name,
                       }))}
                       placeholder="Select service"
-                      className="text-[12px]" // Additional classes
+                      className="text-[12px]"
                       styles={{
-                        control: (base, {isFocused}) => ({
+                        control: (base, { isFocused }) => ({
                           ...base,
-                          border: isFocused ? "2px solid #660F5D" : " 1px solid #EAEAFF",
-                          boxShadow: isFocused ? 'none':'none',
+                          border: isFocused ? "2px solid #660F5D" : "1px solid #EAEAFF",
                           borderRadius: "5px",
                           padding: "2px",
-                          fontSize: "12px", // Consistent font size
+                          fontSize: "12px",
                           color: "#757575",
-                          height:"42px",
-                          
-                          "&:hover":{
-                            
-                          }
+                          height: "42px",
                         }),
                         placeholder: (base) => ({
                           ...base,
                           color: "#757575",
-                          fontSize: "12px", // Placeholder font size
+                          fontSize: "12px",
                         }),
                         singleValue: (base) => ({
                           ...base,
@@ -518,22 +514,22 @@ const CreateOrganization = () => {
                         }),
                         option: (base) => ({
                           ...base,
-                          backgroundColor: "white", // No background color change for selected state
-                          color: "#757575", // Default text color
+                          backgroundColor: "white",
+                          color: "#757575",
                           fontWeight: "100",
                           cursor: "pointer",
-                          fontSize: "12px", // Option font size
+                          fontSize: "12px",
                           "&:hover": {
-                            backgroundColor: "#660F5D", // Apply hover effect
-                            color: "white", // Change text color to white on hover
+                            backgroundColor: "#660F5D",
+                            color: "white",
                           },
                         }),
                       }}
                       components={{
                         DropdownIndicator: () => (
-                          <DownArrow className="w-[16px] h-[16px] pr-1" /> // Use the custom DownArrow icon
+                          <DownArrow className="w-[16px] h-[16px] pr-1" />
                         ),
-                        IndicatorSeparator: () => null, // Remove indicator separator
+                        IndicatorSeparator: () => null,
                       }}
                     />
                   </div>
@@ -551,12 +547,12 @@ const CreateOrganization = () => {
                   </div>
                   <div className="flex gap-2">
                     {editingIndex === null ? (
-                    <span
-                    onClick={handleAddService}
-                    className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
-                  >
-                    Add
-                  </span>
+                      <span
+                        onClick={handleAddService}
+                        className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
+                      >
+                        Add
+                      </span>
                     ) : (
                       <span
                         onClick={handleSaveService}
@@ -575,24 +571,22 @@ const CreateOrganization = () => {
                 </div>
                 <hr />
                 <div className="space-y-4">
-                {userServices.map((service, index) => (
-  <div key={service.id} className="flex flex-col sm:flex-row items-center gap-4 p-4">
-    <input type="hidden" value={service.id} /> {/* Keep ID for reference */}
-    <input type="text" value={service.name} readOnly className="flex-1 px-3 py-2 border rounded-md bg-white" />
-    <div className="w-full sm:w-1/4 relative">
-      <span className="absolute top-2 left-2 text-gray-500">Price:</span>
-      <input type="number" value={service.price} readOnly className="w-full pl-16 px-3 py-2 border rounded-md bg-white" />
-    </div>
-    <span onClick={() => handleEditService(index)} className="px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer">Edit</span>
-    <span onClick={() => handleDeleteService(index)} className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer">Delete</span>
-  </div>
-))}
-
-
+                  {userServices.map((service, index) => (
+                    <div key={service.id} className="flex flex-col sm:flex-row items-center gap-4 p-4">
+                      <input type="hidden" value={service.id} />
+                      <input type="text" value={service.name} readOnly className="flex-1 px-3 py-2 border rounded-md bg-white" />
+                      <div className="w-full sm:w-1/4 relative">
+                        <span className="absolute top-2 left-2 text-gray-500">Price:</span>
+                        <input type="number" value={service.price} readOnly className="w-full pl-16 px-3 py-2 border rounded-md bg-white" />
+                      </div>
+                      <span onClick={() => handleEditService(index)} className="px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer">Edit</span>
+                      <span onClick={() => handleDeleteService(index)} className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer">Delete</span>
+                    </div>
+                  ))}
                 </div>
-
               </div>
-              )}
+            )}
+
             <Controller
               name="file1"
               control={control}
