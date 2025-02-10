@@ -26,8 +26,7 @@ const Settings = () => {
     const fetchSettings = async () => {
       const token = Cookies.get("token");
       try {
-
-        const response = await api.get("admin/getsettings", {
+        const response = await axios.get("http://localhost:5000/admin/getbyid", {
           headers: { Authorization: `Bearer ${token}` },
         });
   
@@ -43,7 +42,7 @@ const Settings = () => {
             whatsappApiKey: data?.whatsappApiKey || "",
           });
   
-          setValue("privacyPolicy", data?.privacyzPolicy || "");
+          setValue("privacyPolicy", data?.privacyPolicy || "");
           setValue("termsAndConditions", data?.termsAndConditions || "");
         } else {
           console.error("Settings data not found in response:", response.data);
@@ -55,6 +54,7 @@ const Settings = () => {
   
     fetchSettings();
   }, [reset, setValue]);
+  
 
   const onSubmit = async (formData) => {
     setLoading(true);

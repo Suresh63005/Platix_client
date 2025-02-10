@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import Swal from "sweetalert2";
 import Header from "../../common/Header";
 import Pagetitle from "../../common/pagetitle";
 import Table from "../../common/UserTable";
-import Swal from "sweetalert2";
 import api from "../../utils/api";
 
 const Services = () => {
@@ -15,25 +14,22 @@ const Services = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [deleteServiceId, setDeleteServiceId] = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [roleOptions, setRoleOptions] = useState([]);
+  const [selectedOrgType, setSelectedOrgType] = useState(null);
+  const [orgTypeOptions, setOrgTypeOptions] = useState([]);; // Organization types dropdown
   const itemsPerPage = 10;
 
   // Fetch services from API
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await api.get(
-          "admin/allservices",
-          {
-            params: {
-              filter: selectedFilter,
-              search: searchQuery,
-              page,
-              limit: itemsPerPage,
-            },
-          }
-        );
+        const response = await api.get("admin/allservices", {
+          params: {
+            filter: selectedFilter,
+            search: searchQuery,
+            page,
+            limit: itemsPerPage,
+          },
+        });
 
         setServices(response.data.services);
         setTotalPages(response.data.totalPages);
@@ -45,22 +41,23 @@ const Services = () => {
     fetchServices();
   }, [selectedFilter, searchQuery, page]);
 
+  // Handle edit
   const handleEdit = (id) => {
     navigate("/createservice", { state: { id, mode: "edit" } });
   };
 
+  // Handle view
   const handleView = (id) => {
     navigate("/createservice", { state: { id, mode: "view" } });
   };
-  const handleDelete = (serviceId) => {
-    console.log("Deleting service with ID:", serviceId); // Log the serviceId to verify it's correct
 
+  // Handle delete confirmation
+  const handleDelete = (serviceId) => {
     if (!serviceId) {
       Swal.fire("Error", "Service ID is missing!", "error");
       return;
     }
 
-    // Show confirmation dialog
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this action!",
@@ -71,89 +68,86 @@ const Services = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Set the service ID to trigger deletion via useEffect
         setDeleteServiceId(serviceId);
       }
     });
   };
 
-  // UseEffect to perform the deletion when deleteServiceId is set
+  // Perform delete when deleteServiceId is set
   useEffect(() => {
     if (deleteServiceId) {
-      // Make an API call to delete the service from the backend
       api
         .delete(`admin/deleteservice/${deleteServiceId}`)
-        .then((response) => {
-          // Handle successful deletion here
-          Swal.fire("Deleted!", "Your service has been deleted.", "success");
-          // Remove deleted service from the UI
-          setServices(
-            services.filter((service) => service.id !== deleteServiceId)
-          );
-          setDeleteServiceId(null); // Reset state after deletion
+        .then(() => {
+          Swal.fire("Deleted!", "Service has been deleted.", "success");
+          setServices(services.filter((service) => service.id !== deleteServiceId));
+          setDeleteServiceId(null);
         })
         .catch((error) => {
-          Swal.fire(
-            "Error!",
-            "There was an issue deleting the service.",
-            "error"
-          );
+          Swal.fire("Error!", "There was an issue deleting the service.", "error");
           console.error("Error deleting service:", error);
-          setDeleteServiceId(null); // Reset state on error
+          setDeleteServiceId(null);
         });
     }
   }, [deleteServiceId, services]);
 
- useEffect(()=>{
-    const fetchroles = async()=>{
-      try{
-        const response = await api.get("admin/viewrole")
-        console.log(response)
-        if(response.data && Array.isArray(response.data.roles)){
-          setRoleOptions(response.data.roles.map(role=>role.rolename))
+  // Fetch organization types for the dropdown
+  useEffect(() => {
+    const fetchOrganizationTypes = async () => {
+      try {
+        const response = await api.get("organization/getall");
+        console.log("Organization Types Response:", response);
+        if (response.data && Array.isArray(response.data.results)) {
+          setOrgTypeOptions(response.data.results.map(org => ({
+            value: org.id, // Use org.id for value
+            label: org.organizationType, // Use org.name for label
+          })));
+        } else {
+          setOrgTypeOptions([]); // Ensure it's always an array
         }
-        else{
-          setRoleOptions(["NO ROLES FOUND"])
-        }
-      }catch(error){
-        console.log("fetching data error",error)
+      } catch (error) {
+        console.error("Error fetching organization types:", error);
+        setOrgTypeOptions([]); // Fallback to empty array on error
       }
+    };
+    fetchOrganizationTypes();
+  }, []);
+  // Handle service assignment to organization type
+  const handleAssignService = () => {
+    if (!selectedOrgType) {
+      Swal.fire("Error", "Please select an organization type.", "error");
+      return;
     }
-    fetchroles()
- },[])
-  
-  
 
-  // Handle role assignment
-  const handleAssignRole = () => {
-    if (!selectedRole) {
-      Swal.fire("Error", "Please select a role to assign.", "error");
+    if (services.length === 0) {
+      Swal.fire("Error", "Please select at least one service.", "error");
       return;
     }
 
     Swal.fire({
       title: "Are you sure?",
-      text: `Assign role ${selectedRole} to selected services?`,
+      text: `Assign selected services to organization type ${selectedOrgType}?`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes, Assign",
     }).then((result) => {
       if (result.isConfirmed) {
         api
-          .post("admin/assignRole", {
-            role: selectedRole,
-            services: services.map((s) => s.id), // Example: Assign to all services
+          .post("/admin/assign-service", {
+            organization_id: selectedOrgType,
+    service_id: services.map((s) => s.id),
           })
           .then(() => {
-            Swal.fire("Success", "Role assigned successfully!", "success");
+            Swal.fire("Success", "Services assigned successfully!", "success");
           })
           .catch((error) => {
-            console.error("Error assigning role:", error);
-            Swal.fire("Error", "Failed to assign role.", "error");
+            console.error("Error assigning services:", error);
+            Swal.fire("Error", "Failed to assign services.", "error");
           });
       }
     });
   };
+
   return (
     <div className="bg-gray-100 h-full">
       <Header name={"Services"} />
@@ -173,12 +167,13 @@ const Services = () => {
           setPage(1);
         }}
         filterPlaceholder="Filter"
-        showRoleAssign={true} // Enable role assignment
-        roleValue={selectedRole}
-        onRoleChange={setSelectedRole}
-        roleOptions={roleOptions}
+        showRoleAssign={true} // Enable organization type assignment
+        roleValue={selectedOrgType} // Using org type instead of role
+        organizationChange={setSelectedOrgType} // Updating selected organization type
+        organizationOptions={Array.isArray(orgTypeOptions) ? orgTypeOptions.map((org) => org.label) : []}
+
         assignButtonLabel="Assign"
-        onAssignClick={handleAssignRole}
+        onAssignClick={handleAssignService} // Updated function call
       />
 
       <div className="overflow-x-auto sm:overflow-x-visible">
@@ -190,7 +185,7 @@ const Services = () => {
           totalPages={totalPages}
           setPage={setPage}
           handleEdit={handleEdit}
-          handleview={handleView}
+          handleView={handleView}
           handleDelete={handleDelete}
         />
       </div>

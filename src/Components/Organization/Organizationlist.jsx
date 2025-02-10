@@ -123,11 +123,12 @@ const OrganizationList = () => {
             "Mobile No",
             { label: "Users", style: { textAlign: "center" } }, 
           ]}
-          fields={["name", "organizationType?.organizationType", "mobile", "icon"]}
+          fields={["name", "organizationType", "mobile", "icon"]}
           data={organizations.map((org) => ({
             ...org,
+            organizationType: org.organizationType?.organizationType || "N/A", // Ensure safe access
             icon: renderUserIcon(org.organizationType_id),
-          }))}
+          }))} 
           page={page}
           totalPages={totalPages}
           setPage={setPage}
