@@ -1,11 +1,13 @@
-import axios from "axios";
 import Swal from "sweetalert2";
 import TickSquare from "../assets/images/TickSquare.svg";
+import api from "./api";
 
+// ✅ Improved Delete Function
 export const deleteItem = async (url, id, setData, forceDelete = false) => {
+  console.log(url)
   try {
-    const response = await axios.delete(`${url}/${id}`, {
-      params: { forceDelete: forceDelete.toString() },
+    const response = await api.delete(`${url}/${id}`, {
+      params: { forceDelete },
     });
 
     if (response.status === 200) {
@@ -22,7 +24,8 @@ export const deleteItem = async (url, id, setData, forceDelete = false) => {
         timer: 1500,
       });
 
-      setData((prev) => prev.filter((item) => item.id !== id));
+      // ✅ Ensure setData updates state correctly
+      setData((prev) => (Array.isArray(prev) ? prev.filter((item) => item.id !== id) : prev));
     }
   } catch (error) {
     console.error("Error deleting item:", error);
