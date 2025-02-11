@@ -9,13 +9,19 @@ import api from "../../utils/api";
 const Services = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+ 
   const [selectedFilter, setSelectedFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [deleteServiceId, setDeleteServiceId] = useState(null);
   const [selectedOrgType, setSelectedOrgType] = useState(null);
+  console.log(selectedOrgType,"sgdxhcjkfdghxgh")
   const [orgTypeOptions, setOrgTypeOptions] = useState([]);; // Organization types dropdown
+  console.log(orgTypeOptions, "from orgggggggggggggggggg")
+  const [organizationType_id,setOrganizationType_id] = useState(null);
+  console.log(organizationType_id,"from akhillllllllllllllllllll")
   const itemsPerPage = 10;
 
   // Fetch services from API
@@ -32,6 +38,7 @@ const Services = () => {
         });
 
         setServices(response.data.services);
+        console.log("hello")
         setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -134,8 +141,8 @@ const Services = () => {
       if (result.isConfirmed) {
         api
           .post("/admin/assign-service", {
-            organization_id: selectedOrgType,
-    service_id: services.map((s) => s.id),
+            organizationType_id: organizationType_id,
+    service_id: selectedItems
           })
           .then(() => {
             Swal.fire("Success", "Services assigned successfully!", "success");
@@ -170,8 +177,9 @@ const Services = () => {
         showRoleAssign={true} // Enable organization type assignment
         roleValue={selectedOrgType} // Using org type instead of role
         organizationChange={setSelectedOrgType} // Updating selected organization type
-        organizationOptions={Array.isArray(orgTypeOptions) ? orgTypeOptions.map((org) => org.label) : []}
-
+        organizationOptions={orgTypeOptions}
+        organizationType_id={organizationType_id}
+        setOrganizationType_id={setOrganizationType_id}
         assignButtonLabel="Assign"
         onAssignClick={handleAssignService} // Updated function call
       />
@@ -187,6 +195,8 @@ const Services = () => {
           handleEdit={handleEdit}
           handleView={handleView}
           handleDelete={handleDelete}
+          setSelectedItems={setSelectedItems}
+          selectedItems={selectedItems}
         />
       </div>
     </div>

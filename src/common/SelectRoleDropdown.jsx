@@ -2,18 +2,25 @@ import React from "react";
 import Select from "react-select";
 import { ReactComponent as DownArrow } from "../assets/images/Down Arrow.svg"; // Import DownArrow
 
-const SelectRoleDropdown = ({ roleValue, onRoleChange, roleOptions, placeholder, customStyles }) => {
+const SelectRoleDropdown = ({ roleValue, onRoleChange, roleOptions, placeholder, customStyles,setOrganizationType_id }) => {
   // Transform options into React Select's format
+
+  
   const formattedOptions = roleOptions.map((option) => ({
-    value: option,
-    label: option,
+    value: option.value,
+    label: option.label,
   }));
+
+  console.log(formattedOptions,"from sureshhhhhhhhhhhhhh")
 
   return (
     <div className="relative w-full">
       <Select
-        value={roleValue ? formattedOptions.find((role) => role.value === roleValue) : null}
-        onChange={(selectedOption) => onRoleChange(selectedOption?.value)}
+        value={roleValue}
+        onChange={(selectedOption) =>{
+           onRoleChange(selectedOption?.value)
+           setOrganizationType_id(selectedOption?.value);
+          }}
         options={formattedOptions}
         placeholder={placeholder}
         styles={customStyles}

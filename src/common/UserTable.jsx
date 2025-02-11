@@ -16,9 +16,13 @@ const Table = ({
   showActions = true,
   handleEdit,
   handleView,
-  handleDelete
+  handleDelete,
+  setSelectedItems,
+  selectedItems
 }) => {
-  const [selectedItems, setSelectedItems] = useState([]);
+
+  console.log(selectedItems,"select items")
+  
   const [editingItem, setEditingItem] = useState(null);
 
   const handleSelectAll = (event) => {
@@ -67,7 +71,7 @@ const Table = ({
                   type="checkbox"
                   className="border-none cursor-pointer th-checkbox"
                   onChange={handleSelectAll}
-                  checked={selectedItems.length === data.length}
+                  checked={selectedItems?.length === data?.length}
                 />
               </th>
               <th className="p-2 font-medium text-left">Sr</th>
@@ -103,7 +107,7 @@ const Table = ({
                       type="checkbox"
                       className="cursor-pointer text-[12px]"
                       onChange={(e) => handleSelectItem(e, item.id)}
-                      checked={selectedItems.includes(item.id)}
+                      checked={selectedItems?.includes(item?.id)}
                     />
                     <div className="custom-checkbox-box"></div>{" "}
                     {/* Custom checkbox box */}
