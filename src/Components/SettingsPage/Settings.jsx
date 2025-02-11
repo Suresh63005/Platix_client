@@ -8,6 +8,8 @@ import TextEditor from "./TextEditor";
 import PasswordInput from "../../common/PasswordInput";
 import TickSquare from "../../assets/images/TickSquare.svg";
 import api from "../../utils/api";
+import { useLoading } from "../../context/LoadingContext";
+import Loader from "../../common/Loader";
 
 const Settings = () => {
   const {
@@ -21,6 +23,15 @@ const Settings = () => {
 
   const [websiteImage, setWebsiteImage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { isLoading,setIsLoading } = useLoading()
+
+  useEffect(()=>{
+    setIsLoading(true)
+    const timer=setTimeout(() => {
+      setIsLoading(false)
+    }, 1000);
+    return () => clearTimeout(timer);
+  },[])
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -98,7 +109,9 @@ const Settings = () => {
   };
 
   return (
-    <div className="flex flex-col bg-gray-100 h-full">
+    <div>
+      {isLoading && <Loader />}
+      <div className="flex flex-col bg-gray-100 h-full">
       <Header name="Settings" />
       <div className="flex-1 bg-white rounded-lg shadow-md mx-4 mb-4 mt-4">
         <div className="h-[81vh] overflow-y-scroll scrollbar-color">
@@ -200,6 +213,7 @@ const Settings = () => {
           </form>
         </div>
       </div>
+    </div>
     </div>
   );
 };

@@ -71,7 +71,7 @@ const Userspage = () => {
     navigate("/createuser", { state: { id, mode: "view" } });
   };
   const handleDelete=async(id,forceDelete=false)=>{
-    deleteItem("http://localhost:5000/user/delete", id, setUsers, forceDelete);
+    deleteItem("/user/delete", id, setUsers, forceDelete);
   }
 
   return (
