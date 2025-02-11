@@ -10,6 +10,7 @@ import {
 } from "../../common/Input_fileds";
 import Header from "../../common/Header";
 import PageNavigation from "../../common/PageNavigation";
+import Loader from "../../common/Loader";
 import { ReactComponent as Cancelbtnicon } from "../../assets/images/Cancel_button_icon.svg";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
@@ -18,46 +19,34 @@ import Select from "react-select";
 import { ReactComponent as DownArrow } from "../../assets/images/Down Arrow.svg";
 import { Vortex } from "react-loader-spinner";
 import api from "../../utils/api";
+import { useLoading } from "../../context/LoadingContext";
 
 const CreateOrganization = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { id, mode: initialMode } = location.state || {};
+  const { isLoading, setIsLoading } = useLoading();
   const [mode, setMode] = useState(initialMode || "create");
   const [organization, setOrganization] = useState(null);
   const { register, handleSubmit, setValue, watch, control, reset } = useForm();
   const [PImages, setPImages] = useState([]);
   const [loading, setloading] = useState(false);
-  const [formData, setFormData] = useState({
-    id: id || null,
-    address: "",
-    businessName: null,
-    file1: null,
-    file2: null,
-    imgPreview: null,
-    description: "",
-    designation: "",
-    email: "",
-    googleCoordinates: { latitude: "", longitude: "" },
-    gstNumber: null,
-    mobile: "",
-    name: "",
-    registrationId: null,
-    organizationType_id: "",
-    whatsapp: "",
-    services: [],
-    bankName: "",
-    accountNumber: "",
-    accountHolder: "",
-    ifscCode: "",
-    upiId: "",
-  });
-  const [availableServices, setAvailableServices] = useState([]); // For fetched services
-  const [userServices, setUserServices] = useState([]); // For added services
+  const [formData, setFormData] = useState({id: id || null,  address: "",  businessName: null,  file1: null,  file2: null,  imgPreview: null,  description: "",  designation: "",  email: "",  googleCoordinates: { latitude: "", longitude: "" },  gstNumber: null,  mobile: "",  name: "",  registrationId: null,  organizationType_id: "",  whatsapp: "",  services: [],  bankName: "",  accountNumber: "",  accountHolder: "",  ifscCode: "",  upiId: "",});
+  const [availableServices, setAvailableServices] = useState([]); 
+  const [userServices, setUserServices] = useState([]); 
   const [newService, setNewService] = useState({ name: "", price: "" });
   const [editingIndex, setEditingIndex] = useState(null);
   const [orgType, setOrgTYpe] = useState([]);
   console.log(orgType, "from sdhfjghlj.gkfdjshfdgh.")
+
+  useEffect(()=>{
+    setIsLoading(true)
+
+    const timer=setTimeout(()=>{
+      setIsLoading(false)
+    },1000)
+    return ()=>clearTimeout(timer)
+  },[id,location,setIsLoading])
 
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
@@ -131,7 +120,7 @@ const CreateOrganization = () => {
         option.label
       )
     )
-    .map((option) => option.value); // This creates an array of values
+    .map((option) => option.value);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -156,8 +145,8 @@ const CreateOrganization = () => {
 
   const handleAddService = () => {
     if (newService.id && newService.price) {
-      setUserServices([...userServices, newService]); // Store service ID instead of name
-      setNewService({ id: "", name: "", price: "" }); // Reset input
+      setUserServices([...userServices, newService]); 
+      setNewService({ id: "", name: "", price: "" }); 
     } else {
       Swal.fire({
         icon: "warning",
@@ -178,12 +167,12 @@ const CreateOrganization = () => {
 
   const handleEditService = (index) => {
     setEditingIndex(index);
-    setNewService({ ...userServices[index] }); // Maintain service ID
+    setNewService({ ...userServices[index] });
   };
 
   const handleDeleteService = (index) => {
-    const updatedServices = userServices.filter((_, i) => i !== index); // Use userServices
-    setUserServices(updatedServices); // Use setUserServices
+    const updatedServices = userServices.filter((_, i) => i !== index);
+    setUserServices(updatedServices); 
   };
 
   const onSubmit = async (data) => {
@@ -280,7 +269,9 @@ const CreateOrganization = () => {
 
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div>
+      {isLoading && <Loader />}
+      <div className="flex flex-col h-screen bg-gray-100">
       <div className="bg-gray-100">
         <Header name={"Organization"} />
         <PageNavigation
@@ -760,6 +751,7 @@ const CreateOrganization = () => {
             )}
           </form>
         </div>
+      </div>
       </div>
     </div>
   );

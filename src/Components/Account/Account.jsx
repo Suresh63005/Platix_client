@@ -9,8 +9,6 @@ import { Icon } from "@iconify/react";
 import ProfileICon from "../../assets/images/User-100.svg";
 import api from "../../utils/api";
 
-const API_BASE_URL = "http://localhost:5000/admin/profile/"; // Adjust as needed
-
 const Account = () => {
   const token = Cookies.get("token"); // Get token from cookies
 
@@ -89,11 +87,7 @@ const Account = () => {
         [name]: value,
       }));
     }
-  };
-
-  console.log(profile,"from profile");
-
-  
+  };  
 
   // Handle Form Submission
   const handleSubmit = async (e) => {
@@ -105,14 +99,12 @@ const Account = () => {
     }
 
     const formData = new FormData();
-
     formData.append("name",profile.name);
     formData.append("dateOfBirth",profile.dateOfBirth);
     formData.append("phoneNumber",profile.phoneNumber);
     formData.append("confirmPassword",profile.confirmPassword);
     formData.append("email",profile.email);
     formData.append("password",profile.password);
-
     if(profile.profileImage) formData.append("profileImage",profile.profileImage);
     
 

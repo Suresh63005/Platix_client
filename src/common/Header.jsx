@@ -16,7 +16,7 @@ const Header = ({ name }) => {
         <div className="users-title text-[24px] font-extrabold hidden sm:block">{name}</div>
 
         {/* Account icon (always on the right side) */}
-        <div className="account-icon ml-auto bg-[#F3E6F2] rounded-full p-2" onClick={navigateToAccount}>
+        <div className="account-icon ml-auto bg-[#F3E6F2] rounded-full p-2 cursor-pointer" onClick={navigateToAccount}>
           <UserIcon className="w-6 h-6" /> {/* Adjust size using Tailwind classes */}
         </div>
       </div>
