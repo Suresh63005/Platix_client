@@ -15,30 +15,28 @@ const Pagetitle = ({
   filterPlaceholder,
   showRoleAssign,
   roleValue,
-  onRoleChange,
-  roleOptions,
+  organizationChange,
+  organizationOptions,
   assignButtonLabel,
   onAssignClick,
 }) => {
   const customStyles = {
-    control: (base, {isFocused}) => ({
+    control: (base, { isFocused }) => ({
       ...base,
       border: isFocused ? "2px solid #660F5D" : " 1px solid #EAEAFF",
-      boxShadow: isFocused ? 'none':'0px 0px 4px 1px #00000033',
+      boxShadow: isFocused ? "none" : "0px 0px 4px 1px #00000033",
       borderRadius: "5px",
       padding: "2px",
       fontSize: "12px", // Consistent font size
       color: "#757575",
-      height:"42px",
-      
-      "&:hover":{
-        
-      }
+      height: "42px",
+
+      "&:hover": {},
     }),
     placeholder: (base) => ({
       ...base,
       color: "#131313",
-      fontWeight:600,
+      fontWeight: 600,
       fontSize: "12px",
     }),
     singleValue: (base) => ({
@@ -78,8 +76,10 @@ const Pagetitle = ({
             <div className="relative w-[200px]">
               <SelectRoleDropdown
                 roleValue={roleValue}
-                onRoleChange={onRoleChange}
-                roleOptions={roleOptions}
+                onRoleChange={organizationChange}
+                roleOptions={
+                  Array.isArray(organizationOptions) ? organizationOptions : []
+                } // Ensure it's always an array
                 placeholder="Select Roles"
                 customStyles={customStyles}
               />
