@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Header from '../../common/Header';
 import ReportsTable from './ReportsTable';
 import ReportsTitle from './ReportsTitle';
+import api from '../../utils/api';
 
 const OrderReports = () => {
   const columns = [
@@ -26,36 +28,58 @@ const OrderReports = () => {
     "Patient Details": "patientDetails",
   };
 
-  const initialData = [
-    {
-      id: 1,
-      orderId: "O001",
-      orderDate: "2023-01-01",
-      from: "Dentist A",
-      username: "John Doe",
-      to: "Patient X",
-      orderStatus: "Completed",
-      mobileNo: "1234567890",
-      patientDetails: "Patient details",
-    },
-    {
-      id: 2,
-      orderId: "O002",
-      orderDate: "2023-02-15",
-      from: "Dentist B",
-      username: "Jane Smith",
-      to: "Patient Y",
-      orderStatus: "Pending",
-      mobileNo: "9876543210",
-      patientDetails: "Patient details",
-    },
-  ];
+    const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+  
+    // State for date range filter
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
 
-  const [filteredData, setFilteredData] = useState(initialData);
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
 
+        let endpoint = "user/all";
+      if (fromDate && toDate) {
+        endpoint = `user/getbydate/${fromDate}/${toDate}`;
+      }
+      
+      const response = await api.get(endpoint);
+      const apiData = response.data.users || [];
+        console.log(apiData)
+        // Transform API response to match table format
+        const formattedData = apiData.map((order) => ({
+          id: order.id ? order.id :"N/A",
+          orderId: order.id ? order.id :"N/A",
+          orderDate: order.orderDate ? order.orderDate :"N/A",
+          from: order.fromOrg?.organizationType || "N/A",
+          username: order.user?.firstName || "N/A",
+          to: order.toOrg?.organizationType || "N/A",
+          orderStatus: order.orderStatus ? order.orderStatus :"N/A",
+          mobileNo: order.MobileNo ? order.MobileNo :"N/A",
+          patientDetails: order.patientName ? order.patientName :"N/A",
+        }));
+
+        setData(formattedData);
+        setFilteredData(formattedData);
+      } catch (error) {
+        console.error("Error fetching order reports:", error);
+        setError("Failed to load data");
+      }finally{
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [fromDate,toDate]);
+
+  // Handle search
   const handleSearch = (query) => {
     const lowerCaseQuery = query.toLowerCase();
-    const result = initialData.filter(
+    const result = data.filter(
       (item) =>
         item.orderId.toLowerCase().includes(lowerCaseQuery) ||
         item.username.toLowerCase().includes(lowerCaseQuery)
@@ -63,19 +87,58 @@ const OrderReports = () => {
     setFilteredData(result);
   };
 
+  const handleBulkDownload = () => {
+    console.log("Download button clicked!"); // ✅ Debugging log
+  
+    if (!filteredData.length) {
+      alert("No data available for download!");
+      return;
+    }
+  
+    const headers = Object.keys(columnKeyMapping);
+    const keys = Object.values(columnKeyMapping);
+  
+    const csvRows = [
+      headers.join(","), 
+      ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(",")) 
+    ];
+  
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
+  
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Order_Reports.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  if (loading) {
+    return <div className="text-center mt-5">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500 mt-5">Error: {error}</div>;
+  }
+
   return (
-    <div className='bg-gray-100 h-full'>
+    <div className="bg-gray-100 h-full">
       <Header name={"Reports"} />
       <ReportsTitle
         title={"Order Reports"}
         searchPlaceholder="Search"
         onSearch={(e) => handleSearch(e.target.value)}
+        fromDate={fromDate}
+        toDate={toDate}
+        onFromDateChange={(e) => setFromDate(e.target.value)}
+        onToDateChange={(e) => setToDate(e.target.value)}
+        onDownloadClick={()=>{handleBulkDownload()}}
       />
       <div className="overflow-x-auto report-table">
         <ReportsTable
           columns={columns}
           data={filteredData}
-          columnKeyMapping={columnKeyMapping}  // Pass column key mapping dynamically
+          columnKeyMapping={columnKeyMapping}
         />
       </div>
     </div>
