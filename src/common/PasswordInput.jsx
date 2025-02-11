@@ -12,7 +12,8 @@ const PasswordInput = React.forwardRef(({ label, placeholder, value, ...rest }, 
       <div className="flex items-center border border-gray-300 rounded-lg focus-within:border-[#660F5D] relative">
         <input
           ref={ref}
-          type={showPassword ? "text" : "password"}
+          // type={showPassword ? "text" : "password"}
+          type={ "text"}
           className="w-full rounded-lg py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D] font-medium"
           placeholder={placeholder}
           value={value} // Now correctly controlled

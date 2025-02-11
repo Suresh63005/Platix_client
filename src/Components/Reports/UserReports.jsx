@@ -1,11 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import Header from '../../common/Header';
-import ReportsTable from './ReportsTable';
-import ReportsTitle from './ReportsTitle';
-import axios from 'axios';
-import api from '../../utils/api';
+import React, { useState, useEffect } from "react";
+import Header from "../../common/Header";
+import ReportsTable from "./ReportsTable";
+import ReportsTitle from "./ReportsTitle";
+import api from "../../utils/api";
 
 const UserReports = () => {
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // State for date range filter
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+
   const columns = [
     "Username",
     "User ID",
@@ -16,45 +24,59 @@ const UserReports = () => {
   ];
 
   const columnKeyMapping = {
-    "Username": "Username",
+    "Username": "username",
     "User ID": "id",
-    "Role": "Role",
+    "Role": "role",
     "Address": "address",
     "Mobile No.": "mobileNo",
-    "Starting Date": "startDate",
+    "Starting Date": "createdAt",
   };
 
-  const [filteredData, setFilteredData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Fetch data from the API
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get('user/all');
-        const data = await response.data.users;
-        setFilteredData(data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
+  // Fetch data from API (Handles normal & filtered requests)
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      let endpoint = "user/all";
+      if (fromDate && toDate) {
+        endpoint = `user/getbydate/${fromDate}/${toDate}`;
       }
-    };
-    fetchData();
-  }, []);
+      
+      const response = await api.get(endpoint);
+      const apiData = response.data.users || [];
 
+      const formattedData = apiData.map((user) => ({
+        id: user.id || "N/A",
+        username: user.Username || "N/A",
+        role: user.Role || "N/A",
+        address: user.address || "N/A",
+        mobileNo: user.mobileNo || "N/A",
+        createdAt: user.createdAt || "N/A",
+      }));
+
+      setData(formattedData);
+      setFilteredData(formattedData);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError("Failed to load data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [fromDate, toDate]); // Refetch data when dates change
+
+  // Handle search
   const handleSearch = (query) => {
     const lowerCaseQuery = query.toLowerCase();
-    const result = filteredData.filter(
+    const result = data.filter(
       (item) =>
         item.username.toLowerCase().includes(lowerCaseQuery) ||
         item.role.toLowerCase().includes(lowerCaseQuery)
     );
     setFilteredData(result);
   };
-
-  // Function to handle bulk download
   const handleBulkDownload = () => {
     console.log("Download button clicked!"); // ✅ Debugging log
   
@@ -81,31 +103,30 @@ const UserReports = () => {
     link.click();
     document.body.removeChild(link);
   };
-  
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-center mt-5">Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="text-center text-red-500 mt-5">Error: {error}</div>;
   }
 
   return (
-    <div className='bg-gray-100 h-full'>
+    <div className="bg-gray-100 h-full">
       <Header name="Reports" />
       <ReportsTitle
         title="User Reports"
         searchPlaceholder="Search"
         onSearch={(e) => handleSearch(e.target.value)}
-        onDownloadClick={()=>{handleBulkDownload()}} 
+        fromDate={fromDate}
+        toDate={toDate}
+        onFromDateChange={(e) => setFromDate(e.target.value)}
+        onToDateChange={(e) => setToDate(e.target.value)}
+        onDownloadClick={()=>{handleBulkDownload()}}
       />
-
       <div className="overflow-x-auto">
-        <ReportsTable
-          columns={columns}
-          data={filteredData}
-          columnKeyMapping={columnKeyMapping}
-        />
+        <ReportsTable columns={columns} data={filteredData} columnKeyMapping={columnKeyMapping} />
       </div>
     </div>
   );
