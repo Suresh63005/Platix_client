@@ -19,6 +19,7 @@ const Pagetitle = ({
   organizationOptions,
   assignButtonLabel,
   onAssignClick,
+  setOrganizationType_id
 }) => {
   const customStyles = {
     control: (base, { isFocused }) => ({
@@ -78,10 +79,11 @@ const Pagetitle = ({
                 roleValue={roleValue}
                 onRoleChange={organizationChange}
                 roleOptions={
-                  Array.isArray(organizationOptions) ? organizationOptions : []
+                  organizationOptions 
                 } // Ensure it's always an array
-                placeholder="Select Roles"
+                placeholder="Select Organization"
                 customStyles={customStyles}
+                setOrganizationType_id={setOrganizationType_id}
               />
             </div>
 
