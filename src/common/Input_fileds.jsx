@@ -32,7 +32,7 @@ export const InputField = forwardRef(({ label, type, placeholder, value, onChang
 ));
 
 // Select Field Component using react-select with forwardRef
-export const SelectField = forwardRef(({ label, options, value, onChange, name, defaultplaceholder }, ref) => (
+export const SelectField = forwardRef(({ label, options, value, onChange, name, defaultplaceholder,handleOrginazationtypeid }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <Select
@@ -42,8 +42,10 @@ export const SelectField = forwardRef(({ label, options, value, onChange, name, 
       }
       onChange={(selectedOption) => {
         if (selectedOption) {
-          onChange(selectedOption.value); // Directly pass the selected value
+          onChange(selectedOption.value);
+          
         }
+        handleOrginazationtypeid(selectedOption?.value)
       }}
       options={options}
       name={name}
