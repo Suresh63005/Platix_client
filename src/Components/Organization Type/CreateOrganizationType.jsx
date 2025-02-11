@@ -10,6 +10,8 @@ import { ReactComponent as Cancelbtnicon } from "../../assets/images/Cancel_butt
 import axios from "axios";
 import { Vortex } from 'react-loader-spinner';
 import api from "../../utils/api";
+import { useLoading } from "../../context/LoadingContext";
+import Loader from "../../common/Loader";
 
 const CreateOrganizationType = () => {
   const location = useLocation();
@@ -17,6 +19,7 @@ const CreateOrganizationType = () => {
   const { id, mode: initialMode } = location.state || {};
   const mode = initialMode || "create";
   const [loading, setloading] = useState(false)
+  const { isLoading,setIsLoading }= useLoading()
   
   const {
     register,
@@ -26,6 +29,13 @@ const CreateOrganizationType = () => {
     reset,
   } = useForm();
 
+  useEffect(()=>{
+    setIsLoading(true)
+    const timer=setTimeout(() => {
+      setIsLoading(false)
+    }, 1000);
+    return ()=>clearTimeout(timer)
+  },[])
   // Fetch organization type details if in edit or view mode
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
@@ -94,7 +104,9 @@ const CreateOrganizationType = () => {
   };
 
   return (
-    <div className="create-organization-type-container flex flex-col min-h-screen bg-gray-100">
+    <div>
+      {isLoading && <Loader />}
+      <div className="create-organization-type-container flex flex-col min-h-screen bg-gray-100">
       <Header name="Organization Types" />
       <PageNavigation
         title={
@@ -181,6 +193,7 @@ const CreateOrganizationType = () => {
           )}
         </form>
       </div>
+    </div>
     </div>
   );
 };

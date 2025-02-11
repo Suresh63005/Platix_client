@@ -13,14 +13,14 @@ import PageNavigation from "../../common/PageNavigation";
 import TickSquare from "../../assets/images/TickSquare.svg";
 import axios from "axios";
 import api from "../../utils/api";
+import { useLoading } from "../../context/LoadingContext";
+import Loader from "../../common/Loader";
 
 const CreateUserPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { id, mode: initialMode, organizationType_id } = location.state || {};
-  console.log(organizationType_id);
-  console.log(id);
-
+  const { isLoading,setIsLoading }=useLoading();
   const [mode, setMode] = useState(initialMode || "create");
   const [designationOptions, setDesignationOptions] = useState([]);
   const [roles, setRoles] = useState([]); // State to store fetched roles
@@ -36,6 +36,14 @@ const CreateUserPage = () => {
   } = useForm();
 
   const formData = watch();
+  useEffect(()=>{
+    setIsLoading(true)
+
+    const timer=setTimeout(() => {
+      setIsLoading(false)
+    }, 1000);
+    return () => clearTimeout(timer)
+  },[])
 
   // Fetch roles dynamically
   useEffect(() => {
@@ -151,7 +159,9 @@ const CreateUserPage = () => {
   };
 
   return (
-    <div className="createuser-page-container flex flex-col min-h-screen bg-gray-100">
+    <div>
+      {isLoading && <Loader />}
+      <div className="createuser-page-container flex flex-col min-h-screen bg-gray-100">
       <Header name="User" />
       <PageNavigation
         title={mode === "view" ? "View User" : mode === "edit" ? "Edit User" : "Create User"}
@@ -314,6 +324,7 @@ const CreateUserPage = () => {
           )}
         </form>
       </div>
+    </div>
     </div>
   );
 };

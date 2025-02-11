@@ -8,12 +8,14 @@ import { InputField } from "../../common/Input_fileds";
 import TickSquare from "../../assets/images/TickSquare.svg";
 import axios from "axios";
 import api from "../../utils/api";
+import { useLoading } from "../../context/LoadingContext";
+import Loader from "../../common/Loader";
 
 const CreateService = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { id, mode: initialMode } = location.state || {};
-  console.log("Received ID:", id); // Debugging ID value
+  const { isLoading,setIsLoading }=useLoading()
   const [mode, setMode] = useState(initialMode || "create");
   const {
     register,
@@ -24,6 +26,13 @@ const CreateService = () => {
   } = useForm();
   const [formData,setFormData]=useState({id:null || id,servicename:"",servicedescription:"",fromdate:"",todate:""})
 
+  useEffect(()=>{
+    setIsLoading(true)
+    const timer=setTimeout(() => {
+      setIsLoading(false)
+    }, 1000);
+     return ()=>clearTimeout(timer)
+  },[])
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
       api
@@ -47,14 +56,12 @@ const CreateService = () => {
       setMode("create");
     }
   }, [id, mode, setValue, location.state]);
-   // Added `location.state` dependency
 
   const handleBackClick = () => {
     navigate(-1);
   };
 
   const onSubmit = async (data) => {
-    console.log("Form Data:", data); // Debugging form submission
     const serviceData = {
       servicename: data.servicename,
       servicedescription: data.servicedescription,
@@ -62,13 +69,11 @@ const CreateService = () => {
       todate: data.todate,
     };
 
-    // If there's an ID (for edit), include it in the payload
     if (id) {
       serviceData.id = data.id;
     }
 
     try {
-      // Send data as JSON, not FormData
       const response = await api.post(`admin/createservice`, serviceData, {
         
       });
@@ -86,7 +91,7 @@ const CreateService = () => {
           navigate("/services");
         },
       });
-      reset(); // Reset form values after submission
+      reset(); 
     } catch (error) {
       console.error("Error creating/updating service:", error);
       Swal.fire({
@@ -98,7 +103,9 @@ const CreateService = () => {
 };
 
   return (
-    <div className="bg-gray-100 h-full">
+    <div>
+      {isLoading && <Loader />}
+      <div className="bg-gray-100 h-full">
       <Header name={"Services"} />
 
       <PageNavigation
@@ -159,6 +166,7 @@ const CreateService = () => {
           )}
         </form>
       </div>
+    </div>
     </div>
   );
 };
