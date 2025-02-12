@@ -59,7 +59,7 @@ const Login = () => {
             <img src="/assets/images/logo2.png" alt="Logo" className="w-22 h-20" />
           </div>
           <h3 className="text-xl text-[#131313] font-extrabold mb-6 text-center">
-            Login with Emailz
+            Login with Email
           </h3>
           {error && <div className="mb-4 text-red-500 text-sm text-center">{error}</div>}
           <form onSubmit={handleSubmit(onSubmit)} className="font-['poppins', sans-serif]">

@@ -144,6 +144,7 @@ const Account = () => {
               <label
                 htmlFor="profile-upload"
                 className="absolute bottom-0 right-0 text-[#660F5D] border border-[#660F5D] bg-white rounded-full p-1 cursor-pointer"
+                title="Click to change profile picture" 
               >
                 <Icon icon="mdi:plus" width={10} />
               </label>
@@ -157,6 +158,7 @@ const Account = () => {
             />
           </div>
         </div>
+
 
         {/* Account Details Section */}
         <div className="bg-white shadow-lg rounded-lg px-6 py-6">
