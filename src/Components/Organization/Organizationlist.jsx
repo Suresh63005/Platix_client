@@ -61,15 +61,15 @@ const OrganizationList = () => {
     loadOrganizationsForPage(page, filter, searchQuery);
   }, [page, filter, searchQuery]);
 
-  const handleIconClick = (organizationType_id) => {
-    navigate(`/userpage`,{state:{organizationType_id}});
+  const handleIconClick = (organization_id) => {
+    navigate(`/userpage`,{state:{organization_id}});
   };
 
-  const renderUserIcon = (organizationType_id) => (
+  const renderUserIcon = (organization_id) => (
     <div
       className="flex items-center justify-center py-2 px-7 rounded-[10px] cursor-pointer"
       style={{ backgroundColor: "#660F5D1A" }}
-      onClick={()=>{handleIconClick(organizationType_id)}}
+      onClick={()=>{handleIconClick(organization_id)}}
     >
       <img src={UserICon} alt="User Icon" className="w-5 h-5" />
     </div>
@@ -127,8 +127,8 @@ const OrganizationList = () => {
           fields={["name", "organizationType", "mobile", "icon"]}
           data={organizations.map((org) => ({
             ...org,
-            organizationType: org.organizationType?.organizationType || "N/A", // Ensure safe access
-            icon: renderUserIcon(org.organizationType_id),
+            organizationType: org.organizationType?.organizationType || "N/A", 
+            icon: renderUserIcon(org.id),
           }))} 
           page={page}
           totalPages={totalPages}

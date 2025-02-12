@@ -37,7 +37,7 @@ const CreateOrganization = () => {
   const [newService, setNewService] = useState({ name: "", price: "" });
   const [editingIndex, setEditingIndex] = useState(null);
   const [orgType, setOrgTYpe] = useState([]);
-  console.log(orgType, "from sdhfjghlj.gkfdjshfdgh.")
+  // console.log(orgType, "from sdhfjghlj.gkfdjshfdgh.")
 
   useEffect(()=>{
     setIsLoading(true)
@@ -99,7 +99,7 @@ const CreateOrganization = () => {
       .get("organization/getall")
       .then((response) => {
         const OrgData = response.data.results;
-        console.log(OrgData,"from orgdata");
+        // console.log(OrgData,"from orgdata");
         setOrgTYpe(
           OrgData.map((org) => ({
             value: org.id, // Set id as value

@@ -9,7 +9,7 @@ import api from "../../utils/api";
 
 const Userspage = () => {
   const location=useLocation();
-  const { organizationType_id } = location.state || {};
+  const { organization_id } = location.state || {};
   // console.log(organizationType_id)
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
@@ -23,26 +23,33 @@ const Userspage = () => {
   // Fetch users from API
   const fetchUsers = async () => {
     try {
-      const response = await api.get("user/all");
-      const allUsers = response.data.users; 
+        let response;
+        
+        if (organization_id) {
+            response = await api.get(`user/getbyorganization/${organization_id}`);
+        } else {
+            response = await api.get("user/all");
+        }
 
-      // Apply filters
-      const filteredUsers = allUsers.filter((user) =>
-        (!userTypeFilter || user.type === userTypeFilter) &&
-        (!usernameFilter || user.username.toLowerCase().includes(usernameFilter.toLowerCase())) &&
-        (!searchQuery || user.username.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+        const allUsers = response.data.users;
 
-      // Pagination
-      const startIndex = (page - 1) * usersPerPage;
-      const paginatedUsers = filteredUsers.slice(startIndex, startIndex + usersPerPage);
+        // Apply filters
+        const filteredUsers = allUsers.filter((user) =>
+            (!userTypeFilter || user.type === userTypeFilter) &&
+            (!usernameFilter || user.username.toLowerCase().includes(usernameFilter.toLowerCase())) &&
+            (!searchQuery || user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
 
-      setUsers(paginatedUsers);
-      setTotalPages(Math.ceil(filteredUsers.length / usersPerPage));
+        // Pagination
+        const startIndex = (page - 1) * usersPerPage;
+        const paginatedUsers = filteredUsers.slice(startIndex, startIndex + usersPerPage);
+
+        setUsers(paginatedUsers);
+        setTotalPages(Math.ceil(filteredUsers.length / usersPerPage));
     } catch (error) {
-      console.error("Error fetching users:", error);
+        console.error("Error fetching users:", error);
     }
-  };
+};
 
   // Fetch users when filters or pagination change
   useEffect(() => {
@@ -50,7 +57,7 @@ const Userspage = () => {
   }, [page, userTypeFilter, usernameFilter, searchQuery]);
 
   const handleCreateUserClick = () => {
-    navigate("/createuser",{state:{organizationType_id}});
+    navigate("/createuser",{state:{organization_id}});
   };
 
   const handleSearch = (event) => {

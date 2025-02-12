@@ -19,7 +19,7 @@ import Loader from "../../common/Loader";
 const CreateUserPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { id, mode: initialMode, organizationType_id } = location.state || {};
+  const { id, mode: initialMode, organization_id } = location.state || {};
   const { isLoading,setIsLoading }=useLoading();
   const [mode, setMode] = useState(initialMode || "create");
   const [designationOptions, setDesignationOptions] = useState([]);
@@ -120,7 +120,7 @@ const CreateUserPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      const requestData = { ...data, organizationType_id };
+      const requestData = { ...data, organization_id };
       console.log(requestData);
 
       const response = await api.post("user/upsert", requestData, {
@@ -131,7 +131,7 @@ const CreateUserPage = () => {
 
       const result = response.data;
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         Swal.fire({
           text: mode === "edit" ? "User updated successfully" : "User created successfully",
           imageUrl: TickSquare,
