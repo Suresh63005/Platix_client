@@ -14,6 +14,7 @@ import api from "../../utils/api";
 // Debounced hook for search or filter
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
+  
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -29,6 +30,7 @@ const useDebounce = (value, delay) => {
 };
 
 const OrganizationTypelist = () => {
+  const [selectedItems, setSelectedItems] = useState([]);
   const [organizationTypes, setOrganizationTypes] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -127,6 +129,8 @@ const OrganizationTypelist = () => {
           handleEdit={handleEdit}
           handleView={handleView}
           handleDelete={handleDelete}
+          setSelectedItems={setSelectedItems}
+          selectedItems={selectedItems}
         />
       </div>
     </div>

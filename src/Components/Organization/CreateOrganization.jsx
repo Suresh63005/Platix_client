@@ -250,6 +250,24 @@ const CreateOrganization = () => {
     }
   };
 
+ const[servicesList,setServicesList] = useState({});
+
+ 
+
+  async function handleOrginazationtypeid (id){
+
+     try {
+      const filteredList = orgType.filter((data) => data.value === id);
+       setServicesList(filteredList)
+     } catch (error) {
+      console.log(error);
+     }
+
+  }
+
+  console.log(servicesList,"sureshhhhhhhhhhhhhhhhhh")
+
+
   return (
     <div>
       {isLoading && <Loader />}
@@ -298,7 +316,8 @@ const CreateOrganization = () => {
                     defaultplaceholder={"Select Role"}
                     options={orgType}
                     value={field.value}
-                    onChange={field.onChange} // Pass onChange to the SelectField component
+                    handleOrginazationtypeid={handleOrginazationtypeid}
+                    onChange={ field.onChange} // Pass onChange to the SelectField component
                     className="p-1 w-full"
                     readOnly={mode === "view"}
                   />
@@ -520,7 +539,7 @@ const CreateOrganization = () => {
                       value={
                         newService.id
                           ? availableServices.find(
-                              (option) => option.id === newService.name
+                              (option) => option.id === newService.servicename
                             )
                           : null
                       }
@@ -528,13 +547,13 @@ const CreateOrganization = () => {
                         setNewService({
                           ...newService,
                           id: selectedOption.id,
-                          name: selectedOption.value,
+                          name: selectedOption.servicename,
                         })
                       }
-                      options={availableServices.map((service) => ({
-                        id: service.id,
-                        value: service.name, // Make sure value is the service name
-                        label: service.name, // Label should also be the service name
+                      options={servicesList[0]?.services?.map((service) => ({
+                        id: service?.id,
+                        value: service?.id, // Make sure value is the service name
+                        label: service?.servicename, // Label should also be the service name
                       }))}
                       placeholder="Select service"
                       className="text-[12px]"

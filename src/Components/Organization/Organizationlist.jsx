@@ -17,6 +17,7 @@ const OrganizationList = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [filter, setFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedItems, setSelectedItems] = useState([]);
   const orgsPerPage = 10;
   const navigate = useNavigate();
 
@@ -136,6 +137,8 @@ const OrganizationList = () => {
           handleEdit={handleEdit}
           handleView={handleView}
           handleDelete={handleDelete}
+          setSelectedItems={setSelectedItems}
+          selectedItems={selectedItems}
         />
       </div>
     </div>
