@@ -5,6 +5,7 @@ import Header from "../../common/Header";
 import Pagetitle from "../../common/pagetitle";
 import Table from "../../common/UserTable";
 import api from "../../utils/api";
+import Cookies from "js-cookie";
 
 const Services = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Services = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [deleteServiceId, setDeleteServiceId] = useState(null);
   const [selectedOrgType, setSelectedOrgType] = useState(null);
-  console.log(selectedOrgType,"sgdxhcjkfdghxgh")
+  console.log(selectedOrgType,"selected organization")
   const [orgTypeOptions, setOrgTypeOptions] = useState([]);; // Organization types dropdown
   console.log(orgTypeOptions, "from orgggggggggggggggggg")
   const [organizationType_id,setOrganizationType_id] = useState(null);
@@ -27,8 +28,10 @@ const Services = () => {
   // Fetch services from API
   useEffect(() => {
     const fetchServices = async () => {
+      const token = Cookies.get("token");
       try {
         const response = await api.get("admin/allservices", {
+          headers: { Authorization: `Bearer ${token}` },
           params: {
             filter: selectedFilter,
             search: searchQuery,
@@ -82,9 +85,12 @@ const Services = () => {
 
   // Perform delete when deleteServiceId is set
   useEffect(() => {
+    const token = Cookies.get("token");
     if (deleteServiceId) {
       api
-        .delete(`admin/deleteservice/${deleteServiceId}`)
+      .delete(`admin/deleteservice/${deleteServiceId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
         .then(() => {
           Swal.fire("Deleted!", "Service has been deleted.", "success");
           setServices(services.filter((service) => service.id !== deleteServiceId));
@@ -101,8 +107,11 @@ const Services = () => {
   // Fetch organization types for the dropdown
   useEffect(() => {
     const fetchOrganizationTypes = async () => {
+      const token = Cookies.get("token");
       try {
-        const response = await api.get("organization/getall");
+        const response = await api.get("organization/getall", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         console.log("Organization Types Response:", response);
         if (response.data && Array.isArray(response.data.results)) {
           setOrgTypeOptions(response.data.results.map(org => ({
@@ -138,11 +147,15 @@ const Services = () => {
       showCancelButton: true,
       confirmButtonText: "Yes, Assign",
     }).then((result) => {
+      const token = Cookies.get("token");
       if (result.isConfirmed) {
         api
           .post("/admin/assign-service", {
             organizationType_id: organizationType_id,
     service_id: selectedItems
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
           })
           .then(() => {
             Swal.fire("Success", "Services assigned successfully!", "success");

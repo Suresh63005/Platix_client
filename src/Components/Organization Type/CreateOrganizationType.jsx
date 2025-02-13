@@ -177,6 +177,7 @@ const CreateOrganizationType = () => {
               />
               {errors.toDate && <p className="text-red-500 text-xs mt-1">{errors.toDate.message}</p>}
             </div>
+
           </div>
 
           {mode !== "view" && (

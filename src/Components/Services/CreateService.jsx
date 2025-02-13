@@ -10,6 +10,7 @@ import axios from "axios";
 import api from "../../utils/api";
 import { useLoading } from "../../context/LoadingContext";
 import Loader from "../../common/Loader";
+import Cookies from "js-cookie";
 
 const CreateService = () => {
   const navigate = useNavigate();
@@ -34,9 +35,13 @@ const CreateService = () => {
      return ()=>clearTimeout(timer)
   },[])
   useEffect(() => {
+    const token = Cookies.get("token");
+
     if (id && (mode === "edit" || mode === "view")) {
       api
-        .get(`admin/getbyid/${id}`)
+        .get(`admin/getbyid/${id}`,{
+          headers: { Authorization: `Bearer ${token}` }
+        })
         .then((response) => {
           const servicedata = response.data.data; // Correctly access `data`
           console.log("Fetched Data:", servicedata); // Debugging API response
@@ -74,8 +79,10 @@ const CreateService = () => {
     }
 
     try {
+      const token = Cookies.get("token");
+      
       const response = await api.post(`admin/createservice`, serviceData, {
-        
+        headers: { Authorization: `Bearer ${token}` }
       });
       console.log(response.data);
       Swal.fire({
@@ -100,6 +107,7 @@ const CreateService = () => {
         showConfirmButton: true,
       });
     }
+    console.log(data)
 };
 
   return (
@@ -121,7 +129,7 @@ const CreateService = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           <div className="flex flex-col">
             <InputField
-              label="Service Name"
+              label="Service Name*"
               type="text"
               placeholder="Enter Service Name"
               {...register("servicename", { required: "Service Name is required" })}
@@ -133,7 +141,7 @@ const CreateService = () => {
 
           <div className="flex flex-col">
             <InputField
-              label="Service Description"
+              label="Service Description*"
               type="text"
               placeholder="Enter Service Description"
               {...register("servicedescription", { required: "Description is required" })}
@@ -145,7 +153,7 @@ const CreateService = () => {
 
           <div className="flex flex-col">
             <InputField
-              label="From Date"
+              label="From Date*"
               type="date"
               {...register("fromdate", { required: "From Date is required" })}
               error={errors.fromdate}
@@ -156,7 +164,7 @@ const CreateService = () => {
 
           <div className="flex flex-col">
             <InputField
-              label="To Date"
+              label="To Date*"
               type="date"
               {...register("todate", { required: "To Date is required" })}
               error={errors.todate}

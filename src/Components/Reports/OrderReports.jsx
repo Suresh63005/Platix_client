@@ -42,13 +42,13 @@ const OrderReports = () => {
     const fetchData = async () => {
       try {
 
-        let endpoint = "user/all";
+        let endpoint = "admin/getallorder";
       if (fromDate && toDate) {
         endpoint = `user/getbydate/${fromDate}/${toDate}`;
       }
       
       const response = await api.get(endpoint);
-      const apiData = response.data.users || [];
+      const apiData = response.data.data || [];
         console.log(apiData)
         // Transform API response to match table format
         const formattedData = apiData.map((order) => ({

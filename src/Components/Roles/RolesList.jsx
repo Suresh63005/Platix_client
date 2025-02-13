@@ -3,7 +3,7 @@ import axios from "axios";
 import Header from "../../common/Header";
 import Table from "../../common/UserTable";
 import api from "../../utils/api";
-
+import Cookies from "js-cookie";
 const Rolespage = () => {
   const [roles, setRoles] = useState([]);
   const [page, setPage] = useState(1);
@@ -15,8 +15,13 @@ const Rolespage = () => {
   }, [page]);
 
   const fetchRoles = async (page) => {
+    const token = Cookies.get("token");
     try {
-      const response = await api.get(`admin/viewrole?page=${page}&limit=${rolesPerPage}`);
+      const response = await api.get(`admin/viewrole?page=${page}&limit=${rolesPerPage}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
       const fetchedRoles = response.data.roles;
       const totalRoles = response.data.totalRoles; // Get total roles from API
   

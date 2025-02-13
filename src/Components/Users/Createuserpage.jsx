@@ -15,6 +15,8 @@ import axios from "axios";
 import api from "../../utils/api";
 import { useLoading } from "../../context/LoadingContext";
 import Loader from "../../common/Loader";
+import Cookies from "js-cookie";
+
 
 const CreateUserPage = () => {
   const location = useLocation();
@@ -47,9 +49,15 @@ const CreateUserPage = () => {
 
   // Fetch roles dynamically
   useEffect(() => {
+        const token = Cookies.get("token");
     const fetchRoles = async () => {
       try {
-        const response = await api.get("admin/viewrole");
+
+        const response = await api.get("admin/viewrole",{
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
         const result = response.data.roles;
 
         if (result) {
@@ -107,6 +115,8 @@ const CreateUserPage = () => {
         ]);
         break;
       case "Dental Laboratory":
+      case "Material Supplier":
+      case "Radiology" :
         setDesignationOptions([
           { value: "Owner", label: "Owner" },
           { value: "Technician", label: "Technician" },
@@ -197,7 +207,7 @@ const CreateUserPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <SelectField
-                  label="Role"
+                  label="Role*"
                   defaultplaceholder="Select Role"
                   options={roles}
                   value={field.value}
@@ -215,7 +225,7 @@ const CreateUserPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <InputField
-                  label="First Name"
+                  label="First Name*"
                   placeholder="Enter First Name"
                   {...field}
                   disabled={mode === "view"}
@@ -228,7 +238,7 @@ const CreateUserPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <InputField
-                  label="Last Name"
+                  label="Last Name*"
                   placeholder="Enter Last Name"
                   {...field}
                   disabled={mode === "view"}
@@ -239,7 +249,7 @@ const CreateUserPage = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Controller
-              name="dateOfBirth"
+              name="dateOfBirth*"
               control={control}
               defaultValue=""
               render={({ field }) => (
@@ -252,7 +262,7 @@ const CreateUserPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <InputField
-                  label="Email"
+                  label="Email*"
                   type="email"
                   placeholder="Enter Email"
                   {...field}
@@ -266,7 +276,7 @@ const CreateUserPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <PhoneNumberInput
-                  label="Mobile Number"
+                  label="Mobile Number*"
                   value={field.value}
                   onChange={(value) => field.onChange(value)}
                   defaultCountry="IN"
@@ -280,7 +290,7 @@ const CreateUserPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <WhatsAppInput
-                  label="WhatsApp Number"
+                  label="WhatsApp Number*"
                   value={field.value}
                   onChange={(value) => field.onChange(value)}
                   disabled={mode === "view"}
@@ -296,7 +306,7 @@ const CreateUserPage = () => {
               defaultValue=""
               render={({ field }) => (
                 <SelectField
-                  label="Designation"
+                  label="Designation*"
                   defaultplaceholder="Select Designation"
                   options={designationOptions || []}
                   value={field.value}

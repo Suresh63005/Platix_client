@@ -145,8 +145,8 @@ const CreateOrganization = () => {
 
   const handleAddService = () => {
     if (newService.id && newService.price) {
-      setUserServices([...userServices, newService]); 
-      setNewService({ id: "", name: "", price: "" }); 
+      setUserServices([...userServices, { ...newService }]); // ✅ Ensuring 'name' is included
+      setNewService({ id: "", name: "", price: "" });
     } else {
       Swal.fire({
         icon: "warning",
@@ -154,7 +154,6 @@ const CreateOrganization = () => {
       });
     }
   };
-
   const handleSaveService = () => {
     if (editingIndex !== null) {
       const updatedServices = [...userServices];
@@ -299,7 +298,7 @@ const CreateOrganization = () => {
           <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <InputField
-                label={"Organization Name"}
+                label={"Organization Name*"}
                 type={"text"}
                 placeholder={"Enter Organization Name"}
                 {...register("name")}
@@ -312,8 +311,8 @@ const CreateOrganization = () => {
                 defaultValue=""
                 render={({ field }) => (
                   <SelectField
-                    label="Organization Type"
-                    defaultplaceholder={"Select Role"}
+                    label="Organization Type*"
+                    defaultplaceholder={"Select Organization Type"}
                     options={orgType}
                     value={field.value}
                     handleOrginazationtypeid={handleOrginazationtypeid}
@@ -325,7 +324,7 @@ const CreateOrganization = () => {
               />
 
               <InputField
-                label={"Address"}
+                label={"Address*"}
                 type={"text"}
                 placeholder={"Enter Address"}
                 {...register("address")}
@@ -337,7 +336,7 @@ const CreateOrganization = () => {
                   htmlFor="google-coordinates"
                   className="block text-xs font-medium"
                 >
-                  Google Coordinates
+                  Google Coordinates*
                 </label>
                 <div className="flex gap-2">
                   <InputField
@@ -361,7 +360,7 @@ const CreateOrganization = () => {
                 defaultValue=""
                 render={({ field }) => (
                   <PhoneNumberInput
-                    label={"Mobile Number"}
+                    label={"Mobile Number*"}
                     value={field.value}
                     onChange={(value) => field.onChange(value)}
                     defaultCountry={"IN"}
@@ -377,7 +376,7 @@ const CreateOrganization = () => {
                 defaultValue=""
                 render={({ field }) => (
                   <WhatsAppInput
-                    label={"WhatsApp Number"}
+                    label={"WhatsApp Number*"}
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.value)}
                     className="p-1"
@@ -387,7 +386,7 @@ const CreateOrganization = () => {
               />
 
               <InputField
-                label={"Email"}
+                label={"Email*"}
                 type={"email"}
                 placeholder={"Enter Email"}
                 {...register("email")}
@@ -395,7 +394,7 @@ const CreateOrganization = () => {
               />
 
               <InputField
-                label={"Description"}
+                label={"Description*"}
                 type={"text"}
                 placeholder={"Enter Description"}
                 {...register("description")}
@@ -406,7 +405,7 @@ const CreateOrganization = () => {
             {dynamicId.includes(watch("organizationType_id")) && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
-                  label="GST"
+                  label="GST*"
                   type="text"
                   placeholder="Enter GST Number"
                   {...register("gstNumber")}
@@ -418,7 +417,7 @@ const CreateOrganization = () => {
                   defaultValue=""
                   render={({ field }) => (
                     <SelectField
-                      label="Designation"
+                      label="Designation*"
                       defaultplaceholder={"Select Designation"}
                       options={[
                         { value: "Owner", label: "Owner" },
@@ -437,15 +436,15 @@ const CreateOrganization = () => {
 
             {watch("organizationType_id") === dentistId && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <InputField
+                {/* <InputField
                   label="Business Name"
                   type="text"
                   placeholder="Enter Business Name"
                   {...register("businessName")}
                   disabled={mode === "view"}
-                />
+                /> */}
                 <InputField
-                  label="Registration ID"
+                  label="Registration ID*"
                   type="text"
                   placeholder="Enter Registration ID"
                   {...register("registrationId")}
@@ -457,7 +456,7 @@ const CreateOrganization = () => {
                   defaultValue=""
                   render={({ field }) => (
                     <SelectField
-                      label="Designation"
+                      label="Designation*"
                       defaultplaceholder={"Select Designation"}
                       options={[
                         { value: "Dentist", label: "Dentist" },
@@ -495,35 +494,35 @@ const CreateOrganization = () => {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <InputField
-                label={"Bank Name"}
+                label={"Bank Name*"}
                 type={"text"}
                 placeholder={"Enter Bank Name"}
                 {...register("bankName")}
                 disabled={mode === "view"}
               />
               <InputField
-                label={"Organization Account Number"}
+                label={"Organization Account Number*"}
                 type={"text"}
                 placeholder={"Enter Account Number"}
                 {...register("accountNumber")}
                 disabled={mode === "view"}
               />
               <InputField
-                label={"Account Holder Name"}
+                label={"Account Holder Name*"}
                 type={"text"}
                 placeholder={"Enter Account Holder Name"}
                 {...register("accountHolder")}
                 disabled={mode === "view"}
               />
               <InputField
-                label={"IFSC Code"}
+                label={"IFSC Code*"}
                 type={"text"}
                 placeholder={"Enter IFSC Code"}
                 {...register("ifscCode")}
                 disabled={mode === "view"}
               />
               <InputField
-                label={"UPI ID"}
+                label={"UPI ID*"}
                 type={"text"}
                 placeholder={"Enter UPI ID"}
                 {...register("upiId")}
@@ -536,24 +535,26 @@ const CreateOrganization = () => {
                 <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
                   <div className="w-full sm:w-1/2">
                     <Select
-                      value={
-                        newService.id
-                          ? availableServices.find(
-                              (option) => option.id === newService.servicename
-                            )
-                          : null
-                      }
+                     value={
+                      newService.id
+                        ? {
+                            id: newService.id,
+                            value: newService.id,
+                            label: newService.name, 
+                          }
+                        : null
+                    }
                       onChange={(selectedOption) =>
                         setNewService({
                           ...newService,
                           id: selectedOption.id,
-                          name: selectedOption.servicename,
+                          name: selectedOption.label, 
                         })
                       }
                       options={servicesList[0]?.services?.map((service) => ({
                         id: service?.id,
-                        value: service?.id, // Make sure value is the service name
-                        label: service?.servicename, // Label should also be the service name
+                        value: service?.id, 
+                        label: service?.servicename, 
                       }))}
                       placeholder="Select service"
                       className="text-[12px]"
