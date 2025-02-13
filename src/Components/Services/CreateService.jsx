@@ -128,7 +128,7 @@ const CreateService = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             <InputField
-              label="Service Name"
+              label="Service Name*"
               type="text"
               placeholder="Enter Service Name"
               {...register("servicename", { required: "Service Name is required" })}
@@ -137,7 +137,7 @@ const CreateService = () => {
             />
 
             <InputField
-              label="Service Description"
+              label="Service Description*"
               type="text"
               placeholder="Enter Service Description"
               {...register("servicedescription", { required: "Description is required" })}
@@ -146,7 +146,7 @@ const CreateService = () => {
             />
 
             <InputField
-              label="From Date"
+              label="From Date*"
               type="date"
               {...register("fromdate", { required: "From Date is required" })}
               error={errors.fromdate}
@@ -154,7 +154,7 @@ const CreateService = () => {
             />
 
             <InputField
-              label="To Date"
+              label="To Date*"
               type="date"
               {...register("todate", { required: "To Date is required" })}
               error={errors.todate}
