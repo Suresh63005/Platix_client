@@ -100,7 +100,7 @@ const Userspage = () => {
 
         <Table
           columns={["Username", "Type of User", "Mobile No", "Starting Date"]}
-          fields={["Username", "type", "mobileNo", "createdAt"]}
+          fields={["Username", "designation", "mobileNo", "createdAt"]}
           data={users}
           page={page}
           totalPages={totalPages}

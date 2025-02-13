@@ -70,14 +70,14 @@ const RevenueReports = () => {
         setLoading(true);
         setError(null);
 
-        let endpoint = "user/all";
+        let endpoint = "admin/getallorder";
         if (fromDate && toDate) {
           endpoint = `user/getbydate/${fromDate}/${toDate}`;
         }
         
         const response = await api.get(endpoint);
 
-        const orders = response.data.users || [];
+        const orders = response.data.data || [];
 
         const formattedOrders = orders.map((order) => ({
           orderId: order.id || "N/A",
