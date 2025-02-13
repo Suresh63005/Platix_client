@@ -7,7 +7,7 @@ const PasswordInput = React.forwardRef(({ label, placeholder, value, ...rest }, 
   return (
     <div>
       <label className="block text-[black] text-[12px] font-sm mb-[4px]">
-        {label}
+        {label+"*"}
       </label>
       <div className="flex items-center border border-gray-300 rounded-lg focus-within:border-[#660F5D] relative">
         <input

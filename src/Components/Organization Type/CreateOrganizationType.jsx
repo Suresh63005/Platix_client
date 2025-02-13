@@ -131,7 +131,7 @@ const CreateOrganizationType = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <InputField
-              label="Organization Type"
+              label="Organization Type*"
               type="text"
               placeholder="Enter Organization Type Name"
               {...register("organizationType", { required: "Organization Type is required" })}
@@ -140,7 +140,7 @@ const CreateOrganizationType = () => {
             />
 
             <InputField
-              label="Description"
+              label="Description*"
               type="text"
               placeholder="Enter Description"
               {...register("description", { required: "Description is required" })}
@@ -149,7 +149,7 @@ const CreateOrganizationType = () => {
             />
 
             <InputField
-              label="From Date"
+              label="From Date*"
               type="date"
               {...register("fromDate", { required: "From Date is required" })}
               error={errors.fromDate}
@@ -157,7 +157,7 @@ const CreateOrganizationType = () => {
             />
 
             <InputField
-              label="To Date"
+              label="To Date*"
               type="date"
               {...register("toDate", { required: "To Date is required" })}
               error={errors.toDate}
