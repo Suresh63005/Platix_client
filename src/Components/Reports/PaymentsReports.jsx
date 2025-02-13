@@ -73,13 +73,13 @@ const PaymentsReports = () => {
         setLoading(true);
         setError(null); // Reset error state before fetching
 
-        let endpoint = "user/all";
+        let endpoint = "admin/getallorder";
       if (fromDate && toDate) {
         endpoint = `user/getbydate/${fromDate}/${toDate}`;
       }
       
       const response = await api.get(endpoint);
-      const apiData = response.data.users || [];
+      const apiData = response.data.data || [];
 
         const formattedOrders = apiData.map((order) => ({
           orderId: order.id || "N/A",

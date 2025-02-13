@@ -10,6 +10,7 @@ import axios from "axios";
 import api from "../../utils/api";
 import { useLoading } from "../../context/LoadingContext";
 import Loader from "../../common/Loader";
+import Cookies from "js-cookie";
 
 const CreateService = () => {
   const navigate = useNavigate();
@@ -34,9 +35,13 @@ const CreateService = () => {
      return ()=>clearTimeout(timer)
   },[])
   useEffect(() => {
+    const token = Cookies.get("token");
+
     if (id && (mode === "edit" || mode === "view")) {
       api
-        .get(`admin/getbyid/${id}`)
+        .get(`admin/getbyid/${id}`,{
+          headers: { Authorization: `Bearer ${token}` }
+        })
         .then((response) => {
           const servicedata = response.data.data; // Correctly access `data`
           console.log("Fetched Data:", servicedata); // Debugging API response
@@ -74,8 +79,10 @@ const CreateService = () => {
     }
 
     try {
+      const token = Cookies.get("token");
+      
       const response = await api.post(`admin/createservice`, serviceData, {
-        
+        headers: { Authorization: `Bearer ${token}` }
       });
       console.log(response.data);
       Swal.fire({
@@ -100,6 +107,7 @@ const CreateService = () => {
         showConfirmButton: true,
       });
     }
+    console.log(data)
 };
 
   return (

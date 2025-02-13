@@ -90,7 +90,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
           </button>
         </div> */}
 
-        <div className="w-full max-h-[400px] overflow-auto scrollbar-color">
+        <div className="w-full max-h-[55vh] overflow-auto scrollbar-color">
           <table className="text-sm min-w-full table-auto">
             <thead className="text-[12px]">
               <tr className="border-b-[1px] border-[#F3E6F2]">

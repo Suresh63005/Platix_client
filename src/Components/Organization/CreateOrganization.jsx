@@ -145,8 +145,8 @@ const CreateOrganization = () => {
 
   const handleAddService = () => {
     if (newService.id && newService.price) {
-      setUserServices([...userServices, newService]); 
-      setNewService({ id: "", name: "", price: "" }); 
+      setUserServices([...userServices, { ...newService }]); // ✅ Ensuring 'name' is included
+      setNewService({ id: "", name: "", price: "" });
     } else {
       Swal.fire({
         icon: "warning",
@@ -154,7 +154,6 @@ const CreateOrganization = () => {
       });
     }
   };
-
   const handleSaveService = () => {
     if (editingIndex !== null) {
       const updatedServices = [...userServices];
@@ -313,7 +312,7 @@ const CreateOrganization = () => {
                 render={({ field }) => (
                   <SelectField
                     label="Organization Type"
-                    defaultplaceholder={"Select Role"}
+                    defaultplaceholder={"Select Organization Type"}
                     options={orgType}
                     value={field.value}
                     handleOrginazationtypeid={handleOrginazationtypeid}
@@ -437,13 +436,13 @@ const CreateOrganization = () => {
 
             {watch("organizationType_id") === dentistId && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <InputField
+                {/* <InputField
                   label="Business Name"
                   type="text"
                   placeholder="Enter Business Name"
                   {...register("businessName")}
                   disabled={mode === "view"}
-                />
+                /> */}
                 <InputField
                   label="Registration ID"
                   type="text"
@@ -536,24 +535,26 @@ const CreateOrganization = () => {
                 <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
                   <div className="w-full sm:w-1/2">
                     <Select
-                      value={
-                        newService.id
-                          ? availableServices.find(
-                              (option) => option.id === newService.servicename
-                            )
-                          : null
-                      }
+                     value={
+                      newService.id
+                        ? {
+                            id: newService.id,
+                            value: newService.id,
+                            label: newService.name, 
+                          }
+                        : null
+                    }
                       onChange={(selectedOption) =>
                         setNewService({
                           ...newService,
                           id: selectedOption.id,
-                          name: selectedOption.servicename,
+                          name: selectedOption.label, 
                         })
                       }
                       options={servicesList[0]?.services?.map((service) => ({
                         id: service?.id,
-                        value: service?.id, // Make sure value is the service name
-                        label: service?.servicename, // Label should also be the service name
+                        value: service?.id, 
+                        label: service?.servicename, 
                       }))}
                       placeholder="Select service"
                       className="text-[12px]"

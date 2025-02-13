@@ -15,6 +15,8 @@ import axios from "axios";
 import api from "../../utils/api";
 import { useLoading } from "../../context/LoadingContext";
 import Loader from "../../common/Loader";
+import Cookies from "js-cookie";
+
 
 const CreateUserPage = () => {
   const location = useLocation();
@@ -47,9 +49,15 @@ const CreateUserPage = () => {
 
   // Fetch roles dynamically
   useEffect(() => {
+        const token = Cookies.get("token");
     const fetchRoles = async () => {
       try {
-        const response = await api.get("admin/viewrole");
+
+        const response = await api.get("admin/viewrole",{
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
         const result = response.data.roles;
 
         if (result) {
@@ -106,6 +114,8 @@ const CreateUserPage = () => {
         ]);
         break;
       case "Dental Laboratory":
+      case "Material Supplier":
+      case "Radiology" :
         setDesignationOptions([
           { value: "Owner", label: "Owner" },
           { value: "Technician", label: "Technician" },
