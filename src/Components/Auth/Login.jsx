@@ -1,43 +1,50 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form"; // Import useForm hook
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup"; // Import yupResolver
+import * as yup from "yup"; // Import Yup for validation
 import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import Cookies from "js-cookie";
 import "./Login.css";
 import { Vortex } from 'react-loader-spinner';
 import { toast, Toaster } from 'react-hot-toast';
 import api from "../../utils/api";
 
-const Login = () => {
-  const { register, handleSubmit, setValue } = useForm(); // Initialize useForm
-  const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({"email":"","password":""}); // State for email input
-  const [error, setError] = useState(""); // State for error messages
-  const navigate = useNavigate(); // Hook to navigate programmatically
-  const [loading, setloading] = useState(false)
+// Define validation schema using Yup
+const validationSchema = yup.object().shape({
+  email: yup.string().email("Invalid email format").required("Email is required"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .max(25, "Password cannot exceed 25 characters")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/\d/, "Password must contain at least one number")
+    .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
+});
 
-  // Toggle password visibility
+const Login = () => {
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    resolver: yupResolver(validationSchema), // Apply Yup validation
+  });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-
-  // Handle input change manually (if needed)
-  const handleChange = (e) => {
-    setValue(e.target.name, e.target.value);
-  };
-
-  // Handle form submission
   const onSubmit = async (data) => {
-    setloading(true)
+    setLoading(true);
     try {
       const response = await api.post("admin/login", data);
       toast.dismiss();
       toast.success('Login successful!');
-      // Store token in cookies (expires in 1 hour)
       Cookies.set("token", response.data.token, { expires: 1, secure: true, sameSite: "Strict" });
-  
+
       setTimeout(() => {
         navigate("/organizationlist");
       }, 2000);
@@ -45,9 +52,8 @@ const Login = () => {
     } catch (error) {
       toast.dismiss();
       toast.error(error.response?.data?.error || "Something went wrong!");
-      setError(error.response?.data?.message || "Something went wrong");
-    }finally{
-      setloading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,7 +67,6 @@ const Login = () => {
           <h3 className="text-xl text-[#131313] font-extrabold mb-6 text-center">
             Login with Email
           </h3>
-          {error && <div className="mb-4 text-red-500 text-sm text-center">{error}</div>}
           <form onSubmit={handleSubmit(onSubmit)} className="font-['poppins', sans-serif]">
             {/* Email Field */}
             <div className="mb-4">
@@ -77,13 +82,13 @@ const Login = () => {
                   id="email"
                   name="email"
                   {...register("email")}
-                  onChange={handleChange}
-                  // value={formData.email}
                   className="w-full email py-3 px-0 text-[12px] text-black focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="eg : platix@gmail.com"
                 />
               </div>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
             </div>
+
             {/* Password Field */}
             <div className="mb-4">
               <label htmlFor="password" className="block text-sm text-[#131313] font-bold mb-[12px]">
@@ -98,30 +103,28 @@ const Login = () => {
                   id="password"
                   name="password"
                   {...register("password")}
-                  onChange={handleChange}
                   className="w-full password py-3 px-0 text-[12px] focus:outline-none focus:ring-0 focus:border-none"
-                  // value={formData.password}
                   placeholder="Password"
                 />
                 <span className="px-3 text-gray-500 cursor-pointer border-none" onClick={togglePasswordVisibility}>
                   <Icon icon={showPassword ? "mdi:eye" : "mdi:eye-off"} width={20} />
                 </span>
               </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
               <h4 className="text-[12px] text-[#131313] text-right mt-1 cursor-pointer font-semibold">
                 <Link to="/forgotpass">Forgot Password?</Link>
               </h4>
             </div>
+
             {/* Login Button */}
             <div className="mt-[32px]">
               <button type="submit" className="w-full py-3 bg-[#860579] text-white font-semibold rounded-lg hover:bg-[#860579] focus:outline-none focus:ring focus:ring-[#860579]" disabled={loading}>
-              {loading ? (
+                {loading ? (
                   <Vortex
                     visible={true}
                     height="25"
                     width="350"
                     ariaLabel="vortex-loading"
-                    wrapperStyle={{}}
-                    wrapperClass="vortex-wrapper"
                     colors={['white', 'white', 'white', 'white', 'white', 'white']}
                   />
                 ) : (
@@ -132,11 +135,12 @@ const Login = () => {
           </form>
         </div>
       </div>
+
       {/* Copyright Text */}
       <div className="flex justify-center py-4 mt-auto bg-white">
         <h4 className="text-sm text-[#25064C] font-medium">© Copyright 2025 Platix Admin Portal</h4>
       </div>
-      <Toaster position="top-right" reverseOrder={false} toastOptions={{duration: 2000, }}/>
+      <Toaster position="top-right" reverseOrder={false} toastOptions={{ duration: 2000 }} />
     </div>
   );
 };

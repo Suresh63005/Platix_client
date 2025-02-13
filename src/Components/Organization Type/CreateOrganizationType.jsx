@@ -130,39 +130,53 @@ const CreateOrganizationType = () => {
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <InputField
-              label="Organization Type"
-              type="text"
-              placeholder="Enter Organization Type Name"
-              {...register("organizationType", { required: "Organization Type is required" })}
-              error={errors.organizationType}
-              readOnly={mode === "view"}
-            />
+            <div className="flex flex-col">
+              <InputField
+                label="Organization Type"
+                type="text"
+                placeholder="Enter Organization Type Name"
+                {...register("organizationType", { required: "Organization Type is required" })}
+                error={errors.organizationType}
+                readOnly={mode === "view"}
+              />
+              {errors.organizationType && <p className="text-red-500 text-xs mt-1">{errors.organizationType.message}</p>}
 
-            <InputField
-              label="Description"
-              type="text"
-              placeholder="Enter Description"
-              {...register("description", { required: "Description is required" })}
-              error={errors.description}
-              readOnly={mode === "view"}
-            />
+            </div>
 
-            <InputField
-              label="From Date"
-              type="date"
-              {...register("fromDate", { required: "From Date is required" })}
-              error={errors.fromDate}
-              readOnly={mode === "view"}
-            />
+            <div className="flex flex-col">
+              <InputField
+                label="Description"
+                type="text"
+                placeholder="Enter Description"
+                {...register("description", { required: "Description is required" })}
+                error={errors.description}
+                readOnly={mode === "view"}
+              />
+              {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
 
-            <InputField
-              label="To Date"
-              type="date"
-              {...register("toDate", { required: "To Date is required" })}
-              error={errors.toDate}
-              readOnly={mode === "view"}
-            />
+            </div>
+
+            <div className="flex flex-col">
+              <InputField
+                label="From Date"
+                type="date"
+                {...register("fromDate", { required: "From Date is required" })}
+                error={errors.fromDate}
+                readOnly={mode === "view"}
+              />
+              {errors.fromDate && <p className="text-red-500 text-xs mt-1">{errors.fromDate.message}</p>}
+            </div>
+
+            <div className="flex flex-col">
+              <InputField
+                label="To Date"
+                type="date"
+                {...register("toDate", { required: "To Date is required" })}
+                error={errors.toDate}
+                readOnly={mode === "view"}
+              />
+              {errors.toDate && <p className="text-red-500 text-xs mt-1">{errors.toDate.message}</p>}
+            </div>
           </div>
 
           {mode !== "view" && (

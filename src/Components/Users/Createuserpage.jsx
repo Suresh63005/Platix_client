@@ -73,11 +73,12 @@ const CreateUserPage = () => {
   useEffect(() => {
     if (id  && (mode === "edit" || mode === "view")) {
       api
-        .get(`user/getbyid/${id}`) // Make sure you have the correct endpoint here
+        .get(`user/getbyid/${id}`) 
         .then((response) => {
           const userData = response.data.user;
-          reset(userData); // Reset the form with fetched user data
-          handleRoleChange(userData.role_id); // Ensure designation updates based on role
+          console.log(userData)
+          reset(userData); 
+          handleRoleChange(userData.role_id); 
         })
         .catch((error) => console.error("Error fetching user data:", error));
     }

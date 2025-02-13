@@ -118,7 +118,8 @@ const CreateService = () => {
           {mode === "edit" ? "Edit Service" : mode === "view" ? "View Service" : "Create Service"}
         </h3>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="flex flex-col">
             <InputField
               label="Service Name"
               type="text"
@@ -127,7 +128,10 @@ const CreateService = () => {
               error={errors.servicename}
               readOnly={mode === "view"}
             />
+            {errors.servicename && <p className="text-red-500 text-xs mt-1">{errors.servicename.message}</p>}
+          </div>
 
+          <div className="flex flex-col">
             <InputField
               label="Service Description"
               type="text"
@@ -136,7 +140,10 @@ const CreateService = () => {
               error={errors.servicedescription}
               readOnly={mode === "view"}
             />
+            {errors.servicedescription && <p className="text-red-500 text-xs mt-1">{errors.servicedescription.message}</p>}
+          </div>
 
+          <div className="flex flex-col">
             <InputField
               label="From Date"
               type="date"
@@ -144,7 +151,10 @@ const CreateService = () => {
               error={errors.fromdate}
               readOnly={mode === "view"}
             />
+            {errors.fromdate && <p className="text-red-500 text-xs mt-1">{errors.fromdate.message}</p>}
+          </div>
 
+          <div className="flex flex-col">
             <InputField
               label="To Date"
               type="date"
@@ -152,7 +162,9 @@ const CreateService = () => {
               error={errors.todate}
               readOnly={mode === "view"}
             />
+            {errors.todate && <p className="text-red-500 text-xs mt-1">{errors.todate.message}</p>}
           </div>
+        </div>
 
           {mode !== "view" && (
             <div className="flex justify-end gap-3 mt-4">
