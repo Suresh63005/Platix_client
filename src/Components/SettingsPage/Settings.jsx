@@ -54,7 +54,7 @@ const Settings = () => {
     const fetchSettings = async () => {
       const token = Cookies.get("token");
       try {
-        const response = await axios.get("http://localhost:5000/admin/getbyid", {
+        const response = await api.get("/admin/getbyid", {
           headers: { Authorization: `Bearer ${token}` },
         });
   
