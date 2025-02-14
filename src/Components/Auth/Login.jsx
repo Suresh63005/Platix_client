@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup"; // Import yupResolver
-import * as yup from "yup"; // Import Yup for validation
 import { Icon } from "@iconify/react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -10,24 +8,9 @@ import { Vortex } from 'react-loader-spinner';
 import { toast, Toaster } from 'react-hot-toast';
 import api from "../../utils/api";
 
-// Define validation schema using Yup
-const validationSchema = yup.object().shape({
-  email: yup.string().email("Invalid email format").required("Email is required"),
-  password: yup
-    .string()
-    .required("Password is required")
-    .min(8, "Password must be at least 8 characters")
-    .max(25, "Password cannot exceed 25 characters")
-    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
-    .matches(/\d/, "Password must contain at least one number")
-    .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
-});
 
 const Login = () => {
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-    resolver: yupResolver(validationSchema), // Apply Yup validation
-  });
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -86,7 +69,6 @@ const Login = () => {
                   placeholder="eg : platix@gmail.com"
                 />
               </div>
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
             </div>
 
             {/* Password Field */}
@@ -110,7 +92,6 @@ const Login = () => {
                   <Icon icon={showPassword ? "mdi:eye" : "mdi:eye-off"} width={20} />
                 </span>
               </div>
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
               <h4 className="text-[12px] text-[#131313] text-right mt-1 cursor-pointer font-semibold">
                 <Link to="/forgotpass">Forgot Password?</Link>
               </h4>
