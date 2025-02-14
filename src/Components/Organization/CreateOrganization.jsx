@@ -394,7 +394,7 @@ const CreateOrganization = () => {
               />
 
               <InputField
-                label={"Description*"}
+                label={"Description"}
                 type={"text"}
                 placeholder={"Enter Description"}
                 {...register("description")}
