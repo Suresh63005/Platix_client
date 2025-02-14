@@ -10,8 +10,20 @@ import TickSquare from "../../assets/images/TickSquare.svg";
 import api from "../../utils/api";
 import { useLoading } from "../../context/LoadingContext";
 import Loader from "../../common/Loader";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
 const Settings = () => {
+  const validationSchema = yup.object().shape({
+    notificationApiKey: yup.string().required("notification API key is required"),
+    smsGatewayApiKey: yup.string().required("smsGateway API key is required"),
+    paymentGatewayApiKey: yup.string().required("paymentGateway API key is required"),
+    emailApiKey: yup.string().required(" email API key is required"),
+    whatsappApiKey: yup.string().required("whatsapp API key is required"),
+    privacyPolicy: yup.string().required("Privacy Policy is required"),
+    termsAndConditions: yup.string().required("Terms & Conditions are required"),
+  });
+
   const {
     register,
     handleSubmit,
@@ -19,7 +31,12 @@ const Settings = () => {
     reset,
     watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({resolver:yupResolver(validationSchema),
+    defaultValues: {
+      privacyPolicy: "",
+      termsAndConditions: "",
+    },
+  });
 
   const [websiteImage, setWebsiteImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -37,7 +54,7 @@ const Settings = () => {
     const fetchSettings = async () => {
       const token = Cookies.get("token");
       try {
-        const response = await api.get("/admin/getbyid", {
+        const response = await axios.get("http://localhost:5000/admin/getbyid", {
           headers: { Authorization: `Bearer ${token}` },
         });
   
@@ -131,52 +148,75 @@ const Settings = () => {
                   onChange={(e) => setWebsiteImage(e.target.files[0])}
                   className="w-full py-[6px] px-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#660F5D] focus:border-[#660F5D]"
                 />
+                {errors.organizationType && <p className="text-red-500 text-xs mt-1">{errors.organizationType.message}</p>}
+
+              </div>
+              <div className="flex flex-col">
+                <PasswordInput
+                  label="Notification API Key"
+                  placeholder="Enter API Key"
+                  {...register("notificationApiKey", {
+                    required: "API key is required",
+                  })}
+                  defaultValue={watch("notificationApiKey")}
+                  error={errors.notificationApiKey}
+                />
+                {errors.notificationApiKey && <p className="text-red-500 text-xs mt-1">{errors.notificationApiKey.message}</p>}
+
               </div>
 
-              <PasswordInput
-                label="Notification API Key"
-                placeholder="Enter API Key"
-                {...register("notificationApiKey", {
-                  required: "API key is required",
-                })}
-                defaultValue={watch("notificationApiKey")}
-                error={errors.notificationApiKey}
-              />
+              <div className="flex flex-col">
+                <PasswordInput
+                  label="SMS Gateway API Key"
+                  placeholder="Enter API Key"
+                  {...register("smsGatewayApiKey", { required: "API key is required" })}
+                  defaultValue={watch("smsGatewayApiKey")}
+                  error={errors.smsGatewayApiKey}
+                />
+                {errors.smsGatewayApiKey && <p className="text-red-500 text-xs mt-1">{errors.smsGatewayApiKey.message}</p>}
 
-              <PasswordInput
-                label="SMS Gateway API Key"
-                placeholder="Enter API Key"
-                {...register("smsGatewayApiKey", { required: "API key is required" })}
-                defaultValue={watch("smsGatewayApiKey")}
-                error={errors.smsGatewayApiKey}
-              />
-              <PasswordInput
-                label="Payment Gateway API Key"
-                placeholder="Enter API Key"
-                {...register("paymentGatewayApiKey", {
-                  required: "API key is required",
-                })}
-                defaultValue={watch("paymentGatewayApiKey")}
-                error={errors.paymentGatewayApiKey}
-              />
-              <PasswordInput
-                label="Email API Key"
-                placeholder="Enter API Key"
-                {...register("emailApiKey", {
-                  required: "API key is required",
-                })}
-                defaultValue={watch("emailApiKey")}
-                error={errors.emailApiKey}
-              />
-              <PasswordInput
-                label="WhatsApp API Key"
-                placeholder="Enter API Key"
-                {...register("whatsappApiKey", {
-                  required: "API key is required",
-                })}
-                defaultValue={watch("whatsappApiKey")}
-                error={errors.whatsappApiKey}
-              />
+              </div>
+
+              <div className="flex flex-col">
+                <PasswordInput
+                  label="Payment Gateway API Key"
+                  placeholder="Enter API Key"
+                  {...register("paymentGatewayApiKey", {
+                    required: "API key is required",
+                  })}
+                  defaultValue={watch("paymentGatewayApiKey")}
+                  error={errors.paymentGatewayApiKey}
+                />
+                {errors.paymentGatewayApiKey && <p className="text-red-500 text-xs mt-1">{errors.paymentGatewayApiKey.message}</p>}
+
+              </div>
+              <div className="flex flex-col">
+                <PasswordInput
+                  label="Email API Key"
+                  placeholder="Enter API Key"
+                  {...register("emailApiKey", {
+                    required: "API key is required",
+                  })}
+                  defaultValue={watch("emailApiKey")}
+                  error={errors.emailApiKey}
+                />
+                {errors.emailApiKey && <p className="text-red-500 text-xs mt-1">{errors.emailApiKey.message}</p>}
+
+              </div>
+
+              <div className="flex flex-col">
+                <PasswordInput
+                  label="WhatsApp API Key"
+                  placeholder="Enter API Key"
+                  {...register("whatsappApiKey", {
+                    required: "API key is required",
+                  })}
+                  defaultValue={watch("whatsappApiKey")}
+                  error={errors.whatsappApiKey}
+                />
+                {errors.whatsappApiKey && <p className="text-red-500 text-xs mt-1">{errors.whatsappApiKey.message}</p>}
+
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -188,6 +228,9 @@ const Settings = () => {
                   value={watch("privacyPolicy")}
                   onChange={(value) => setValue("privacyPolicy", value)}
                 />
+                {errors.privacyPolicy && (
+            <p className="text-red-500 text-xs">{errors.privacyPolicy.message}</p>
+          )}
               </div>
 
               <div>
@@ -198,6 +241,9 @@ const Settings = () => {
                   value={watch("termsAndConditions")}
                   onChange={(value) => setValue("termsAndConditions", value)}
                 />
+                {errors.termsAndConditions && (
+            <p className="text-red-500 text-xs">{errors.termsAndConditions.message}</p>
+          )}
               </div>
             </div>
 

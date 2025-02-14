@@ -142,7 +142,7 @@ export const WhatsAppInput = forwardRef(({ label, value, onChange, name }, ref) 
 ));
 
 // File Upload Component with forwardRef
-export const FileUpload = forwardRef(({ name, onChange, multiple = false }, ref) => {
+export const FileUpload = forwardRef(({ name, onChange, label, multiple = false }, ref) => {
   const [files, setFiles] = useState([]);
   const fileInputRef = useRef(null); // Reference to the file input
 
@@ -189,22 +189,19 @@ export const FileUpload = forwardRef(({ name, onChange, multiple = false }, ref)
 
   return (
     <div ref={ref} className="mt-4">
+      <label className="block text-sm font-medium text-gray-700" htmlFor={name}>
+        {label}
+      </label>
       <div className="flex flex-wrap gap-4 mb-4 items-center">
         <input
           ref={fileInputRef} // Add the reference to the file input
           type="file"
           name={name}
+          id={name}
           multiple={multiple}
           onChange={handleFileChange}
           className="w-full sm:w-[350px] border border-gray-300 rounded-md p-1 text-sm"
         />
-        {/* <button
-          className="flex items-center gap-1 bg-[#660F5D] text-white px-7 py-1 rounded-md text-[12px]"
-          onClick={(e) => e.preventDefault()}
-        >
-          <UploadIcon className="w-[15px]" />
-          Upload
-        </button> */}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -228,6 +225,7 @@ export const FileUpload = forwardRef(({ name, onChange, multiple = false }, ref)
     </div>
   );
 });
+
 // Service Form Component with forwardRef
 export const ServiceForm = forwardRef((props, ref) => {
   const [serviceList, setServiceList] = useState([]);

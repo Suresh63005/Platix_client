@@ -28,25 +28,56 @@ const CreateOrganization = () => {
   const { isLoading, setIsLoading } = useLoading();
   const [mode, setMode] = useState(initialMode || "create");
   const [organization, setOrganization] = useState(null);
-  const { register, handleSubmit, setValue, watch, control, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm();
   const [PImages, setPImages] = useState([]);
   const [loading, setloading] = useState(false);
-  const [formData, setFormData] = useState({id: id || null,  address: "",  businessName: null,  file1: null,  file2: null,  imgPreview: null,  description: "",  designation: "",  email: "",  googleCoordinates: { latitude: "", longitude: "" },  gstNumber: null,  mobile: "",  name: "",  registrationId: null,  organizationType_id: "",  whatsapp: "",  services: [],  bankName: "",  accountNumber: "",  accountHolder: "",  ifscCode: "",  upiId: "",});
-  const [availableServices, setAvailableServices] = useState([]); 
-  const [userServices, setUserServices] = useState([]); 
+  const [formData, setFormData] = useState({
+    id: id || null,
+    address: "",
+    businessName: null,
+    file1: null,
+    file2: null,
+    imgPreview: null,
+    description: "",
+    designation: "",
+    email: "",
+    googleCoordinates: { latitude: "", longitude: "" },
+    gstNumber: null,
+    mobile: "",
+    name: "",
+    registrationId: null,
+    organizationType_id: "",
+    whatsapp: "",
+    services: [],
+    bankName: "",
+    accountNumber: "",
+    accountHolder: "",
+    ifscCode: "",
+    upiId: "",
+  });
+  const [availableServices, setAvailableServices] = useState([]);
+  const [userServices, setUserServices] = useState([]);
   const [newService, setNewService] = useState({ name: "", price: "" });
   const [editingIndex, setEditingIndex] = useState(null);
   const [orgType, setOrgTYpe] = useState([]);
   // console.log(orgType, "from sdhfjghlj.gkfdjshfdgh.")
 
-  useEffect(()=>{
-    setIsLoading(true)
+  useEffect(() => {
+    setIsLoading(true);
 
-    const timer=setTimeout(()=>{
-      setIsLoading(false)
-    },1000)
-    return ()=>clearTimeout(timer)
-  },[id,location,setIsLoading])
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [id, location, setIsLoading]);
 
   useEffect(() => {
     if (id && (mode === "edit" || mode === "view")) {
@@ -104,7 +135,7 @@ const CreateOrganization = () => {
           OrgData.map((org) => ({
             value: org.id, // Set id as value
             label: org.organizationType, // Set organizationType as label
-            services:org.services
+            services: org.services,
           }))
         );
       })
@@ -171,7 +202,7 @@ const CreateOrganization = () => {
 
   const handleDeleteService = (index) => {
     const updatedServices = userServices.filter((_, i) => i !== index);
-    setUserServices(updatedServices); 
+    setUserServices(updatedServices);
   };
 
   const onSubmit = async (data) => {
@@ -249,510 +280,530 @@ const CreateOrganization = () => {
     }
   };
 
- const[servicesList,setServicesList] = useState({});
+  const [servicesList, setServicesList] = useState({});
 
- 
-
-  async function handleOrginazationtypeid (id){
-
-     try {
+  async function handleOrginazationtypeid(id) {
+    try {
       const filteredList = orgType.filter((data) => data.value === id);
-       setServicesList(filteredList)
-     } catch (error) {
+      setServicesList(filteredList);
+    } catch (error) {
       console.log(error);
-     }
-
+    }
   }
 
-  console.log(servicesList,"sureshhhhhhhhhhhhhhhhhh")
-
+  console.log(servicesList, "sureshhhhhhhhhhhhhhhhhh");
 
   return (
     <div>
       {isLoading && <Loader />}
       <div className="flex flex-col h-screen bg-gray-100">
-      <div className="bg-gray-100">
-        <Header name={"Organization"} />
-        <PageNavigation
-          title={
-            mode === "edit"
-              ? "Edit Organization"
-              : mode === "view"
-              ? "View Organization"
-              : "Create Organization"
-          }
-          onBackClick={handleBackClick}
-        />
-      </div>
+        <div className="bg-gray-100">
+          <Header name={"Organization"} />
+          <PageNavigation
+            title={
+              mode === "edit"
+                ? "Edit Organization"
+                : mode === "view"
+                ? "View Organization"
+                : "Create Organization"
+            }
+            onBackClick={handleBackClick}
+          />
+        </div>
 
-      <div className="flex-1 overflow-y-auto p-3">
-        <div className="bg-white border border-[#EAEAFF] shadow-md rounded-lg p-6 mb-6">
-          <h3 className="form-title text-lg font-bold mb-4">
-            {mode === "view"
-              ? "View Organization"
-              : mode === "edit"
-              ? "Edit Organization"
-              : "Create Organization"}
-          </h3>
+        <div className="flex-1 overflow-y-auto p-3">
+          <div className="bg-white border border-[#EAEAFF] shadow-md rounded-lg p-6 mb-6">
+            <h3 className="form-title text-lg font-bold mb-4">
+              {mode === "view"
+                ? "View Organization"
+                : mode === "edit"
+                ? "Edit Organization"
+                : "Create Organization"}
+            </h3>
 
-          <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <InputField
-                label={"Organization Name*"}
-                type={"text"}
-                placeholder={"Enter Organization Name"}
-                {...register("name")}
-                readOnly={mode === "view"}
-              />
-
-              <Controller
-                name="organizationType_id"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <SelectField
-                    label="Organization Type*"
-                    defaultplaceholder={"Select Organization Type"}
-                    options={orgType}
-                    value={field.value}
-                    handleOrginazationtypeid={handleOrginazationtypeid}
-                    onChange={ field.onChange} // Pass onChange to the SelectField component
-                    className="p-1 w-full"
-                    readOnly={mode === "view"}
-                  />
-                )}
-              />
-
-              <InputField
-                label={"Address*"}
-                type={"text"}
-                placeholder={"Enter Address"}
-                {...register("address")}
-                disabled={mode === "view"}
-              />
-
-              <div className="flex flex-col p-1 mt-[-5px]">
-                <label
-                  htmlFor="google-coordinates"
-                  className="block text-xs font-medium"
-                >
-                  Google Coordinates*
-                </label>
-                <div className="flex gap-2">
-                  <InputField
-                    type={"text"}
-                    placeholder={"Latitude"}
-                    {...register("googleCoordinates.latitude")}
-                    disabled={mode === "view"}
-                  />
-                  <InputField
-                    type={"text"}
-                    placeholder={"Longitude"}
-                    {...register("googleCoordinates.longitude")}
-                    disabled={mode === "view"}
-                  />
-                </div>
-              </div>
-
-              <Controller
-                name="mobile"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <PhoneNumberInput
-                    label={"Mobile Number*"}
-                    value={field.value}
-                    onChange={(value) => field.onChange(value)}
-                    defaultCountry={"IN"}
-                    className="p-1"
-                    disabled={mode === "view"}
-                  />
-                )}
-              />
-
-              <Controller
-                name="whatsapp"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <WhatsAppInput
-                    label={"WhatsApp Number*"}
-                    value={field.value}
-                    onChange={(e) => field.onChange(e.target.value)}
-                    className="p-1"
-                    disabled={mode === "view"}
-                  />
-                )}
-              />
-
-              <InputField
-                label={"Email*"}
-                type={"email"}
-                placeholder={"Enter Email"}
-                {...register("email")}
-                disabled={mode === "view"}
-              />
-
-              <InputField
-                label={"Description"}
-                type={"text"}
-                placeholder={"Enter Description"}
-                {...register("description")}
-                disabled={mode === "view"}
-              />
-            </div>
-
-            {dynamicId.includes(watch("organizationType_id")) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+              <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div>
                 <InputField
-                  label="GST*"
-                  type="text"
-                  placeholder="Enter GST Number"
-                  {...register("gstNumber")}
-                  disabled={mode === "view"}
+                  label={"Organization Name*"}
+                  type={"text"}
+                  placeholder={"Enter Organization Name"}
+                  {...register("name",{ required: "Organization Name required." })}
+                  readOnly={mode === "view"}
                 />
+                {errors.name && (
+                  <p className="text-red-500 mt-2  text-xs">{errors.name.message}</p>
+                )}
+                </div>
+                
                 <Controller
-                  name="designation"
+                  name="organizationType_id"
                   control={control}
                   defaultValue=""
                   render={({ field }) => (
-                    <SelectField
-                      label="Designation*"
-                      defaultplaceholder={"Select Designation"}
-                      options={[
-                        { value: "Owner", label: "Owner" },
-                        { value: "Technician", label: "Technician" },
-                        { value: "Delivery Boy", label: "Delivery Boy" },
-                      ]}
+                    <div>
+                      <SelectField
+                        label="Organization Type*"
+                        defaultplaceholder="Select Organization Type"
+                        options={orgType}
+                        value={field.value}
+                        handleOrginazationtypeid={handleOrginazationtypeid}
+                        onChange={(e) => field.onChange(e)} // Ensure correct onChange handling
+                        className="p-1 w-full"
+                        readOnly={mode === "view"}
+                      />
+                      {errors.organizationType_id && (
+                        <p className="text-red-500 text-xs">
+                          {errors.organizationType_id.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                />
+
+                <div>
+                <InputField
+                  label={"Address*"}
+                  type={"text"}
+                  placeholder={"Enter Address"}
+                  {...register("address")}    
+                  disabled={mode === "view"}
+                />
+                {errors.address && <p className="text-red-500 text-xs">{errors.address.message}</p>}
+                </div>
+                <div>
+                <div className="flex flex-col p-1 mt-[-5px]">
+                  <label
+                    htmlFor="google-coordinates"
+                    className="block text-xs font-medium"
+                  >
+                    Google Coordinates*
+                  </label>
+                  <div className="flex gap-2">
+                    <InputField
+                      type={"text"}
+                      placeholder={"Latitude"}
+                      {...register("googleCoordinates.latitude")}
+                      disabled={mode === "view"}
+                    />
+                    <InputField
+                      type={"text"}
+                      placeholder={"Longitude"}
+                      {...register("googleCoordinates.longitude")}
+                      disabled={mode === "view"}
+                    />
+                  </div>
+                  {errors.address && <p className="text-red-500 text-xs">{errors.address.message}</p>}
+                </div>
+
+                </div>
+
+                <Controller
+                  name="mobile"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <PhoneNumberInput
+                      label={"Mobile Number*"}
                       value={field.value}
                       onChange={(value) => field.onChange(value)}
+                      defaultCountry={"IN"}
                       className="p-1"
                       disabled={mode === "view"}
                     />
                   )}
                 />
-              </div>
-            )}
 
-            {watch("organizationType_id") === dentistId && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {/* <InputField
+                <Controller
+                  name="whatsapp"
+                  control={control}
+                  defaultValue=""
+                  render={({ field }) => (
+                    <WhatsAppInput
+                      label={"WhatsApp Number*"}
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      className="p-1"
+                      disabled={mode === "view"}
+                    />
+                  )}
+                />
+
+                <InputField
+                  label={"Email*"}
+                  type={"email"}
+                  placeholder={"Enter Email"}
+                  {...register("email")}
+                  disabled={mode === "view"}
+                />
+
+                <InputField
+                  label={"Description"}
+                  type={"text"}
+                  placeholder={"Enter Description"}
+                  {...register("description")}
+                  disabled={mode === "view"}
+                />
+              </div>
+
+              {dynamicId.includes(watch("organizationType_id")) && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <InputField
+                    label="GST*"
+                    type="text"
+                    placeholder="Enter GST Number"
+                    {...register("gstNumber")}
+                    disabled={mode === "view"}
+                  />
+                  <Controller
+                    name="designation"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <SelectField
+                        label="Designation*"
+                        defaultplaceholder={"Select Designation"}
+                        options={[
+                          { value: "Owner", label: "Owner" },
+                          { value: "Technician", label: "Technician" },
+                          { value: "Delivery Boy", label: "Delivery Boy" },
+                        ]}
+                        value={field.value}
+                        onChange={(value) => field.onChange(value)}
+                        className="p-1"
+                        disabled={mode === "view"}
+                      />
+                    )}
+                  />
+                </div>
+              )}
+
+              {watch("organizationType_id") === dentistId && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {/* <InputField
                   label="Business Name"
                   type="text"
                   placeholder="Enter Business Name"
                   {...register("businessName")}
                   disabled={mode === "view"}
                 /> */}
+                  <InputField
+                    label="Registration ID*"
+                    type="text"
+                    placeholder="Enter Registration ID"
+                    {...register("registrationId")}
+                    disabled={mode === "view"}
+                  />
+                  <Controller
+                    name="designation"
+                    control={control}
+                    defaultValue=""
+                    render={({ field }) => (
+                      <SelectField
+                        label="Designation*"
+                        defaultplaceholder={"Select Designation"}
+                        options={[
+                          { value: "Dentist", label: "Dentist" },
+                          { value: "Orthodontist", label: "Orthodontist" },
+                          { value: "Prosthodontist", label: "Prosthodontist" },
+                          { value: "Oral surgeon", label: "Oral surgeon" },
+                          { value: "Periodontist", label: "Periodontist" },
+                          { value: "Implantologist", label: "Implantologist" },
+                          {
+                            value: "Oral Pathologist",
+                            label: "Oral Pathologist",
+                          },
+                          {
+                            value: "Oral Medicine & Radiologist",
+                            label: "Oral Medicine & Radiologist",
+                          },
+                          {
+                            value: "Community dentist",
+                            label: "Community dentist",
+                          },
+                          { value: "Paeddontist", label: "Paeddontist" },
+                        ]}
+                        value={field.value}
+                        onChange={(value) => field.onChange(value)}
+                        className="p-1"
+                        disabled={mode === "view"}
+                      />
+                    )}
+                  />
+                </div>
+              )}
+              {/* Organization Account Details */}
+              <h3 className="text-lg font-bold mb-4 mt-6">
+                Organization Account Details
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <InputField
-                  label="Registration ID*"
-                  type="text"
-                  placeholder="Enter Registration ID"
-                  {...register("registrationId")}
+                  label={"Bank Name*"}
+                  type={"text"}
+                  placeholder={"Enter Bank Name"}
+                  {...register("bankName")}
                   disabled={mode === "view"}
                 />
-                <Controller
-                  name="designation"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <SelectField
-                      label="Designation*"
-                      defaultplaceholder={"Select Designation"}
-                      options={[
-                        { value: "Dentist", label: "Dentist" },
-                        { value: "Orthodontist", label: "Orthodontist" },
-                        { value: "Prosthodontist", label: "Prosthodontist" },
-                        { value: "Oral surgeon", label: "Oral surgeon" },
-                        { value: "Periodontist", label: "Periodontist" },
-                        { value: "Implantologist", label: "Implantologist" },
-                        {
-                          value: "Oral Pathologist",
-                          label: "Oral Pathologist",
-                        },
-                        {
-                          value: "Oral Medicine & Radiologist",
-                          label: "Oral Medicine & Radiologist",
-                        },
-                        {
-                          value: "Community dentist",
-                          label: "Community dentist",
-                        },
-                        { value: "Paeddontist", label: "Paeddontist" },
-                      ]}
-                      value={field.value}
-                      onChange={(value) => field.onChange(value)}
-                      className="p-1"
-                      disabled={mode === "view"}
-                    />
-                  )}
+                <InputField
+                  label={"Organization Account Number*"}
+                  type={"text"}
+                  placeholder={"Enter Account Number"}
+                  {...register("accountNumber")}
+                  disabled={mode === "view"}
+                />
+                <InputField
+                  label={"Account Holder Name*"}
+                  type={"text"}
+                  placeholder={"Enter Account Holder Name"}
+                  {...register("accountHolder")}
+                  disabled={mode === "view"}
+                />
+                <InputField
+                  label={"IFSC Code*"}
+                  type={"text"}
+                  placeholder={"Enter IFSC Code"}
+                  {...register("ifscCode")}
+                  disabled={mode === "view"}
+                />
+                <InputField
+                  label={"UPI ID*"}
+                  type={"text"}
+                  placeholder={"Enter UPI ID"}
+                  {...register("upiId")}
+                  disabled={mode === "view"}
                 />
               </div>
-            )}
-            {/* Organization Account Details */}
-            <h3 className="text-lg font-bold mb-4 mt-6">
-              Organization Account Details
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <InputField
-                label={"Bank Name*"}
-                type={"text"}
-                placeholder={"Enter Bank Name"}
-                {...register("bankName")}
-                disabled={mode === "view"}
-              />
-              <InputField
-                label={"Organization Account Number*"}
-                type={"text"}
-                placeholder={"Enter Account Number"}
-                {...register("accountNumber")}
-                disabled={mode === "view"}
-              />
-              <InputField
-                label={"Account Holder Name*"}
-                type={"text"}
-                placeholder={"Enter Account Holder Name"}
-                {...register("accountHolder")}
-                disabled={mode === "view"}
-              />
-              <InputField
-                label={"IFSC Code*"}
-                type={"text"}
-                placeholder={"Enter IFSC Code"}
-                {...register("ifscCode")}
-                disabled={mode === "view"}
-              />
-              <InputField
-                label={"UPI ID*"}
-                type={"text"}
-                placeholder={"Enter UPI ID"}
-                {...register("upiId")}
-                disabled={mode === "view"}
-              />
-            </div>
-            {dynamicId.includes(watch("organizationType_id")) && (
-              <div className="">
-                <h3 className="text-lg font-semibold mb-4">User Services</h3>
-                <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
-                  <div className="w-full sm:w-1/2">
-                    <Select
-                     value={
-                      newService.id
-                        ? {
-                            id: newService.id,
-                            value: newService.id,
-                            label: newService.name, 
-                          }
-                        : null
-                    }
-                      onChange={(selectedOption) =>
-                        setNewService({
-                          ...newService,
-                          id: selectedOption.id,
-                          name: selectedOption.label, 
-                        })
-                      }
-                      options={servicesList[0]?.services?.map((service) => ({
-                        id: service?.id,
-                        value: service?.id, 
-                        label: service?.servicename, 
-                      }))}
-                      placeholder="Select service"
-                      className="text-[12px]"
-                      styles={{
-                        control: (base, { isFocused }) => ({
-                          ...base,
-                          border: isFocused ? "2px solid #660F5D" : " 1px solid #EAEAFF",
-                          boxShadow: isFocused ? "none" : "none",
-                          borderRadius: "5px",
-                          padding: "2px",
-                          fontSize: "12px", // Consistent font size
-                          color: "#757575",
-                          height: "42px",
-                    
-                          "&:hover": {},
-                        }),
-                        placeholder: (base) => ({
-                          ...base,
-                          color: "#757575",
-                          fontSize: "12px",
-                        }),
-                        singleValue: (base) => ({
-                          ...base,
-                          fontSize: "12px",
-                          fontWeight: "600",
-                          color: "#757575",
-                          fontFamily: "Montserrat, sans-serif",
-                        }),
-                        option: (base) => ({
-                          ...base,
-                          backgroundColor: "white",
-                          color: "#757575",
-                          fontWeight: "100",
-                          cursor: "pointer",
-                          fontSize: "12px",
-                          "&:hover": {
-                            backgroundColor: "#660F5D",
-                            color: "white",
-                          },
-                        }),
-                      }}
-                      components={{
-                        DropdownIndicator: () => (
-                          <DownArrow className="w-[16px] h-[16px] pr-1" />
-                        ),
-                        IndicatorSeparator: () => null,
-                      }}
-                    />
-                  </div>
-                  <div className="w-full sm:w-1/4 relative">
-                    <span className="absolute top-2 left-2 text-gray-500">
-                      Price:
-                    </span>
-                    <input
-                      type="number"
-                      placeholder="Price"
-                      value={newService.price}
-                      onChange={(e) =>
-                        setNewService({ ...newService, price: e.target.value })
-                      }
-                      className="w-full pl-16 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#660F5D]"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    {editingIndex === null ? (
-                      <span
-                        onClick={handleAddService}
-                        className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
-                      >
-                        Add
-                      </span>
-                    ) : (
-                      <span
-                        onClick={handleSaveService}
-                        className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
-                      >
-                        Save
-                      </span>
-                    )}
-                    <span
-                      onClick={() => setNewService({ name: "", price: "" })}
-                      className="px-7 py-1 bg-white text-gray-400 border-gray-700 border rounded-md cursor-pointer"
-                    >
-                      Clear
-                    </span>
-                  </div>
-                </div>
-                <hr />
-                <div className="space-y-4">
-                  {userServices.map((service, index) => (
-                    <div
-                      key={service.id}
-                      className="flex flex-col sm:flex-row items-center gap-4 p-4"
-                    >
-                      <input type="hidden" value={service.id} />
-                      <input
-                        type="text"
-                        value={service.name}
-                        readOnly
-                        className="flex-1 px-3 py-2 border rounded-md bg-white"
+              {dynamicId.includes(watch("organizationType_id")) && (
+                <div className="">
+                  <h3 className="text-lg font-semibold mb-4">User Services</h3>
+                  <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
+                    <div className="w-full sm:w-1/2">
+                      <Select
+                        value={
+                          newService.id
+                            ? {
+                                id: newService.id,
+                                value: newService.id,
+                                label: newService.name,
+                              }
+                            : null
+                        }
+                        onChange={(selectedOption) =>
+                          setNewService({
+                            ...newService,
+                            id: selectedOption.id,
+                            name: selectedOption.label,
+                          })
+                        }
+                        options={servicesList[0]?.services?.map((service) => ({
+                          id: service?.id,
+                          value: service?.id,
+                          label: service?.servicename,
+                        }))}
+                        placeholder="Select service"
+                        className="text-[12px]"
+                        styles={{
+                          control: (base, { isFocused }) => ({
+                            ...base,
+                            border: isFocused
+                              ? "2px solid #660F5D"
+                              : " 1px solid #EAEAFF",
+                            boxShadow: isFocused ? "none" : "none",
+                            borderRadius: "5px",
+                            padding: "2px",
+                            fontSize: "12px", // Consistent font size
+                            color: "#757575",
+                            height: "42px",
+
+                            "&:hover": {},
+                          }),
+                          placeholder: (base) => ({
+                            ...base,
+                            color: "#757575",
+                            fontSize: "12px",
+                          }),
+                          singleValue: (base) => ({
+                            ...base,
+                            fontSize: "12px",
+                            fontWeight: "600",
+                            color: "#757575",
+                            fontFamily: "Montserrat, sans-serif",
+                          }),
+                          option: (base) => ({
+                            ...base,
+                            backgroundColor: "white",
+                            color: "#757575",
+                            fontWeight: "100",
+                            cursor: "pointer",
+                            fontSize: "12px",
+                            "&:hover": {
+                              backgroundColor: "#660F5D",
+                              color: "white",
+                            },
+                          }),
+                        }}
+                        components={{
+                          DropdownIndicator: () => (
+                            <DownArrow className="w-[16px] h-[16px] pr-1" />
+                          ),
+                          IndicatorSeparator: () => null,
+                        }}
                       />
-                      <div className="w-full sm:w-1/4 relative">
-                        <span className="absolute top-2 left-2 text-gray-500">
-                          Price:
-                        </span>
-                        <input
-                          type="number"
-                          value={service.price}
-                          readOnly
-                          className="w-full pl-16 px-3 py-2 border rounded-md bg-white"
-                        />
-                      </div>
-                      <span
-                        onClick={() => handleEditService(index)}
-                        className="px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer"
-                      >
-                        Edit
+                    </div>
+                    <div className="w-full sm:w-1/4 relative">
+                      <span className="absolute top-2 left-2 text-gray-500">
+                        Price:
                       </span>
+                      <input
+                        type="number"
+                        placeholder="Price"
+                        value={newService.price}
+                        onChange={(e) =>
+                          setNewService({
+                            ...newService,
+                            price: e.target.value,
+                          })
+                        }
+                        className="w-full pl-16 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#660F5D]"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      {editingIndex === null ? (
+                        <span
+                          onClick={handleAddService}
+                          className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
+                        >
+                          Add
+                        </span>
+                      ) : (
+                        <span
+                          onClick={handleSaveService}
+                          className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
+                        >
+                          Save
+                        </span>
+                      )}
                       <span
-                        onClick={() => handleDeleteService(index)}
-                        className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer"
+                        onClick={() => setNewService({ name: "", price: "" })}
+                        className="px-7 py-1 bg-white text-gray-400 border-gray-700 border rounded-md cursor-pointer"
                       >
-                        Delete
+                        Clear
                       </span>
                     </div>
-                  ))}
+                  </div>
+                  <hr />
+                  <div className="space-y-4">
+                    {userServices.map((service, index) => (
+                      <div
+                        key={service.id}
+                        className="flex flex-col sm:flex-row items-center gap-4 p-4"
+                      >
+                        <input type="hidden" value={service.id} />
+                        <input
+                          type="text"
+                          value={service.name}
+                          readOnly
+                          className="flex-1 px-3 py-2 border rounded-md bg-white"
+                        />
+                        <div className="w-full sm:w-1/4 relative">
+                          <span className="absolute top-2 left-2 text-gray-500">
+                            Price:
+                          </span>
+                          <input
+                            type="number"
+                            value={service.price}
+                            readOnly
+                            className="w-full pl-16 px-3 py-2 border rounded-md bg-white"
+                          />
+                        </div>
+                        <span
+                          onClick={() => handleEditService(index)}
+                          className="px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer"
+                        >
+                          Edit
+                        </span>
+                        <span
+                          onClick={() => handleDeleteService(index)}
+                          className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer"
+                        >
+                          Delete
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-
-            <Controller
-              name="file1"
-              control={control}
-              defaultValue={[]}
-              render={({ field }) => (
-                <FileUpload
-                  name="file1"
-                  multiple={false}
-                  onChange={handleChange}
-                />
               )}
-            />
 
-            <Controller
-              name="file2"
-              control={control}
-              defaultValue={[]}
-              render={({ field }) => (
-                <FileUpload
-                  name="file2"
-                  multiple={true}
-                  onChange={handleImageUpload}
-                />
+              <Controller
+                name="file1"
+                control={control}
+                defaultValue={[]}
+                render={({ field }) => (
+                  <FileUpload
+                    name="file1"
+                    label="choose file for profile*"
+                    multiple={false}
+                    onChange={handleChange}
+                  />
+                )}
+              />
+
+              <Controller
+                name="file2"
+                control={control}
+                defaultValue={[]}
+                render={({ field }) => (
+                  <FileUpload
+                    name="file2"
+                    label="choose file* (Max 3 images)"
+                    multiple={true}
+                    onChange={handleImageUpload}
+                  />
+                )}
+              />
+
+              {mode !== "view" && (
+                <div className="flex justify-end gap-3 mt-4">
+                  <button
+                    type="reset"
+                    className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
+                  >
+                    <Cancelbtnicon className="w-4 h-4" />
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    name="submit"
+                    className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm"
+                  >
+                    {loading ? (
+                      <Vortex
+                        visible={true}
+                        height="25"
+                        width="50"
+                        ariaLabel="vortex-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="vortex-wrapper"
+                        colors={[
+                          "white",
+                          "white",
+                          "white",
+                          "white",
+                          "white",
+                          "white",
+                        ]}
+                      />
+                    ) : mode === "edit" ? (
+                      "Update"
+                    ) : (
+                      "Save"
+                    )}
+                  </button>
+                </div>
               )}
-            />
-
-            {mode !== "view" && (
-              <div className="flex justify-end gap-3 mt-4">
-                <button
-                  type="reset"
-                  className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
-                >
-                  <Cancelbtnicon className="w-4 h-4" />
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  name="submit"
-                  className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm"
-                >
-                  {loading ? (
-                    <Vortex
-                      visible={true}
-                      height="25"
-                      width="50"
-                      ariaLabel="vortex-loading"
-                      wrapperStyle={{}}
-                      wrapperClass="vortex-wrapper"
-                      colors={[
-                        "white",
-                        "white",
-                        "white",
-                        "white",
-                        "white",
-                        "white",
-                      ]}
-                    />
-                  ) : mode === "edit" ? (
-                    "Update"
-                  ) : (
-                    "Save"
-                  )}
-                </button>
-              </div>
-            )}
-          </form>
+            </form>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );
