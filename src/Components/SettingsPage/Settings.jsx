@@ -57,7 +57,7 @@ const Settings = () => {
         const response = await api.get("/admin/getbyid", {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
+        
         if (response.data.settings) {
           const data = response.data.settings; // Extract settings object
           console.log("Fetched Settings:", data); // Debugging
