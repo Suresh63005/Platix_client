@@ -350,6 +350,7 @@ const CreateOrganization = () => {
                         handleOrginazationtypeid={handleOrginazationtypeid}
                         onChange={(e) => field.onChange(e)} // Ensure correct onChange handling
                         className="p-1 w-full"
+                        // {...register("organizationType_id",{ required: "Organization Type is required."})}
                         readOnly={mode === "view"}
                       />
                       {errors.organizationType_id && (
@@ -366,7 +367,7 @@ const CreateOrganization = () => {
                   label={"Address*"}
                   type={"text"}
                   placeholder={"Enter Address"}
-                  {...register("address")}    
+                  {...register("address",{ required: "address is required."})}    
                   disabled={mode === "view"}
                 />
                 {errors.address && <p className="text-red-500 text-xs">{errors.address.message}</p>}
@@ -383,21 +384,21 @@ const CreateOrganization = () => {
                     <InputField
                       type={"text"}
                       placeholder={"Latitude"}
-                      {...register("googleCoordinates.latitude")}
+                      {...register("googleCoordinates.latitude",{ required: "Coordinates is required."})}
                       disabled={mode === "view"}
                     />
                     <InputField
                       type={"text"}
                       placeholder={"Longitude"}
-                      {...register("googleCoordinates.longitude")}
+                      {...register("googleCoordinateslongitude",{ required: "Coordinates is required."})}
                       disabled={mode === "view"}
                     />
                   </div>
-                  {errors.address && <p className="text-red-500 text-xs">{errors.address.message}</p>}
+                  {errors. googleCoordinateslongitude&& <p className="text-red-500 text-xs">{errors.googleCoordinateslongitude.message}</p>}
+                </div>
                 </div>
 
-                </div>
-
+                <div>
                 <Controller
                   name="mobile"
                   control={control}
@@ -408,12 +409,16 @@ const CreateOrganization = () => {
                       value={field.value}
                       onChange={(value) => field.onChange(value)}
                       defaultCountry={"IN"}
+                      {...register("mobile",{ required: "mobile number is required."})} 
                       className="p-1"
                       disabled={mode === "view"}
                     />
                   )}
                 />
+                {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile.message}</p>}
+                </div>
 
+                <div>
                 <Controller
                   name="whatsapp"
                   control={control}
@@ -423,39 +428,49 @@ const CreateOrganization = () => {
                       label={"WhatsApp Number*"}
                       value={field.value}
                       onChange={(e) => field.onChange(e.target.value)}
+                      {...register("whatsapp",{ required: "whatsapp number is required."})}
                       className="p-1"
                       disabled={mode === "view"}
                     />
                   )}
                 />
-
-                <InputField
+                {errors.whatsapp && <p className="text-red-500 text-xs">{errors.whatsapp.message}</p>}
+                </div>
+               <div>
+               <InputField
                   label={"Email*"}
                   type={"email"}
                   placeholder={"Enter Email"}
-                  {...register("email")}
+                  {...register("email",{ required: "email is required."})}
                   disabled={mode === "view"}
                 />
+                {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
+               </div>
 
-                <InputField
+               <div>
+               <InputField
                   label={"Description"}
                   type={"text"}
                   placeholder={"Enter Description"}
                   {...register("description")}
                   disabled={mode === "view"}
                 />
+               </div>
               </div>
 
               {dynamicId.includes(watch("organizationType_id")) && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div>
                   <InputField
                     label="GST*"
                     type="text"
                     placeholder="Enter GST Number"
-                    {...register("gstNumber")}
+                    {...register("gstNumber",{ required: "GST is required."})}
                     disabled={mode === "view"}
                   />
-                  <Controller
+                  {errors.gstNumber && <p className="text-red-500 text-xs">{errors.gstNumber.message}</p>}
+                  </div>
+                  {/* <Controller
                     name="designation"
                     control={control}
                     defaultValue=""
@@ -474,7 +489,7 @@ const CreateOrganization = () => {
                         disabled={mode === "view"}
                       />
                     )}
-                  />
+                  /> */}
                 </div>
               )}
 
@@ -487,14 +502,16 @@ const CreateOrganization = () => {
                   {...register("businessName")}
                   disabled={mode === "view"}
                 /> */}
+                  <div>
                   <InputField
                     label="Registration ID*"
                     type="text"
                     placeholder="Enter Registration ID"
-                    {...register("registrationId")}
+                    {...register("registrationId",{ required: "registration id is required."})}
                     disabled={mode === "view"}
                   />
-                  <Controller
+                  </div>
+                  {/* <Controller
                     name="designation"
                     control={control}
                     defaultValue=""
@@ -529,7 +546,7 @@ const CreateOrganization = () => {
                         disabled={mode === "view"}
                       />
                     )}
-                  />
+                  /> */}
                 </div>
               )}
               {/* Organization Account Details */}
@@ -537,45 +554,60 @@ const CreateOrganization = () => {
                 Organization Account Details
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div>
                 <InputField
                   label={"Bank Name*"}
                   type={"text"}
                   placeholder={"Enter Bank Name"}
-                  {...register("bankName")}
+                  {...register("bankName",{ required: "bankname is required."})}
                   disabled={mode === "view"}
                 />
-                <InputField
+                {errors.bankName && <p className="text-red-500 text-xs">{errors.bankName.message}</p>}
+                </div>
+               <div>
+               <InputField
                   label={"Organization Account Number*"}
                   type={"text"}
                   placeholder={"Enter Account Number"}
-                  {...register("accountNumber")}
+                  {...register("accountNumber",{ required: "account number is required."})}
                   disabled={mode === "view"}
                 />
+                {errors.accountNumber && <p className="text-red-500 text-xs">{errors.accountNumber.message}</p>}
+               </div>
+                <div>
                 <InputField
                   label={"Account Holder Name*"}
                   type={"text"}
                   placeholder={"Enter Account Holder Name"}
-                  {...register("accountHolder")}
+                  {...register("accountHolder",{ required: "Account Holder is required."})}
                   disabled={mode === "view"}
                 />
-                <InputField
+                {errors.accountHolder && <p className="text-red-500 text-xs">{errors.accountHolder.message}</p>}
+                </div>
+               <div>
+               <InputField
                   label={"IFSC Code*"}
                   type={"text"}
                   placeholder={"Enter IFSC Code"}
-                  {...register("ifscCode")}
+                  {...register("ifscCode",{ required: "IFSC code is required."})}
                   disabled={mode === "view"}
                 />
+                {errors.ifscCode && <p className="text-red-500 text-xs">{errors.ifscCode.message}</p>}
+               </div>
+                <div>
                 <InputField
                   label={"UPI ID*"}
                   type={"text"}
                   placeholder={"Enter UPI ID"}
-                  {...register("upiId")}
+                  {...register("upiId",{ required: "UPI ID is required."})}
                   disabled={mode === "view"}
                 />
+                {errors.upiId && <p className="text-red-500 text-xs">{errors.upiId.message}</p>}
+                </div>
               </div>
               {dynamicId.includes(watch("organizationType_id")) && (
                 <div className="">
-                  <h3 className="text-lg font-semibold mb-4">User Services</h3>
+                  <h3 className="text-lg font-semibold mb-4">Services</h3>
                   <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
                     <div className="w-full sm:w-1/2">
                       <Select
@@ -734,6 +766,7 @@ const CreateOrganization = () => {
                 </div>
               )}
 
+              <div>
               <Controller
                 name="file1"
                 control={control}
@@ -744,10 +777,15 @@ const CreateOrganization = () => {
                     label="choose file for profile*"
                     multiple={false}
                     onChange={handleChange}
+                    {...register("file1",{ required: "organization image is required."})}
                   />
                 )}
+                
               />
+              {errors.file1 && <p className="text-red-500 text-xs">{errors.file1.message}</p>}
+              </div>
 
+              <div>
               <Controller
                 name="file2"
                 control={control}
@@ -755,12 +793,16 @@ const CreateOrganization = () => {
                 render={({ field }) => (
                   <FileUpload
                     name="file2"
-                    label="choose file* (Max 3 images)"
+                    label="choose file* (Max 10 images)"
                     multiple={true}
                     onChange={handleImageUpload}
+                    
                   />
+                  
                 )}
+                
               />
+              </div>
 
               {mode !== "view" && (
                 <div className="flex justify-end gap-3 mt-4">

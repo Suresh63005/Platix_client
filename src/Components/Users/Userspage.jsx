@@ -6,11 +6,11 @@ import Table from "../../common/UserTable";
 import Pagetitle from "../../common/pagetitle";
 import { deleteItem } from "../../utils/delteEntity";
 import api from "../../utils/api";
-
+import { useParams} from "react-router-dom";
 const Userspage = () => {
-  const location=useLocation();
-  const { organization_id } = location.state || {};
-  // console.log(organizationType_id)
+  const location = useLocation();
+
+  const { organization_id } = useParams();
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -57,7 +57,7 @@ const Userspage = () => {
   }, [page, userTypeFilter, usernameFilter, searchQuery]);
 
   const handleCreateUserClick = () => {
-    navigate("/createuser",{state:{organization_id}});
+    navigate(`/createuser/${organization_id}`);
   };
 
   const handleSearch = (event) => {
@@ -71,11 +71,11 @@ const Userspage = () => {
   };
 
   const handleEdit = (id) => {
-    navigate("/createuser", { state: { id, mode: "edit" } });
+    navigate(`/createuser/${organization_id}`, { state: { id, mode: "edit" } });
   };
 
   const handleView = (id) => {
-    navigate("/createuser", { state: { id, mode: "view" } });
+    navigate(`/createuser/${organization_id}`, { state: { id, mode: "view" } });
   };
   const handleDelete=async(id,forceDelete=false)=>{
     deleteItem("/user/delete", id, setUsers, forceDelete);
