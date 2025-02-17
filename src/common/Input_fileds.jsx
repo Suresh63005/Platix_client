@@ -189,7 +189,7 @@ export const FileUpload = forwardRef(({ name, onChange, label, multiple = false 
 
   return (
     <div ref={ref} className="mt-4">
-      <label className="block text-sm font-medium text-gray-700" htmlFor={name}>
+      <label className="block text-sm font-medium text-black" htmlFor={name}>
         {label}
       </label>
       <div className="flex flex-wrap gap-4 mb-4 items-center">

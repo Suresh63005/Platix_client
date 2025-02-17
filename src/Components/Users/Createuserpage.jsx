@@ -16,12 +16,14 @@ import api from "../../utils/api";
 import { useLoading } from "../../context/LoadingContext";
 import Loader from "../../common/Loader";
 import Cookies from "js-cookie";
-
+import { useParams} from "react-router-dom";
 
 const CreateUserPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { id, mode: initialMode, organization_id } = location.state || {};
+  const { organization_id } = useParams();
+  const { id, mode: initialMode} = location.state || {};
+  console.log(organization_id)
   const { isLoading,setIsLoading }=useLoading();
   const [mode, setMode] = useState(initialMode || "create");
   const [designationOptions, setDesignationOptions] = useState([]);
@@ -153,7 +155,7 @@ const CreateUserPage = () => {
           showConfirmButton: false,
           showCloseButton: false,
           timer: 2000,
-        }).then(() => navigate("/userpage"));
+        }).then(() =>navigate(`/userspage/${organization_id}`));
       } else {
         throw new Error(result.message || "Something went wrong");
       }

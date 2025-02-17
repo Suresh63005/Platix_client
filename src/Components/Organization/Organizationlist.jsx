@@ -62,7 +62,7 @@ const OrganizationList = () => {
   }, [page, filter, searchQuery]);
 
   const handleIconClick = (organization_id) => {
-    navigate(`/userpage`,{state:{organization_id}});
+    navigate(`/userspage/${organization_id}`);
   };
 
   const renderUserIcon = (organization_id) => (
@@ -81,6 +81,7 @@ const OrganizationList = () => {
   };
 
   const handleSearch = (event) => {
+    console.log(typeof event.target.value)
     setSearchQuery(event.target.value);
     setPage(1);
   };
