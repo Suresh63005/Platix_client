@@ -41,7 +41,6 @@ const Services = () => {
         });
 
         setServices(response.data.services);
-        console.log("hello")
         setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error("Error fetching services:", error);

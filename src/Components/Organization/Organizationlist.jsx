@@ -10,6 +10,7 @@ import { ClassNames } from "@emotion/react";
 import axios from "axios";
 import api from "../../utils/api";
 import { deleteItem } from "../../utils/delteEntity";
+import Cookies from "js-cookie";
 
 const OrganizationList = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -21,12 +22,7 @@ const OrganizationList = () => {
   const orgsPerPage = 10;
   const navigate = useNavigate();
 
-  const filterOptions = [
-    "Dentist",
-    "Dental Laboratory",
-    "Radiology",
-    "Material Supplier",
-  ];
+  const [filterOptions,setFilterOptions] = useState([])
 
   const loadOrganizationsForPage = (page, filter, searchQuery) => {
     const apiUrl = "api/organization/all";
@@ -55,6 +51,38 @@ const OrganizationList = () => {
       setOrganizations([]); 
     });
   };
+
+
+  useEffect(() => {
+    const fetchOrganizationTypes = async () => {
+      const token = Cookies.get("token"); 
+  
+      try {
+        const response = await api.get("/organization/getall", {
+          headers: { Authorization: `Bearer ${token}` }, 
+        });
+  
+        console.log("Organization Types Response:", response.data);
+  
+        if (response.data && Array.isArray(response.data.results)) {
+          
+          setFilterOptions(
+            response.data.results.map((org) => ({
+              value: org.id, // Use organizationType as value
+              label: org.organizationType || "N/A", // Use organizationType as label, fallback to "N/A"
+            }))
+          );
+        } else {
+          setFilterOptions([]); // Ensure it's always an array
+        }
+      } catch (error) {
+        console.error("Error fetching organization types:", error);
+        setFilterOptions([]); // Fallback to empty array on error
+      }
+    };
+  
+    fetchOrganizationTypes();
+  }, []);
   
 
   useEffect(() => {

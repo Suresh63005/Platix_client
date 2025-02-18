@@ -8,6 +8,7 @@ import axios from "axios";
 import TickSquare from "../../assets/images/TickSquare.svg";
 import { deleteItem } from "../../utils/delteEntity";
 import api from "../../utils/api";
+import Cookies from "js-cookie";
 // import { organizationTypesData } from "../../Data/data";
 
 
@@ -34,12 +35,14 @@ const OrganizationTypelist = () => {
   const [organizationTypes, setOrganizationTypes] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [filter, setFilter] = useState(""); // Filter state
+  const [filter, setFilter] = useState("");
+  const [filterOptions,setFilterOptions] = useState([])// Filter state
+  
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const orgsPerPage = 10;
   const navigate = useNavigate(); // Initialize navigate function
 
-  const filterOptions = ["Dentist", "Dental Laboratory", "Radiology", "Material Supplier"]; // Filter options
+  // const filterOptions = ["Dentist", "Dental Laboratory", "Radiology", "Material Supplier"]; // Filter options
 
   // Debounced filter and search query
   const debouncedFilter = useDebounce(filter, 500);
@@ -66,18 +69,51 @@ const OrganizationTypelist = () => {
         // console.log("API Response:", data); // Log response for debugging
         const filteredOrgs = data.results; 
         setOrganizationTypes(filteredOrgs);
+        
         setTotalPages(Math.ceil(data.totalCount / orgsPerPage));
       })
       .catch((error) => {
         console.error("Error fetching organizations:", error);
       });
   };
-
+  useEffect(() => {
+    const fetchOrganizationTypes = async () => {
+      const token = Cookies.get("token"); 
+  
+      try {
+        const response = await api.get("/organization/getall", {
+          headers: { Authorization: `Bearer ${token}` }, 
+        });
+  
+        console.log("Organization Types Response:", response.data);
+  
+        if (response.data && Array.isArray(response.data.results)) {
+          
+          setFilterOptions(
+            response.data.results.map((org) => ({
+              value: org.organizationType, // Use organizationType as value
+              label: org.organizationType || "N/A", // Use organizationType as label, fallback to "N/A"
+            }))
+          );
+        } else {
+          setFilterOptions([]); // Ensure it's always an array
+        }
+      } catch (error) {
+        console.error("Error fetching organization types:", error);
+        setFilterOptions([]); // Fallback to empty array on error
+      }
+    };
+  
+    fetchOrganizationTypes();
+  }, []);
+  
+  
   useEffect(() => {
     loadOrganizationsForPage(page, debouncedFilter, debouncedSearchQuery);
   }, [page, debouncedFilter, debouncedSearchQuery]);
 
   const handleFilterChange = (value) => {
+
     setFilter(value);
     setPage(1);
   };
@@ -107,17 +143,16 @@ const OrganizationTypelist = () => {
         <Header name={"Organization Type"} />
 
         <Pagetitle
-          title="Organization Types List"
-          buttonLabel="Create Organization Type"
-          onButtonClick={handleCreateOrganizationType}
-          filterValue={filter}
-          onFilterChange={handleFilterChange}
-          options={filterOptions}
-          searchPlaceholder="Search"
-          onSearch={handleSearch}
-          filterPlaceholder={"Filter"}
-        />
-
+  title="Organization Types List"
+  buttonLabel="Create Organization Type"
+  onButtonClick={handleCreateOrganizationType}
+  filterValue={filter}
+  onFilterChange={handleFilterChange}
+  options={filterOptions} // `filterOptions` now contains the organization types
+  searchPlaceholder="Search"
+  onSearch={handleSearch}
+  filterPlaceholder={"Filter"}
+/>
         <Table
           columns={["Organization Type", "From Date", "To Date"]}
           fields={["organizationType", "fromDate", "toDate"]}
@@ -130,7 +165,8 @@ const OrganizationTypelist = () => {
           handleView={handleView}
           handleDelete={handleDelete}
           setSelectedItems={setSelectedItems}
-          selectedItems={selectedItems}
+          selectedItems={selectedItems}// Pass value key
+          labelKey="organizationType" //
         />
       </div>
     </div>
