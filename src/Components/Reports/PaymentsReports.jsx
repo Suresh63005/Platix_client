@@ -114,11 +114,13 @@ const PaymentsReports = () => {
   useEffect(() => {
     if (debouncedSearchQuery) {
       const lowerCaseQuery = debouncedSearchQuery.toLowerCase();
-      const result = data.filter(
-        (item) =>
-          item.orderId.toLowerCase().includes(lowerCaseQuery) ||
-          item.username.toLowerCase().includes(lowerCaseQuery)
+  
+      const result = data.filter((item) =>
+        Object.values(columnKeyMapping).some(
+          (key) => item[key] && item[key].toString().toLowerCase().includes(lowerCaseQuery)
+        )
       );
+  
       setFilteredData(result);
     } else {
       setFilteredData(data);

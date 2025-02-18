@@ -4,15 +4,33 @@ import ReportsTable from "./ReportsTable";
 import ReportsTitle from "./ReportsTitle";
 import api from "../../utils/api";
 
+// Debounce Hook
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
 const UserReports = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // State for date range filter
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const columns = [
     "Username",
@@ -32,7 +50,7 @@ const UserReports = () => {
     "Starting Date": "createdAt",
   };
 
-  // Fetch data from API (Handles normal & filtered requests)
+  // Fetch data when component mounts or date filters change
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -40,7 +58,7 @@ const UserReports = () => {
       if (fromDate && toDate) {
         endpoint = `user/getbydate/${fromDate}/${toDate}`;
       }
-      
+
       const response = await api.get(endpoint);
       const apiData = response.data.users || [];
 
@@ -65,36 +83,41 @@ const UserReports = () => {
 
   useEffect(() => {
     fetchData();
-  }, [fromDate, toDate]); // Refetch data when dates change
+  }, [fromDate, toDate]);
 
-  // Handle search
-  const handleSearch = (query) => {
-    const lowerCaseQuery = query.toLowerCase();
-    const result = data.filter(
-      (item) =>
-        item.username.toLowerCase().includes(lowerCaseQuery) ||
-        item.role.toLowerCase().includes(lowerCaseQuery)
-    );
-    setFilteredData(result);
-  };
+  // Apply search filtering using debounce
+  useEffect(() => {
+    if (debouncedSearchQuery) {
+      const lowerCaseQuery = debouncedSearchQuery.toLowerCase();
+
+      const result = data.filter((item) =>
+        Object.values(columnKeyMapping).some(
+          (key) => item[key] && item[key].toString().toLowerCase().includes(lowerCaseQuery)
+        )
+      );
+
+      setFilteredData(result);
+    } else {
+      setFilteredData(data);
+    }
+  }, [debouncedSearchQuery, data]);
+
   const handleBulkDownload = () => {
-    console.log("Download button clicked!"); // ✅ Debugging log
-  
     if (!filteredData.length) {
       alert("No data available for download!");
       return;
     }
-  
+
     const headers = Object.keys(columnKeyMapping);
     const keys = Object.values(columnKeyMapping);
-  
+
     const csvRows = [
-      headers.join(","), 
-      ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(",")) 
+      headers.join(","),
+      ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(",")),
     ];
-  
+
     const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
-  
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -118,12 +141,12 @@ const UserReports = () => {
       <ReportsTitle
         title="User Reports"
         searchPlaceholder="Search"
-        onSearch={(e) => handleSearch(e.target.value)}
+        onSearch={(e) => setSearchQuery(e.target.value)}
         fromDate={fromDate}
         toDate={toDate}
         onFromDateChange={(e) => setFromDate(e.target.value)}
         onToDateChange={(e) => setToDate(e.target.value)}
-        onDownloadClick={()=>{handleBulkDownload()}}
+        onDownloadClick={handleBulkDownload}
       />
       <div className="overflow-x-auto">
         <ReportsTable columns={columns} data={filteredData} columnKeyMapping={columnKeyMapping} />

@@ -57,11 +57,7 @@ const RevenueReports = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   
-  // Debounced date values
-  const debouncedFromDate = useDebounce(fromDate, 500);
-  const debouncedToDate = useDebounce(toDate, 500);
-
-  // Debounced search query
+  // Debounced values
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   useEffect(() => {
@@ -76,25 +72,21 @@ const RevenueReports = () => {
         }
         
         const response = await api.get(endpoint);
-
         const orders = response.data.data || [];
 
         const formattedOrders = orders.map((order) => ({
           orderId: order.id || "N/A",
           orderDate: order.orderDate || "N/A",
           from: order.fromOrg?.organizationType || "N/A",
-          username: order.user?.firstName || "N/A",
-          userContact: order.MobileNo || "N/A",
           to: order.toOrg?.organizationType || "N/A",
-          contactName: order.patientName || "N/A",
-          contactNumber: order.MobileNo || "N/A",
-          invoice: "INV-" + order.id.substring(0, 5),
-          amount: order.totalAmount || "N/A",
+          invoiceAmount: order.totalAmount || "N/A",
           paidAmount: order.paidAmount || "N/A",
           balance:
             order.totalAmount && order.paidAmount
               ? order.totalAmount - order.paidAmount
               : "N/A",
+          amountToBusiness: order.amountToBusiness || "N/A",
+          amountToPlatix: order.amountToPlatix || "N/A",
           modeOfPayment: order.paymentMethod || "N/A",
         }));
 
@@ -109,27 +101,23 @@ const RevenueReports = () => {
     };
 
     fetchData();
-  }, [fromDate, toDate]); // Refetch data when dates change
+  }, [fromDate, toDate]);
 
   useEffect(() => {
     if (debouncedSearchQuery) {
       const lowerCaseQuery = debouncedSearchQuery.toLowerCase();
-      const result = data.filter(
-        (item) =>
-          item.orderId.toLowerCase().includes(lowerCaseQuery) ||
-          item.from.toLowerCase().includes(lowerCaseQuery) ||
-          item.to.toLowerCase().includes(lowerCaseQuery)
+      const result = data.filter((item) =>
+        Object.values(columnKeyMapping).some(
+          (key) => item[key] && item[key].toString().toLowerCase().includes(lowerCaseQuery)
+        )
       );
       setFilteredData(result);
     } else {
-      // Reset filtered data when search query is cleared
       setFilteredData(data);
     }
   }, [debouncedSearchQuery, data]);
 
   const handleBulkDownload = () => {
-    console.log("Download button clicked!");
-
     if (!filteredData.length) {
       alert("No data available for download!");
       return;
@@ -146,7 +134,6 @@ const RevenueReports = () => {
     ];
 
     const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
-
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -171,18 +158,17 @@ const RevenueReports = () => {
         title={"Revenue Reports"}
         searchPlaceholder="Search"
         onSearch={(e) => setSearchQuery(e.target.value)}
-        fromDate={fromDate} // Use the actual state here
+        fromDate={fromDate}
         toDate={toDate}
         onFromDateChange={(e) => setFromDate(e.target.value)}
         onToDateChange={(e) => setToDate(e.target.value)}
-        onDownloadClick={handleBulkDownload} // Pass function directly
+        onDownloadClick={handleBulkDownload}
       />
       <div className="overflow-x-auto w-full">
-        {/* Reports Table */}
         <ReportsTable
           columns={columns}
           data={filteredData}
-          columnKeyMapping={columnKeyMapping} // Pass column key mapping dynamically
+          columnKeyMapping={columnKeyMapping}
         />
       </div>
     </div>

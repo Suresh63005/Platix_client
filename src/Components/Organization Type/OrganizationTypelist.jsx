@@ -11,11 +11,9 @@ import api from "../../utils/api";
 import Cookies from "js-cookie";
 // import { organizationTypesData } from "../../Data/data";
 
-
 // Debounced hook for search or filter
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
-  
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -36,8 +34,8 @@ const OrganizationTypelist = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [filter, setFilter] = useState("");
-  const [filterOptions,setFilterOptions] = useState([])// Filter state
-  
+  const [filterOptions, setFilterOptions] = useState([]); // Filter state
+
   const [searchQuery, setSearchQuery] = useState(""); // Search query state
   const orgsPerPage = 10;
   const navigate = useNavigate(); // Initialize navigate function
@@ -51,25 +49,25 @@ const OrganizationTypelist = () => {
   // Load data from API
   const loadOrganizationsForPage = (page, filter, searchQuery) => {
     const start = (page - 1) * orgsPerPage;
-    
+
     // Set your API endpoint
     const apiUrl = "organization/getall";
-    
+
     api
       .get(apiUrl, {
         params: {
           page,
           limit: orgsPerPage,
           filter,
-          search: searchQuery
+          search: searchQuery,
         },
       })
       .then((response) => {
         const { data } = response;
         // console.log("API Response:", data); // Log response for debugging
-        const filteredOrgs = data.results; 
+        const filteredOrgs = data.results;
         setOrganizationTypes(filteredOrgs);
-        
+
         setTotalPages(Math.ceil(data.totalCount / orgsPerPage));
       })
       .catch((error) => {
@@ -78,17 +76,16 @@ const OrganizationTypelist = () => {
   };
   useEffect(() => {
     const fetchOrganizationTypes = async () => {
-      const token = Cookies.get("token"); 
-  
+      const token = Cookies.get("token");
+
       try {
         const response = await api.get("/organization/getall", {
-          headers: { Authorization: `Bearer ${token}` }, 
+          headers: { Authorization: `Bearer ${token}` },
         });
-  
+
         console.log("Organization Types Response:", response.data);
-  
+
         if (response.data && Array.isArray(response.data.results)) {
-          
           setFilterOptions(
             response.data.results.map((org) => ({
               value: org.organizationType, // Use organizationType as value
@@ -103,17 +100,15 @@ const OrganizationTypelist = () => {
         setFilterOptions([]); // Fallback to empty array on error
       }
     };
-  
+
     fetchOrganizationTypes();
   }, []);
-  
-  
+
   useEffect(() => {
     loadOrganizationsForPage(page, debouncedFilter, debouncedSearchQuery);
   }, [page, debouncedFilter, debouncedSearchQuery]);
 
   const handleFilterChange = (value) => {
-
     setFilter(value);
     setPage(1);
   };
@@ -143,16 +138,16 @@ const OrganizationTypelist = () => {
         <Header name={"Organization Type"} />
 
         <Pagetitle
-  title="Organization Types List"
-  buttonLabel="Create Organization Type"
-  onButtonClick={handleCreateOrganizationType}
-  filterValue={filter}
-  onFilterChange={handleFilterChange}
-  options={filterOptions} // `filterOptions` now contains the organization types
-  searchPlaceholder="Search"
-  onSearch={handleSearch}
-  filterPlaceholder={"Filter"}
-/>
+          title="Organization Types List"
+          buttonLabel="Create Organization Type"
+          onButtonClick={handleCreateOrganizationType}
+          filterValue={filter}
+          onFilterChange={handleFilterChange}
+          options={filterOptions} // `filterOptions` now contains the organization types
+          searchPlaceholder="Search"
+          onSearch={handleSearch}
+          filterPlaceholder={"Filter"}
+        />
         <Table
           columns={["Organization Type", "From Date", "To Date"]}
           fields={["organizationType", "fromDate", "toDate"]}
@@ -165,7 +160,7 @@ const OrganizationTypelist = () => {
           handleView={handleView}
           handleDelete={handleDelete}
           setSelectedItems={setSelectedItems}
-          selectedItems={selectedItems}// Pass value key
+          selectedItems={selectedItems} // Pass value key
           labelKey="organizationType" //
         />
       </div>
