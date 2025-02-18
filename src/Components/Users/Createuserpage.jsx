@@ -28,6 +28,7 @@ const CreateUserPage = () => {
   const [mode, setMode] = useState(initialMode || "create");
   const [designationOptions, setDesignationOptions] = useState([]);
   const [roles, setRoles] = useState([]); // State to store fetched roles
+  const [showDesignationField, setShowDesignationField] = useState(false);
 
   const {
     register,
@@ -60,7 +61,7 @@ const CreateUserPage = () => {
             "Authorization": `Bearer ${token}`
           }
         });
-        const result = response.data.roles;
+        const result = response.data.formattedRoles;
 
         if (result) {
           const roleOptions = result.map((role) => ({
@@ -97,10 +98,10 @@ const CreateUserPage = () => {
 
   const handleRoleChange = (selectedRoleId) => {
     setValue("role_id", selectedRoleId);
-
+  
     const selectedRole = roles.find((role) => role.value === selectedRoleId);
     if (!selectedRole) return;
-
+  
     switch (selectedRole.label) {
       case "Dentist":
         setDesignationOptions([
@@ -115,22 +116,24 @@ const CreateUserPage = () => {
           { value: "Community dentist", label: "Community dentist" },
           { value: "Paeddontist", label: "Paeddontist" },
         ]);
+        setShowDesignationField(true); // Show designation for Dentist
         break;
       case "Dental Laboratory":
       case "Material Supplier":
-      case "Radiology" :
+      case "Radiology":
         setDesignationOptions([
           { value: "Owner", label: "Owner" },
           { value: "Technician", label: "Technician" },
           { value: "Delivery Boy", label: "Delivery Boy" },
         ]);
+        setShowDesignationField(false); // Hide designation for other roles
         break;
       default:
         setDesignationOptions([]);
+        setShowDesignationField(false); // Hide designation for unknown roles
         break;
     }
   };
-
   const onSubmit = async (data) => {
     try {
       const requestData = { ...data, organization_id };
@@ -301,24 +304,25 @@ const CreateUserPage = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Controller
-              name="designation"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <SelectField
-                  label="Designation*"
-                  defaultplaceholder="Select Designation"
-                  options={designationOptions || []}
-                  value={field.value}
-                  onChange={(value) => field.onChange(value)}
-                  disabled={mode === "view"}
-                />
-              )}
-            />
-          </div>
-
+          {showDesignationField && (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <Controller
+      name="designation"
+      control={control}
+      defaultValue=""
+      render={({ field }) => (
+        <SelectField
+          label="Specialization*"
+          defaultplaceholder="Select Designation"
+          options={designationOptions || []}
+          value={field.value}
+          onChange={(value) => field.onChange(value)}
+          disabled={mode === "view"}
+        />
+      )}
+    />
+  </div>
+)}
           {mode !== "view" && (
             <div className="flex justify-end gap-3 mt-4">
               <button

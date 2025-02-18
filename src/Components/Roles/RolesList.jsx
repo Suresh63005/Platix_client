@@ -22,7 +22,7 @@ const Rolespage = () => {
           "Authorization": `Bearer ${token}`
         }
       });
-      const fetchedRoles = response.data.roles;
+      const fetchedRoles = response.data.formattedRoles;
       const totalRoles = response.data.totalRoles; // Get total roles from API
   
       if (!Array.isArray(fetchedRoles)) {

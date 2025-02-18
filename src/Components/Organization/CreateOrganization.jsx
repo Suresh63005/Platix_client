@@ -409,7 +409,7 @@ const CreateOrganization = () => {
                       value={field.value}
                       onChange={(value) => field.onChange(value)}
                       defaultCountry={"IN"}
-                      {...register("mobile",{ required: "mobile number is required."})} 
+                      // {...register("mobile",{ required: "mobile number is required."})} 
                       className="p-1"
                       disabled={mode === "view"}
                     />
@@ -427,6 +427,7 @@ const CreateOrganization = () => {
                     <WhatsAppInput
                       label={"WhatsApp Number*"}
                       value={field.value}
+                      name={"whatsapp"}
                       onChange={(e) => field.onChange(e.target.value)}
                       {...register("whatsapp",{ required: "whatsapp number is required."})}
                       className="p-1"
