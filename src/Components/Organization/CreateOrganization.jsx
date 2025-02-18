@@ -35,7 +35,7 @@ const CreateOrganization = () => {
     watch,
     control,
     reset,
-    formState: { errors },
+    formState: { errors }, setError, clearErrors,
   } = useForm();
   const [PImages, setPImages] = useState([]);
   const [loading, setloading] = useState(false);
@@ -399,44 +399,63 @@ const CreateOrganization = () => {
                 </div>
 
                 <div>
-                <Controller
-                  name="mobile"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <PhoneNumberInput
-                      label={"Mobile Number*"}
-                      value={field.value}
-                      onChange={(value) => field.onChange(value)}
-                      defaultCountry={"IN"}
-                      // {...register("mobile",{ required: "mobile number is required."})} 
-                      className="p-1"
-                      disabled={mode === "view"}
-                    />
-                  )}
-                />
-                {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile.message}</p>}
-                </div>
+  <Controller
+    name="mobile"
+    control={control}
+    defaultValue=""
+    rules={{ required: "Mobile number is required." }} // Validation rule directly inside Controller
+    render={({ field }) => (
+      <PhoneNumberInput
+        label={"Mobile Number*"}
+        {...field}
+        defaultCountry={"IN"}
+        placeholder={"Enter Mobile Number"}
+        className="p-1"
+        disabled={mode === "view"}
+        onChange={(value) => {
+          field.onChange(value); // Pass the value directly to field.onChange
+          // Validate mobile number length directly in the Controller
+          if (value && value.length > 12) {
+            setError("mobile", { type: "manual", message: "Mobile number cannot exceed 12 digits." });
+          } else {
+            clearErrors("mobile");
+          }
+        }}
+      />
+    )}
+  />
+  {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile.message}</p>}
+</div>
 
-                <div>
-                <Controller
-                  name="whatsapp"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <WhatsAppInput
-                      label={"WhatsApp Number*"}
-                      value={field.value}
-                      name={"whatsapp"}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      {...register("whatsapp",{ required: "whatsapp number is required."})}
-                      className="p-1"
-                      disabled={mode === "view"}
-                    />
-                  )}
-                />
-                {errors.whatsapp && <p className="text-red-500 text-xs">{errors.whatsapp.message}</p>}
-                </div>
+{/* WhatsApp Number Input */}
+<div>
+  <Controller
+    name="whatsapp"
+    control={control}
+    defaultValue=""
+    rules={{ required: "WhatsApp number is required." }} // Validation rule directly inside Controller
+    render={({ field }) => (
+      <WhatsAppInput
+        label={"WhatsApp Number*"}
+        {...field}
+        className="p-1"
+        disabled={mode === "view"}
+        onChange={(e) => {
+          const value = e.target.value.replace(/[^0-9]/g, ""); // Allow only numbers
+          field.onChange(value); // Pass the value directly to field.onChange
+          // Validate WhatsApp number length directly in the Controller
+          if (value.length > 10) {
+            setError("whatsapp", { type: "manual", message: "WhatsApp number cannot exceed 10 digits." });
+          } else {
+            clearErrors("whatsapp");
+          }
+        }}
+      />
+    )}
+  />
+  {errors.whatsapp && <p className="text-red-500 text-xs">{errors.whatsapp.message}</p>}
+</div>
+
                <div>
                <InputField
                   label={"Email*"}
@@ -778,12 +797,12 @@ const CreateOrganization = () => {
                     label="choose file for profile*"
                     multiple={false}
                     onChange={handleChange}
-                    {...register("file1",{ required: "organization image is required."})}
+                    // {...register("file1",{ required: "organization image is required."})}
                   />
                 )}
                 
               />
-              {errors.file1 && <p className="text-red-500 text-xs">{errors.file1.message}</p>}
+              {/* {errors.file1 && <p className="text-red-500 text-xs">{errors.file1.message}</p>} */}
               </div>
 
               <div>

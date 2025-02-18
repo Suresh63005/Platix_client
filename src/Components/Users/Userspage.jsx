@@ -15,6 +15,7 @@ const Userspage = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [roles, setRoles] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [usernameFilter, setUsernameFilter] = useState(""); // Username filter state
   const [userTypeFilter, setUserTypeFilter] = useState(""); // User type filter state
@@ -114,10 +115,11 @@ const Userspage = () => {
     setSearchQuery(event.target.value);
     setPage(1); // Reset to first page when search query changes
   };
-  const handleFilterChange = (value) => {
-    setUserTypeFilter(value);
-    setPage(1); // Reset to first page when filter changes
-  };
+  const handleFilterChange = (selectedValue) => {
+    setUserTypeFilter(selectedValue);  // ✅ Directly set the value from react-select
+    setPage(1);
+};
+
 
   const handleEdit = (id) => {
     navigate(`/createuser/${organization_id}`, { state: { id, mode: "edit" } });
@@ -157,6 +159,8 @@ const Userspage = () => {
           handleEdit={handleEdit}
           handleView={handleView}
           handleDelete={handleDelete}
+          setSelectedItems={setSelectedItems}
+          selectedItems={selectedItems}
         />
       </div>
     </div>
