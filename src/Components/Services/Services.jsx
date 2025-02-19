@@ -11,7 +11,7 @@ const Services = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
- 
+ const [servicesFilter,setServicesFilter] = useState()
   const [selectedFilter, setSelectedFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -22,7 +22,7 @@ const Services = () => {
   const [orgTypeOptions, setOrgTypeOptions] = useState([]);; // Organization types dropdown
   console.log(orgTypeOptions, "from orgggggggggggggggggg")
   const [organizationType_id,setOrganizationType_id] = useState(null);
-  console.log(organizationType_id,"from akhillllllllllllllllllll")
+  // console.log(organizationType_id,"from akhillllllllllllllllllll")
   const itemsPerPage = 10;
 
   // Fetch services from API
@@ -126,6 +126,30 @@ const Services = () => {
       }
     };
     fetchOrganizationTypes();
+  }, []);
+
+  useEffect(() => {
+    const filterServices = async () => {
+      const token = Cookies.get("token");
+      try {
+        const response = await api.get("admin/allservices", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("Services Response:", response);
+        if (response.data && Array.isArray(response.data.serivces)) {
+          setServicesFilter(response.data.services.map(org => ({
+            value: org.id, // Use org.id for value
+            label: org.servicename, // Use org.name for label
+          })));
+        } else {
+          setOrgTypeOptions([]); // Ensure it's always an array
+        }
+      } catch (error) {
+        console.error("Error fetching organization types:", error);
+        setOrgTypeOptions([]); // Fallback to empty array on error
+      }
+    };
+    filterServices();
   }, []);
   // Handle service assignment to organization type
   const handleAssignService = () => {
