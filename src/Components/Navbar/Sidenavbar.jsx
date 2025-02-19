@@ -13,7 +13,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./sidenavbar.css";
-
+import { ReactComponent as LogoutIcon } from '../../assets/images/ri_logout-circle-line.svg';
 import OrganizationIcon from "../../assets/images/OrganizationIcon.svg";
 import ActiveorganizationIcon from "../../assets/images/active_organizationIcon.svg";
 import OrganizationTypeIcon from "../../assets/images/OrganizationType.svg";
@@ -68,7 +68,10 @@ const Sidenavbar = () => {
 
     setActiveReport(null); // Reset active report when location changes
   }, [location]);
-
+  const handleLogout = () => {
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    navigate("/");
+  };
   const handleClick = useCallback(
     (item, route, isReport = false, e) => {
       e.preventDefault(); // Prevent default link behavior
@@ -219,13 +222,24 @@ const Sidenavbar = () => {
   </div>
 </Collapse>
 
-      {renderNavItem(
-        SettingsIcon,
-        ActiveSettingsIcon,
-        "Settings",
-        "settings",
-        "/settings"
-      )}
+{renderNavItem(
+  SettingsIcon,
+  ActiveSettingsIcon,
+  "Settings",
+  "settings",
+  "/settings"
+)}
+
+{/* Logout Option */}
+<div
+  onClick={handleLogout}
+  className="flex items-center cursor-pointer p-2 m-4 text-[12px] text-white rounded-lg"
+  role="menuitem"
+  aria-label="Logout"
+>
+  <LogoutIcon className="w-5 h-5 mr-4" />
+  <span>Logout</span>
+</div>
     </div>
   </div>
 </div>

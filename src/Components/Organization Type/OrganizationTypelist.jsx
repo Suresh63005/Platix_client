@@ -48,8 +48,6 @@ const OrganizationTypelist = () => {
 
   // Load data from API
   const loadOrganizationsForPage = (page, filter, searchQuery) => {
-    const start = (page - 1) * orgsPerPage;
-
     // Set your API endpoint
     const apiUrl = "organization/getall";
 
@@ -58,22 +56,23 @@ const OrganizationTypelist = () => {
         params: {
           page,
           limit: orgsPerPage,
-          filter,
+          filter: filter === "all" ? "" : filter,  // Send empty string when "all" is selected
           search: searchQuery,
         },
       })
       .then((response) => {
         const { data } = response;
-        // console.log("API Response:", data); // Log response for debugging
-        const filteredOrgs = data.results;
-        setOrganizationTypes(filteredOrgs);
+        const filteredOrgs = data.results || []; 
 
+        setOrganizationTypes(filteredOrgs);
         setTotalPages(Math.ceil(data.totalCount / orgsPerPage));
       })
       .catch((error) => {
         console.error("Error fetching organizations:", error);
+        setOrganizationTypes([]);
       });
-  };
+};
+
   useEffect(() => {
     const fetchOrganizationTypes = async () => {
       const token = Cookies.get("token");
