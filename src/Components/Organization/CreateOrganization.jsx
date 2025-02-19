@@ -265,7 +265,7 @@ const CreateOrganization = () => {
           form.append("file2", file);
         });
       }
-      console.log(form,"from ");
+      console.log(form,"frommmmmmmmmmmmmmm ");
       const response = await api.post("api/organization/upsert", form, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -410,7 +410,7 @@ const CreateOrganization = () => {
                     <InputField
                       type={"text"}
                       placeholder={"Longitude"}
-                      {...register("googleCoordinateslongitude",{ required: "Coordinates is required."})}
+                      {...register("googleCoordinates.longitude",{ required: "Coordinates is required."})}
                       disabled={mode === "view"}
                     />
                   </div>
@@ -827,7 +827,7 @@ const CreateOrganization = () => {
               </div>
               {/* {id&& <img src= {organization?.file1} alt="file1"/>} */}
               {organization?.file1  && (
-                <img src={organization.file1} alt="" />
+                <img src={organization.file1} alt="" width={"100px"} height={"100px"}/>
               )}
               <div>
               <Controller
@@ -852,6 +852,7 @@ const CreateOrganization = () => {
                 <div className="flex justify-end gap-3 mt-4">
                   <button
                     type="reset"
+                    onClick={() => navigate("/organizationlist")}
                     className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
                   >
                     <Cancelbtnicon className="w-4 h-4" />

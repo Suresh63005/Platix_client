@@ -35,7 +35,7 @@ const Userspage = () => {
           page,
           limit: usersPerPage,
           search: searchQuery,  // Pass the search query to the backend
-          filter: userTypeFilter,  // Pass the selected filter to the backend
+          filter: userTypeFilter === "all" ? "" : userTypeFilter,  // Pass the selected filter to the backend
         };
   
         if (organization_id) {

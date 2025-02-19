@@ -11,7 +11,8 @@ const Services = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
- const [servicesFilter,setServicesFilter] = useState()
+  const [filter,setFilter] = useState("")
+ const [servicesFilteroptions,setServicesFilteroptions] = useState()
   const [selectedFilter, setSelectedFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -33,7 +34,7 @@ const Services = () => {
         const response = await api.get("admin/allservices", {
           headers: { Authorization: `Bearer ${token}` },
           params: {
-            filter: selectedFilter,
+            filter: filter === "all" ? "" : filter,
             search: searchQuery,
             page,
             limit: itemsPerPage,
@@ -48,7 +49,7 @@ const Services = () => {
     };
 
     fetchServices();
-  }, [selectedFilter, searchQuery, page]);
+  }, [filter, searchQuery, page]);
 
   // Handle edit
   const handleEdit = (id) => {
@@ -129,27 +130,32 @@ const Services = () => {
   }, []);
 
   useEffect(() => {
-    const filterServices = async () => {
+    const fetchServiceFilterOptions = async () => {
       const token = Cookies.get("token");
       try {
         const response = await api.get("admin/allservices", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("Services Response:", response);
-        if (response.data && Array.isArray(response.data.serivces)) {
-          setServicesFilter(response.data.services.map(org => ({
-            value: org.id, // Use org.id for value
-            label: org.servicename, // Use org.name for label
-          })));
+  
+        console.log("Services Filter Response:", response);
+        
+        if (response.data && Array.isArray(response.data.services)) {
+          setServicesFilteroptions(
+            response.data.services.map(service => ({
+              value: service.id, // Service ID for filtering
+              label: service.servicename, // Displayed service name
+            }))
+          );
         } else {
-          setOrgTypeOptions([]); // Ensure it's always an array
+          setServicesFilteroptions([]); // Ensure fallback is an empty array
         }
       } catch (error) {
-        console.error("Error fetching organization types:", error);
-        setOrgTypeOptions([]); // Fallback to empty array on error
+        console.error("Error fetching service filter options:", error);
+        setServicesFilteroptions([]); // Fallback to an empty array on error
       }
     };
-    filterServices();
+  
+    fetchServiceFilterOptions();
   }, []);
   // Handle service assignment to organization type
   const handleAssignService = () => {
@@ -190,6 +196,10 @@ const Services = () => {
       }
     });
   };
+  // const handleFilterChange = (value) => {
+  //   setFilter(value);
+  //   setPage(1);
+  // };
 
   return (
     <div className="bg-gray-100 h-full">
@@ -198,12 +208,12 @@ const Services = () => {
         title="Services List"
         buttonLabel="Create Service"
         onButtonClick={() => navigate("/createservice")}
-        filterValue={selectedFilter}
+        filterValue={filter}
         onFilterChange={(value) => {
-          setSelectedFilter(value);
+          setFilter(value);
           setPage(1);
         }}
-        options={[...new Set(services.map((service) => service.servicename))]}
+        options={servicesFilteroptions}
         searchPlaceholder="Search"
         onSearch={(e) => {
           setSearchQuery(e.target.value);

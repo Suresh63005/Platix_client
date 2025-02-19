@@ -29,6 +29,7 @@ const CreateUserPage = () => {
   const [designationOptions, setDesignationOptions] = useState([]);
   const [roles, setRoles] = useState([]); // State to store fetched roles
   const [showDesignationField, setShowDesignationField] = useState(false);
+  const [organizationName, setOrganizationName] = useState("");
 
   const {
     register,
@@ -49,7 +50,21 @@ const CreateUserPage = () => {
     }, 1000);
     return () => clearTimeout(timer)
   },[])
-
+  useEffect(() => {
+    if (organization_id) {
+      api
+        .get(`api/organization/getby/${organization_id}`)
+        .then((response) => {
+          const orgName = response.data.data.name;
+          setOrganizationName(orgName);
+          setValue("organizationName", orgName);
+        })
+        .catch((error) => {
+          console.error("Error fetching organization name:", error);
+          setOrganizationName("");
+        });
+    }
+  }, [organization_id, setValue]);
   // Fetch roles dynamically
   useEffect(() => {
         const token = Cookies.get("token");
@@ -372,33 +387,43 @@ const CreateUserPage = () => {
     </div>
 
     {/* Specialization (Designation) Field */}
-    {showDesignationField && (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Controller
-          name="designation"
-          control={control}
-          defaultValue=""
-          rules={{ required: "Designation is required." }}
-          render={({ field }) => (
-            <SelectField
-              label="Specialization*"
-              defaultplaceholder="Select Designation"
-              options={designationOptions || []}
-              value={field.value}
-              onChange={(value) => field.onChange(value)}
-              disabled={mode === "view"}
-            />
-          )}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  {showDesignationField && (
+    <Controller
+      name="designation"
+      control={control}
+      defaultValue=""
+      rules={{ required: "Designation is required." }}
+      render={({ field }) => (
+        <SelectField
+          label="Specialization*"
+          defaultplaceholder="Select Designation"
+          options={designationOptions || []}
+          value={field.value}
+          onChange={(value) => field.onChange(value)}
+          disabled={mode === "view"}
         />
-        {errors.designation && <p className="text-red-500 text-xs">{errors.designation.message}</p>}
-      </div>
-    )}
+      )}
+    />
+  )}
+
+      <InputField
+        label="Organization Name"
+        placeholder="Organization Name"
+        value={organizationName}
+        readOnly
+        className="p-1"
+      />
+    
+  
+</div>
 
     {/* Submit Buttons */}
     {mode !== "view" && (
       <div className="flex justify-end gap-3 mt-4">
         <button
           type="reset"
+          onClick={() => navigate(`/userspage/${organization_id}`)}
           className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
         >
           Cancel
