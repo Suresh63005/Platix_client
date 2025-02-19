@@ -26,10 +26,10 @@ const OrderReports = () => {
     "Order ID",
     "Order Date",
     "From",
-    "Username",
     "To",
-    "Order Status",
+    "Username",
     "Mobile No",
+    "Order Status",
     "Patient Details",
   ];
 
@@ -37,10 +37,10 @@ const OrderReports = () => {
     "Order ID": "orderId",
     "Order Date": "orderDate",
     "From": "from",
-    "Username": "username",
     "To": "to",
-    "Order Status": "orderStatus",
+    "Username": "username",
     "Mobile No": "mobileNo",
+    "Order Status": "orderStatus",
     "Patient Details": "patientDetails",
   };
 

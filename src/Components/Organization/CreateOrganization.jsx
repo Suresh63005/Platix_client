@@ -261,7 +261,7 @@ const CreateOrganization = () => {
           form.append("file2", file);
         });
       }
-      console.log(form,"from ");
+      console.log(form,"frommmmmmmmmmmmmmm ");
       const response = await api.post("api/organization/upsert", form, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -802,6 +802,7 @@ const CreateOrganization = () => {
                 </div>
               )}
 
+
 <div>
   {/* File Upload Input */}
   <Controller
@@ -840,6 +841,7 @@ const CreateOrganization = () => {
     </div>
   )}
 </div>
+
               <div>
               <Controller
                 name="file2"
@@ -863,6 +865,7 @@ const CreateOrganization = () => {
                 <div className="flex justify-end gap-3 mt-4">
                   <button
                     type="reset"
+                    onClick={() => navigate("/organizationlist")}
                     className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
                   >
                     <Cancelbtnicon className="w-4 h-4" />

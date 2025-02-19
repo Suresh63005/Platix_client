@@ -50,12 +50,15 @@ const FilterDropdown = ({ filterValue, onFilterChange, options, placeholder, cla
   };
 
   // Transform options into React Select's format
-  const formattedOptions = Array.isArray(options)
-  ? options.map((option) => ({
-      value: option.value, 
-      label: option.label, 
-    }))
-  : [];
+    const formattedOptions = [
+    { value: "all", label: "All" },  // Add "All" at the beginning
+    ...(Array.isArray(options)
+      ? options.map((option) => ({
+        value: option.value, 
+        label: option.label, 
+        }))
+      : [])
+  ];
 
   return (
     <div className="relative w-full">
