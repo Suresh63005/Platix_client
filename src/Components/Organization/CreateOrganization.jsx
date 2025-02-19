@@ -20,6 +20,7 @@ import { ReactComponent as DownArrow } from "../../assets/images/Down Arrow.svg"
 import { Vortex } from "react-loader-spinner";
 import api from "../../utils/api";
 import { useLoading } from "../../context/LoadingContext";
+import { organizationTypesData } from "../../Data/data";
 
 const CreateOrganization = () => {
   const location = useLocation();
@@ -85,8 +86,9 @@ const CreateOrganization = () => {
         .get(`api/organization/getby/${id}`)
         .then((response) => {
           const orgData = response.data.data;
+          console.log(orgData,"from jjjjjjjjjjjjjjjjjjjjjjjj")
           setOrganization(orgData);
-          console.log(orgData);
+  
           // Populate form fields
           Object.keys(orgData).forEach((key) => {
             if (orgData[key] !== null && typeof orgData[key] === "object") {
@@ -97,10 +99,17 @@ const CreateOrganization = () => {
               setValue(key, orgData[key]);
             }
           });
-
+  
           // Set services if available
           if (orgData.services) {
-            setUserServices(orgData.services);
+            // Map services to include both `id` and `name`
+            
+            const servicesWithNames = orgData.services.map((service) => ({
+              id: service.id,
+              name: service.serviceDetail.servicename || service.name, // Ensure `name` is included
+              price: service.price,
+            }));
+            setUserServices(servicesWithNames);
           }
         })
         .catch((error) =>
@@ -160,9 +169,13 @@ const CreateOrganization = () => {
   const handleChange = (e) => {
     const { name, files } = e.target;
     if (files && files.length > 0) {
+      const file=files[0];
+      const previewUrl=URL.createObjectURL(file)
       setFormData((prev) => ({
         ...prev,
-        [name]: files[0],
+        file1: file,
+        imgPreview: previewUrl
+        // [name]: files[0],
       }));
       setValue(name, files[0]);
     }
@@ -196,12 +209,19 @@ const CreateOrganization = () => {
   };
 
   const handleEditService = (index) => {
+    const serviceToEdit = userServices[index];
     setEditingIndex(index);
-    setNewService({ ...userServices[index] });
+    setNewService({
+      id: serviceToEdit.id,
+      name: serviceToEdit.name,
+      price: serviceToEdit.price,
+    });
   };
 
   const handleDeleteService = (index) => {
-    const updatedServices = userServices.filter((_, i) => i !== index);
+
+    const updatedServices = userServices.filter((_, i) => i !== index); 
+    
     setUserServices(updatedServices);
   };
 
@@ -245,7 +265,7 @@ const CreateOrganization = () => {
           form.append("file2", file);
         });
       }
-      console.log(form);
+      console.log(form,"from ");
       const response = await api.post("api/organization/upsert", form, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -291,7 +311,7 @@ const CreateOrganization = () => {
     }
   }
 
-  console.log(servicesList, "sureshhhhhhhhhhhhhhhhhh");
+ 
 
   return (
     <div>
@@ -415,7 +435,7 @@ const CreateOrganization = () => {
         onChange={(value) => {
           field.onChange(value); // Pass the value directly to field.onChange
           // Validate mobile number length directly in the Controller
-          if (value && value.length > 12) {
+          if (value && value.length > 13) {
             setError("mobile", { type: "manual", message: "Mobile number cannot exceed 12 digits." });
           } else {
             clearErrors("mobile");
@@ -775,11 +795,11 @@ const CreateOrganization = () => {
                           Edit
                         </span>
                         <span
-                          onClick={() => handleDeleteService(index)}
-                          className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer"
-                        >
-                          Delete
-                        </span>
+  onClick={() => handleDeleteService(index)} // Pass the correct index
+  className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer"
+>
+  Delete
+</span>
                       </div>
                     ))}
                   </div>
@@ -802,9 +822,13 @@ const CreateOrganization = () => {
                 )}
                 
               />
+              
               {/* {errors.file1 && <p className="text-red-500 text-xs">{errors.file1.message}</p>} */}
               </div>
-
+              {/* {id&& <img src= {organization?.file1} alt="file1"/>} */}
+              {organization?.file1  && (
+                <img src={organization.file1} alt="" />
+              )}
               <div>
               <Controller
                 name="file2"

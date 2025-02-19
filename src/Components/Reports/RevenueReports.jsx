@@ -68,7 +68,7 @@ const RevenueReports = () => {
 
         let endpoint = "admin/getallorder";
         if (fromDate && toDate) {
-          endpoint = `user/getbydate/${fromDate}/${toDate}`;
+          endpoint = `order/getbyorderdate/${fromDate}/${toDate}`;
         }
         
         const response = await api.get(endpoint);

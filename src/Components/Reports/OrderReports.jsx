@@ -58,9 +58,10 @@ const OrderReports = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        let endpoint = "admin/getallorder";
+        let endpoint = "order/getallorderedreport";
         if (fromDate && toDate) {
-          endpoint = `user/getbydate/${fromDate}/${toDate}`;
+          alert(1)
+          endpoint = `order/getbyorderdate/${fromDate}/${toDate}`;
         }
 
         const response = await api.get(endpoint);
