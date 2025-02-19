@@ -86,7 +86,7 @@ const CreateOrganization = () => {
         .get(`api/organization/getby/${id}`)
         .then((response) => {
           const orgData = response.data.data;
-          console.log(orgData,"from jjjjjjjjjjjjjjjjjjjjjjjj")
+
           setOrganization(orgData);
   
           // Populate form fields
@@ -102,11 +102,9 @@ const CreateOrganization = () => {
   
           // Set services if available
           if (orgData.services) {
-            // Map services to include both `id` and `name`
-            
             const servicesWithNames = orgData.services.map((service) => ({
-              id: service.id,
-              name: service.serviceDetail.servicename || service.name, // Ensure `name` is included
+              id: service.serviceDetail.id,
+              name: service.serviceDetail.servicename || service.name,
               price: service.price,
             }));
             setUserServices(servicesWithNames);
@@ -118,8 +116,6 @@ const CreateOrganization = () => {
     } else {
       setMode("create");
     }
-
-    // Fetch services dynamically
     api
       .get("admin/allservices")
       .then((response) => {
@@ -142,8 +138,8 @@ const CreateOrganization = () => {
         // console.log(OrgData,"from orgdata");
         setOrgTYpe(
           OrgData.map((org) => ({
-            value: org.id, // Set id as value
-            label: org.organizationType, // Set organizationType as label
+            value: org.id, 
+            label: org.organizationType,
             services: org.services,
           }))
         );
@@ -170,7 +166,7 @@ const CreateOrganization = () => {
     const { name, files } = e.target;
     if (files && files.length > 0) {
       const file=files[0];
-      const previewUrl=URL.createObjectURL(file)
+      const previewUrl=URL.createObjectURL(file);
       setFormData((prev) => ({
         ...prev,
         file1: file,
@@ -410,7 +406,7 @@ const CreateOrganization = () => {
                     <InputField
                       type={"text"}
                       placeholder={"Longitude"}
-                      {...register("googleCoordinateslongitude",{ required: "Coordinates is required."})}
+                      {...register("googleCoordinates.longitude",{ required: "Coordinates is required."})}
                       disabled={mode === "view"}
                     />
                   </div>
@@ -806,29 +802,44 @@ const CreateOrganization = () => {
                 </div>
               )}
 
-              <div>
-              <Controller
-                name="file1"
-                control={control}
-                defaultValue={[]}
-                render={({ field }) => (
-                  <FileUpload
-                    name="file1"
-                    label="choose file for profile*"
-                    multiple={false}
-                    onChange={handleChange}
-                    // {...register("file1",{ required: "organization image is required."})}
-                  />
-                )}
-                
-              />
-              
-              {/* {errors.file1 && <p className="text-red-500 text-xs">{errors.file1.message}</p>} */}
-              </div>
-              {/* {id&& <img src= {organization?.file1} alt="file1"/>} */}
-              {organization?.file1  && (
-                <img src={organization.file1} alt="" />
-              )}
+<div>
+  {/* File Upload Input */}
+  <Controller
+    name="file1"
+    control={control}
+    defaultValue={[]}
+    render={({ field }) => (
+      <FileUpload
+        name="file1"
+        label="Choose file for profile*"
+        multiple={false}
+        onChange={handleChange} // Ensure this is correctly handling file selection
+      />
+    )}
+  />
+
+  {/* Display the image preview */}
+  {formData.imgPreview && (
+    <div className="mt-2 w-[50px] h-[50px]">
+      <img
+        src={formData.imgPreview}
+        alt="Preview"
+        className="w-full h-full object-cover rounded-md"
+      />
+    </div>
+  )}
+
+  {/* Display the existing image if in edit/view mode */}
+  {organization?.file1 && !formData.imgPreview && (
+    <div className="mt-2 w-[50px] h-[50px]">
+      <img
+        src={organization.file1}
+        alt="Existing"
+        className="w-full h-full rounded-md"
+      />
+    </div>
+  )}
+</div>
               <div>
               <Controller
                 name="file2"
