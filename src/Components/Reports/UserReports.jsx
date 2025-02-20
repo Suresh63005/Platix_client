@@ -24,6 +24,7 @@ const useDebounce = (value, delay) => {
 const UserReports = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,17 +35,27 @@ const UserReports = () => {
 
   const columns = [
     "Username",
+    "Organization",
     "User ID",
+    "Email",
     "Role",
+    "Designation",
+    "DOB",
+    "Whatsapp No",
     "Address",
     "Mobile No.",
     "Starting Date",
-  ];
 
+  ];
   const columnKeyMapping = {
     "Username": "username",
+    "Organization":"organization",
     "User ID": "id",
+    "Email":"email",
     "Role": "role",
+    "Designation":"designation",
+    "DOB":"dateOfBirth",
+    "Whatsapp No":"whatsappNo",
     "Address": "address",
     "Mobile No.": "mobileNo",
     "Starting Date": "createdAt",
@@ -62,9 +73,16 @@ const UserReports = () => {
       const response = await api.get(endpoint);
       const apiData = response.data.users || [];
 
+      
+
       const formattedData = apiData.map((user) => ({
         id: user.id || "N/A",
         username: user.Username || "N/A",
+        organization:user.organization.name || "N/A",
+        email: user.email || "N/A",
+        dateOfBirth: user.dateOfBirth || "N/A",
+        designation: user.designation || "N/A",
+        whatsappNo: user.whatsappNo || "N/A",
         role: user.Role || "N/A",
         address: user.address || "N/A",
         mobileNo: user.mobileNo || "N/A",

@@ -71,6 +71,9 @@ const CreateOrganization = () => {
   const [orgType, setOrgTYpe] = useState([]);
   // console.log(orgType, "from sdhfjghlj.gkfdjshfdgh.")
 
+
+ 
+
   useEffect(() => {
     setIsLoading(true);
 
@@ -261,7 +264,7 @@ const CreateOrganization = () => {
           form.append("file2", file);
         });
       }
-      console.log(form,"frommmmmmmmmmmmmmm ");
+      
       const response = await api.post("api/organization/upsert", form, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -352,31 +355,30 @@ const CreateOrganization = () => {
                 )}
                 </div>
                 
-                <Controller
-                  name="organizationType_id"
-                  control={control}
-                  defaultValue=""
-                  render={({ field }) => (
-                    <div>
-                      <SelectField
-                        label="Organization Type*"
-                        defaultplaceholder="Select Organization Type"
-                        options={orgType}
-                        value={field.value}
-                        handleOrginazationtypeid={handleOrginazationtypeid}
-                        onChange={(e) => field.onChange(e)} // Ensure correct onChange handling
-                        className="p-1 w-full"
-                        // {...register("organizationType_id",{ required: "Organization Type is required."})}
-                        readOnly={mode === "view"}
-                      />
-                      {errors.organizationType_id && (
-                        <p className="text-red-500 text-xs">
-                          {errors.organizationType_id.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                />
+<div>
+<Controller
+  name="organizationType_id"
+  control={control}
+  defaultValue=""
+  rules={{ required: "Organization Type is required." }}
+  render={({ field }) => (
+    <SelectField
+      label="Organization Type*"
+      defaultplaceholder="Select Organization Type"
+      options={orgType}
+      value={field.value}
+      onChange={(value) => {
+        field.onChange(value);
+        handleOrginazationtypeid(value);
+      }}
+      disabled={mode === "view"}
+    />
+  )}
+/>
+{errors.organizationType_id && (
+  <p className="text-red-500 text-xs">{errors.organizationType_id.message}</p>
+)}
+</div>
 
                 <div>
                 <InputField
@@ -410,7 +412,7 @@ const CreateOrganization = () => {
                       disabled={mode === "view"}
                     />
                   </div>
-                  {errors. googleCoordinateslongitude&& <p className="text-red-500 text-xs">{errors.googleCoordinateslongitude.message}</p>}
+                  {errors. googleCoordinates?.longitude&& <p className="text-red-500 text-xs">{errors.googleCoordinates?.longitude.message}</p>}
                 </div>
                 </div>
 
@@ -820,15 +822,15 @@ const CreateOrganization = () => {
   />
 
   {/* Display the image preview */}
-  {formData.imgPreview && (
+  {/* {formData.imgPreview && (
     <div className="mt-2 w-[50px] h-[50px]">
       <img
         src={formData.imgPreview}
         alt="Preview"
-        className="w-full h-full object-cover rounded-md"
+        className="w-full h-full rounded-md"
       />
     </div>
-  )}
+  )} */}
 
   {/* Display the existing image if in edit/view mode */}
   {organization?.file1 && !formData.imgPreview && (
@@ -850,7 +852,7 @@ const CreateOrganization = () => {
                 render={({ field }) => (
                   <FileUpload
                     name="file2"
-                    label="choose file* (Max 10 images)"
+                    label="Choose file (Max 3 images)"
                     multiple={true}
                     onChange={handleImageUpload}
                     

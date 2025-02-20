@@ -1,4 +1,4 @@
-import React, { useState, forwardRef,useRef } from "react";
+import React, { useState, forwardRef,useRef, useEffect } from "react";
 import { WhatsApp } from "@mui/icons-material";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
@@ -163,20 +163,23 @@ export const FileUpload = forwardRef(({ name, onChange, label, multiple = false 
     }
   };
 
+
+
   const handleDelete = (fileToDelete) => {
-    const updatedFiles = files.filter(
-      (file) =>
-        file.name !== fileToDelete.name ||
-        file.lastModified !== fileToDelete.lastModified
+    setFiles((prevFiles) =>
+      prevFiles.filter(
+        (file) =>
+          file.name !== fileToDelete.name ||
+          file.lastModified !== fileToDelete.lastModified
+      )
     );
-    setFiles(updatedFiles);
 
     // Update parent form after deletion
     if (onChange) {
       onChange({
         target: {
           name,
-          files: updatedFiles,
+          files: files,
         },
       });
     }
@@ -186,6 +189,11 @@ export const FileUpload = forwardRef(({ name, onChange, label, multiple = false 
       fileInputRef.current.value = ""; // Reset the file input value
     }
   };
+
+
+  
+
+ 
 
   return (
     <div ref={ref} className="mt-4">
