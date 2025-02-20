@@ -77,8 +77,8 @@ const RevenueReports = () => {
         const formattedOrders = orders.map((order) => ({
           orderId: order.id || "N/A",
           orderDate: order.orderDate || "N/A",
-          from: order.fromOrg?.organizationType || "N/A",
-          to: order.toOrg?.organizationType || "N/A",
+          from: order.fromOrg?.name || "N/A",
+          to: order.toOrg?.name || "N/A",
           invoiceAmount: order.totalAmount || "N/A",
           paidAmount: order.paidAmount || "N/A",
           balance:

@@ -20,10 +20,10 @@ const Services = () => {
   const [deleteServiceId, setDeleteServiceId] = useState(null);
   const [selectedOrgType, setSelectedOrgType] = useState(null);
   console.log(selectedOrgType,"selected organization")
-  const [orgTypeOptions, setOrgTypeOptions] = useState([]);; // Organization types dropdown
+  const [orgTypeOptions, setOrgTypeOptions] = useState([]);; 
   console.log(orgTypeOptions, "from orgggggggggggggggggg")
   const [organizationType_id,setOrganizationType_id] = useState(null);
-  // console.log(organizationType_id,"from akhillllllllllllllllllll")
+  
   const itemsPerPage = 10;
 
   // Fetch services from API
