@@ -60,7 +60,6 @@ const OrderReports = () => {
       try {
         let endpoint = "order/getallorderedreport";
         if (fromDate && toDate) {
-          alert(1)
           endpoint = `order/getbyorderdate/${fromDate}/${toDate}`;
         }
 

@@ -10,7 +10,7 @@ import api from "../../utils/api";
 
 
 const Login = () => {
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, setError,formState: { errors } } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -26,15 +26,21 @@ const Login = () => {
       const response = await api.post("admin/login", data);
       toast.dismiss();
       toast.success('Login successful!');
-      Cookies.set("token", response.data.token, { expires: 1, secure: true, sameSite: "Strict" });
-
+      Cookies.set("token", response.data.token, { expires: 24, secure: true, sameSite: "Strict" });
+  
       setTimeout(() => {
         navigate("/organizationlist");
       }, 2000);
-
+  
     } catch (error) {
       toast.dismiss();
-      toast.error(error.response?.data?.error || "Something went wrong!");
+      if (error.response?.status === 404) {
+        setError("email", { type: "manual", message: "Email not registered as admin" });
+      } else if (error.response?.status === 401) {
+        setError("password", { type: "manual", message: "Incorrect password" });
+      } else {
+        toast.error("Something went wrong!");
+      }
     } finally {
       setLoading(false);
     }
@@ -62,13 +68,12 @@ const Login = () => {
                 </span>
                 <input
                   type="email"
-                  id="email"
-                  name="email"
-                  {...register("email")}
+                  {...register("email", { required: "Email is required" })}
                   className="w-full email py-3 px-0 text-[12px] text-black focus:outline-none focus:ring-0 focus:border-none"
-                  placeholder="eg : platix@gmail.com"
+                  placeholder="Enter your email"
                 />
               </div>
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
             </div>
 
             {/* Password Field */}
@@ -82,16 +87,15 @@ const Login = () => {
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  {...register("password")}
+                  {...register("password", { required: "Password is required" })}
                   className="w-full password py-3 px-0 text-[12px] focus:outline-none focus:ring-0 focus:border-none"
-                  placeholder="Password"
+                  placeholder="Enter your password"
                 />
-                <span className="px-3 text-gray-500 cursor-pointer border-none" onClick={togglePasswordVisibility}>
+                <span className="px-3 cursor-pointer" onClick={togglePasswordVisibility}>
                   <Icon icon={showPassword ? "mdi:eye" : "mdi:eye-off"} width={20} />
                 </span>
               </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
               <h4 className="text-[12px] text-[#131313] text-right mt-1 cursor-pointer font-semibold">
                 <Link to="/forgotpass">Forgot Password?</Link>
               </h4>

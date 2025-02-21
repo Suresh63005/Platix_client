@@ -71,22 +71,23 @@ const UserReports = () => {
       }
 
       const response = await api.get(endpoint);
+      console.log(response,"filtered date users")
       const apiData = response.data.users || [];
 
       
 
       const formattedData = apiData.map((user) => ({
-        id: user.id || "N/A",
-        username: user.Username || "N/A",
-        organization:user.organization.name || "N/A",
-        email: user.email || "N/A",
-        dateOfBirth: user.dateOfBirth || "N/A",
-        designation: user.designation || "N/A",
-        whatsappNo: user.whatsappNo || "N/A",
-        role: user.Role || "N/A",
-        address: user.address || "N/A",
-        mobileNo: user.mobileNo || "N/A",
-        createdAt: user.createdAt || "N/A",
+        id: user?.id || "N/A",
+        username: user?.Username || "N/A",
+        organization:user?.organization?.name || "N/A",
+        email: user?.email || "N/A",
+        dateOfBirth: user?.dateOfBirth || "N/A",
+        designation: user?.designation || "N/A",
+        whatsappNo: user?.whatsappNo || "N/A",
+        role: user?.Role || "N/A",
+        address: user?.address || "N/A",
+        mobileNo: user?.mobileNo || "N/A",
+        createdAt: user?.createdAt || "N/A",
       }));
 
       setData(formattedData);
