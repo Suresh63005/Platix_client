@@ -34,9 +34,9 @@ const UserReports = () => {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const columns = [
+    "User ID",
     "Username",
     "Organization",
-    "User ID",
     "Email",
     "Role",
     "Designation",
@@ -74,10 +74,8 @@ const UserReports = () => {
       console.log(response,"filtered date users")
       const apiData = response.data.users || [];
 
-      
-
-      const formattedData = apiData.map((user) => ({
-        id: user?.id || "N/A",
+      const formattedData = apiData.map((user,index) => ({
+        id: `user${(index + 1).toString().padStart(4, '0')}`,
         username: user?.Username || "N/A",
         organization:user?.organization?.name || "N/A",
         email: user?.email || "N/A",

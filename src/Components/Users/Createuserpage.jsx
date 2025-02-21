@@ -345,7 +345,7 @@ const CreateUserPage = () => {
               disabled={mode === "view"}
               onChange={(value) => {
                 field.onChange(value);
-                if (value && value.length > 12) {
+                if (value && value.length > 13) {
                   setError("mobileNo", { type: "manual", message: "Mobile number cannot exceed 12 digits." });
                 } else {
                   clearErrors("mobileNo");

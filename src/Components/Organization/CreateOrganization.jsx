@@ -435,7 +435,7 @@ const CreateOrganization = () => {
     
         if (value && value.length < 10) {
           setError("mobile", { type: "manual", message: "Mobile number must be at least 10 digits." });
-        } else if (value && value.length > 12) {
+        } else if (value && value.length > 13) {
           setError("mobile", { type: "manual", message: "Mobile number cannot exceed 12 digits." });
         } else {
           clearErrors("mobile");
