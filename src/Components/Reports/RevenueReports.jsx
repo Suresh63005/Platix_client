@@ -75,7 +75,9 @@ const RevenueReports = () => {
         const orders = response.data.data || [];
 
         const formattedOrders = orders.map((order) => ({
-          orderId: order.id || "N/A",
+          orderId: order.orderId || "N/A",
+          id: order.id || "N/A",
+
           orderDate: order.orderDate || "N/A",
           from: order.fromOrg?.name || "N/A",
           to: order.toOrg?.name || "N/A",

@@ -206,6 +206,7 @@ export const FileUpload = forwardRef(({ name, onChange, label, multiple = false 
           type="file"
           name={name}
           id={name}
+          accept="image/png, image/jpeg"
           multiple={multiple}
           onChange={handleFileChange}
           className="w-full sm:w-[350px] border border-gray-300 rounded-md p-1 text-sm"

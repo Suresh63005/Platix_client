@@ -81,7 +81,7 @@ const Pagetitle = ({
                 roleOptions={
                   organizationOptions 
                 } // Ensure it's always an array
-                placeholder="Select Organization"
+                placeholder="Select Organization Type"
                 customStyles={customStyles}
                 setOrganizationType_id={setOrganizationType_id}
               />
