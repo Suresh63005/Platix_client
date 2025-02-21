@@ -424,22 +424,24 @@ const CreateOrganization = () => {
     rules={{ required: "Mobile number is required." }} // Validation rule directly inside Controller
     render={({ field }) => (
       <PhoneNumberInput
-        label={"Mobile Number*"}
-        {...field}
-        defaultCountry={"IN"}
-        placeholder={"Enter Mobile Number"}
-        className="p-1"
-        disabled={mode === "view"}
-        onChange={(value) => {
-          field.onChange(value); // Pass the value directly to field.onChange
-          // Validate mobile number length directly in the Controller
-          if (value && value.length > 13) {
-            setError("mobile", { type: "manual", message: "Mobile number cannot exceed 12 digits." });
-          } else {
-            clearErrors("mobile");
-          }
-        }}
-      />
+      label={"Mobile Number*"}
+      {...field}
+      defaultCountry={"IN"}
+      placeholder={"Enter Mobile Number"}
+      className="p-1"
+      disabled={mode === "view"}
+      onChange={(value) => {
+        field.onChange(value); // Pass the value directly to field.onChange
+    
+        if (value && value.length < 10) {
+          setError("mobile", { type: "manual", message: "Mobile number must be at least 10 digits." });
+        } else if (value && value.length > 12) {
+          setError("mobile", { type: "manual", message: "Mobile number cannot exceed 12 digits." });
+        } else {
+          clearErrors("mobile");
+        }
+      }}
+    />
     )}
   />
   {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile.message}</p>}

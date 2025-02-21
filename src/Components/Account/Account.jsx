@@ -10,6 +10,7 @@ import ProfileICon from "../../assets/images/User-100.svg";
 import api from "../../utils/api";
 
 const Account = () => {
+  
   const token = Cookies.get("token"); // Get token from cookies
 
   // Extract admin ID from JWT
