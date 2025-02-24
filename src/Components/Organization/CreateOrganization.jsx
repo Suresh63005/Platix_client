@@ -25,9 +25,11 @@ import { organizationTypesData } from "../../Data/data";
 const CreateOrganization = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { id, mode: initialMode } = location.state || {};
+  const { id, mode } = location.state || {};
+  
   const { isLoading, setIsLoading } = useLoading();
-  const [mode, setMode] = useState(initialMode || "create");
+  const [mode1, setMode1] = useState(mode || "create");
+  
   const [organization, setOrganization] = useState(null);
   const {
     register,
@@ -36,7 +38,9 @@ const CreateOrganization = () => {
     watch,
     control,
     reset,
-    formState: { errors }, setError, clearErrors,
+    formState: { errors },
+    setError,
+    clearErrors,
   } = useForm();
   const [PImages, setPImages] = useState([]);
   const [loading, setloading] = useState(false);
@@ -71,9 +75,6 @@ const CreateOrganization = () => {
   const [orgType, setOrgTYpe] = useState([]);
   // console.log(orgType, "from sdhfjghlj.gkfdjshfdgh.")
 
-
- 
-
   useEffect(() => {
     setIsLoading(true);
 
@@ -84,14 +85,14 @@ const CreateOrganization = () => {
   }, [id, location, setIsLoading]);
 
   useEffect(() => {
-    if (id && (mode === "edit" || mode === "view")) {
+    if (id && (mode1 === "edit" || mode1 === "view")) {
       api
         .get(`api/organization/getby/${id}`)
         .then((response) => {
           const orgData = response.data.data;
 
           setOrganization(orgData);
-  
+
           // Populate form fields
           Object.keys(orgData).forEach((key) => {
             if (orgData[key] !== null && typeof orgData[key] === "object") {
@@ -102,7 +103,7 @@ const CreateOrganization = () => {
               setValue(key, orgData[key]);
             }
           });
-  
+
           // Set services if available
           if (orgData.services) {
             const servicesWithNames = orgData.services.map((service) => ({
@@ -117,7 +118,7 @@ const CreateOrganization = () => {
           console.error("Error fetching organization data:", error)
         );
     } else {
-      setMode("create");
+      setMode1("create");
     }
     api
       .get("admin/allservices")
@@ -141,7 +142,7 @@ const CreateOrganization = () => {
         // console.log(OrgData,"from orgdata");
         setOrgTYpe(
           OrgData.map((org) => ({
-            value: org.id, 
+            value: org.id,
             label: org.organizationType,
             services: org.services,
           }))
@@ -150,7 +151,7 @@ const CreateOrganization = () => {
       .catch((error) => {
         console.error("Error fetching services:", error);
       });
-  }, [id, mode, setValue]);
+  }, [id, mode1, setValue]);
 
   const dentistId = orgType.find((option) => option.label === "Dentist")?.value;
   const dynamicId = orgType
@@ -168,12 +169,12 @@ const CreateOrganization = () => {
   const handleChange = (e) => {
     const { name, files } = e.target;
     if (files && files.length > 0) {
-      const file=files[0];
-      const previewUrl=URL.createObjectURL(file);
+      const file = files[0];
+      const previewUrl = URL.createObjectURL(file);
       setFormData((prev) => ({
         ...prev,
         file1: file,
-        imgPreview: previewUrl
+        imgPreview: previewUrl,
         // [name]: files[0],
       }));
       setValue(name, files[0]);
@@ -218,9 +219,8 @@ const CreateOrganization = () => {
   };
 
   const handleDeleteService = (index) => {
+    const updatedServices = userServices.filter((_, i) => i !== index);
 
-    const updatedServices = userServices.filter((_, i) => i !== index); 
-    
     setUserServices(updatedServices);
   };
 
@@ -264,7 +264,7 @@ const CreateOrganization = () => {
           form.append("file2", file);
         });
       }
-      
+
       const response = await api.post("api/organization/upsert", form, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -275,7 +275,7 @@ const CreateOrganization = () => {
         if (response.status === 201 || response.status === 200) {
           Swal.fire({
             text:
-              mode === "edit"
+              mode1 === "edit"
                 ? "Organization Updated Successfully"
                 : "Organization Added Successfully",
             icon: "success",
@@ -310,8 +310,6 @@ const CreateOrganization = () => {
     }
   }
 
- 
-
   return (
     <div>
       {isLoading && <Loader />}
@@ -320,9 +318,9 @@ const CreateOrganization = () => {
           <Header name={"Organization"} />
           <PageNavigation
             title={
-              mode === "edit"
+              mode1 === "edit"
                 ? "Edit Organization"
-                : mode === "view"
+                : mode1 === "view"
                 ? "View Organization"
                 : "Create Organization"
             }
@@ -333,9 +331,9 @@ const CreateOrganization = () => {
         <div className="flex-1 overflow-y-auto p-3">
           <div className="bg-white border border-[#EAEAFF] shadow-md rounded-lg p-6 mb-6">
             <h3 className="form-title text-lg font-bold mb-4">
-              {mode === "view"
+              {mode1 === "view"
                 ? "View Organization"
-                : mode === "edit"
+                : mode1 === "edit"
                 ? "Edit Organization"
                 : "Create Organization"}
             </h3>
@@ -343,172 +341,222 @@ const CreateOrganization = () => {
             <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
               <div className="grid grid-cols-1  sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div>
-                <InputField
-                  label={"Organization Name*"}
-                  type={"text"}
-                  placeholder={"Enter Organization Name"}
-                  {...register("name",{ required: "Organization Name required." })}
-                  readOnly={mode === "view"}
-                />
-                {errors.name && (
-                  <p className="text-red-500 mt-2  text-xs">{errors.name.message}</p>
-                )}
+                  <InputField
+                    label={"Organization Name*"}
+                    type={"text"}
+                    placeholder={"Enter Organization Name"}
+                    {...register("name", {
+                      required: "Organization Name required.",
+                    })}
+                    readOnly={mode1}
+                  />
+                  {errors.name && (
+                    <p className="text-red-500 mt-2  text-xs">
+                      {errors.name.message}
+                    </p>
+                  )}
                 </div>
-                
-<div>
-<Controller
-  name="organizationType_id"
-  control={control}
-  defaultValue=""
-  rules={{ required: "Organization Type is required." }}
-  render={({ field }) => (
-    <SelectField
-      label="Organization Type*"
-      defaultplaceholder="Select Organization Type"
-      options={orgType}
-      value={field.value}
-      onChange={(value) => {
-        field.onChange(value);
-        handleOrginazationtypeid(value);
-      }}
-      disabled={mode === "view"}
-    />
-  )}
-/>
-{errors.organizationType_id && (
-  <p className="text-red-500 text-xs">{errors.organizationType_id.message}</p>
-)}
-</div>
 
                 <div>
-                <InputField
-                  label={"Address*"}
-                  type={"text"}
-                  placeholder={"Enter Address"}
-                  {...register("address",{ required: "address is required."})}    
-                  disabled={mode === "view"}
-                />
-                {errors.address && <p className="text-red-500 text-xs">{errors.address.message}</p>}
+                  <Controller
+                    name="organizationType_id"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: "Organization Type is required." }}
+                    render={({ field }) => (
+                      <SelectField
+                        label="Organization Type*"
+                        defaultplaceholder="Select Organization Type"
+                        options={orgType}
+                        readOnly
+                        value={field.value}
+                        onChange={(value) => {
+                          field.onChange(value);
+                          handleOrginazationtypeid(value);
+                        }}
+                        disabled={mode1}
+                      />
+                    )}
+                  />
+                  {errors.organizationType_id && (
+                    <p className="text-red-500 text-xs">
+                      {errors.organizationType_id.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <InputField
+                    label={"Address*"}
+                    type={"text"}
+                    placeholder={"Enter Address"}
+                    {...register("address", {
+                      required: "address is required.",
+                    })}
+                    readOnly={mode1}
+                  />
+                  {errors.address && (
+                    <p className="text-red-500 text-xs">
+                      {errors.address.message}
+                    </p>
+                  )}
                 </div>
                 <div>
-                <div className="flex flex-col p-1 mt-[-5px]">
-                  <label
-                    htmlFor="google-coordinates"
-                    className="block text-xs font-medium"
-                  >
-                    Google Coordinates*
-                  </label>
-                  <div className="flex gap-2">
-                    <InputField
-                      type={"text"}
-                      placeholder={"Latitude"}
-                      {...register("googleCoordinates.latitude",{ required: "Coordinates is required."})}
-                      disabled={mode === "view"}
-                    />
-                    <InputField
-                      type={"text"}
-                      placeholder={"Longitude"}
-                      {...register("googleCoordinates.longitude",{ required: "Coordinates is required."})}
-                      disabled={mode === "view"}
-                    />
+                  <div className="flex flex-col p-1 mt-[-5px]">
+                    <label
+                      htmlFor="google-coordinates"
+                      className="block text-xs font-medium"
+                    >
+                      Google Coordinates*
+                    </label>
+                    <div className="flex gap-2">
+                      <InputField
+                        type={"text"}
+                        placeholder={"Latitude"}
+                        {...register("googleCoordinates.latitude", {
+                          required: "Coordinates is required.",
+                        })}
+                        readOnly={mode1}
+                      />
+                      <InputField
+                        type={"text"}
+                        placeholder={"Longitude"}
+                        {...register("googleCoordinates.longitude", {
+                          required: "Coordinates is required.",
+                        })}
+                        readOnly={mode1}
+                      />
+                    </div>
+                    {errors.googleCoordinates?.longitude && (
+                      <p className="text-red-500 text-xs">
+                        {errors.googleCoordinates?.longitude.message}
+                      </p>
+                    )}
                   </div>
-                  {errors. googleCoordinates?.longitude&& <p className="text-red-500 text-xs">{errors.googleCoordinates?.longitude.message}</p>}
-                </div>
                 </div>
 
                 <div>
-  <Controller
-    name="mobile"
-    control={control}
-    defaultValue=""
-    rules={{ required: "Mobile number is required." }} // Validation rule directly inside Controller
-    render={({ field }) => (
-      <PhoneNumberInput
-      label={"Mobile Number*"}
-      {...field}
-      defaultCountry={"IN"}
-      placeholder={"Enter Mobile Number"}
-      className="p-1"
-      disabled={mode === "view"}
-      onChange={(value) => {
-        field.onChange(value); // Pass the value directly to field.onChange
-    
-        if (value && value.length < 10) {
-          setError("mobile", { type: "manual", message: "Mobile number must be at least 10 digits." });
-        } else if (value && value.length > 13) {
-          setError("mobile", { type: "manual", message: "Mobile number cannot exceed 12 digits." });
-        } else {
-          clearErrors("mobile");
-        }
-      }}
-    />
-    )}
-  />
-  {errors.mobile && <p className="text-red-500 text-xs">{errors.mobile.message}</p>}
-</div>
+                  <Controller
+                    name="mobile"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: "Mobile number is required." }} // Validation rule directly inside Controller
+                    render={({ field }) => (
+                      <PhoneNumberInput
+                        label={"Mobile Number*"}
+                        {...field}
+                        defaultCountry={"IN"}
+                        placeholder={"Enter Mobile Number"}
+                        className="p-1"
+                        readOnly={mode1}
+                        onChange={(value) => {
+                          field.onChange(value); // Pass the value directly to field.onChange
 
-{/* WhatsApp Number Input */}
-<div>
-  <Controller
-    name="whatsapp"
-    control={control}
-    defaultValue=""
-    rules={{ required: "WhatsApp number is required." }} // Validation rule directly inside Controller
-    render={({ field }) => (
-      <WhatsAppInput
-        label={"WhatsApp Number*"}
-        {...field}
-        className="p-1"
-        disabled={mode === "view"}
-        onChange={(e) => {
-          const value = e.target.value.replace(/[^0-9]/g, ""); // Allow only numbers
-          field.onChange(value); // Pass the value directly to field.onChange
-          // Validate WhatsApp number length directly in the Controller
-          if (value.length > 10) {
-            setError("whatsapp", { type: "manual", message: "WhatsApp number cannot exceed 10 digits." });
-          } else {
-            clearErrors("whatsapp");
-          }
-        }}
-      />
-    )}
-  />
-  {errors.whatsapp && <p className="text-red-500 text-xs">{errors.whatsapp.message}</p>}
-</div>
+                          if (value && value.length < 10) {
+                            setError("mobile", {
+                              type: "manual",
+                              message:
+                                "Mobile number must be at least 10 digits.",
+                            });
+                          } else if (value && value.length > 13) {
+                            setError("mobile", {
+                              type: "manual",
+                              message: "Mobile number cannot exceed 10 digits.",
+                            });
+                          } else {
+                            clearErrors("mobile");
+                          }
+                        }}
+                      />
+                    )}
+                  />
+                  {errors.mobile && (
+                    <p className="text-red-500 text-xs">
+                      {errors.mobile.message}
+                    </p>
+                  )}
+                </div>
 
-               <div>
-               <InputField
-                  label={"Email*"}
-                  type={"email"}
-                  placeholder={"Enter Email"}
-                  {...register("email",{ required: "email is required."})}
-                  disabled={mode === "view"}
-                />
-                {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
-               </div>
+                {/* WhatsApp Number Input */}
+                <div>
+                  <Controller
+                    name="whatsapp"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: "WhatsApp number is required." }} // Validation rule directly inside Controller
+                    render={({ field }) => (
+                      <WhatsAppInput
+                        label={"WhatsApp Number*"}
+                        {...field}
+                        className="p-1"
+                        readOnly={mode1}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/[^0-9]/g, ""); // Allow only numbers
+                          field.onChange(value); // Pass the value directly to field.onChange
+                          // Validate WhatsApp number length directly in the Controller
+                          if (value.length > 10) {
+                            setError("whatsapp", {
+                              type: "manual",
+                              message:
+                                "WhatsApp number cannot exceed 10 digits.",
+                            });
+                          } else {
+                            clearErrors("whatsapp");
+                          }
+                        }}
+                      />
+                    )}
+                  />
+                  {errors.whatsapp && (
+                    <p className="text-red-500 text-xs">
+                      {errors.whatsapp.message}
+                    </p>
+                  )}
+                </div>
 
-               <div>
-               <InputField
-                  label={"Description"}
-                  type={"text"}
-                  placeholder={"Enter Description"}
-                  {...register("description")}
-                  disabled={mode === "view"}
-                />
-               </div>
+                <div>
+                  <InputField
+                    label={"Email*"}
+                    type={"email"}
+                    placeholder={"Enter Email"}
+                    {...register("email", { required: "email is required." })}
+                    readOnly={mode1}
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-xs">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <InputField
+                    label={"Description"}
+                    type={"text"}
+                    placeholder={"Enter Description"}
+                    {...register("description")}
+                    readOnly={mode1}
+                  />
+                </div>
               </div>
 
               {dynamicId.includes(watch("organizationType_id")) && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <div>
-                  <InputField
-                    label="GST*"
-                    type="text"
-                    placeholder="Enter GST Number"
-                    {...register("gstNumber",{ required: "GST is required."})}
-                    disabled={mode === "view"}
-                  />
-                  {errors.gstNumber && <p className="text-red-500 text-xs">{errors.gstNumber.message}</p>}
+                    <InputField
+                      label="GST*"
+                      type="text"
+                      placeholder="Enter GST Number"
+                      {...register("gstNumber", {
+                        required: "GST is required.",
+                      })}
+                      readOnly={mode1}
+                    />
+                    {errors.gstNumber && (
+                      <p className="text-red-500 text-xs">
+                        {errors.gstNumber.message}
+                      </p>
+                    )}
                   </div>
                   {/* <Controller
                     name="designation"
@@ -526,7 +574,7 @@ const CreateOrganization = () => {
                         value={field.value}
                         onChange={(value) => field.onChange(value)}
                         className="p-1"
-                        disabled={mode === "view"}
+                        readOnly={mode1}
                       />
                     )}
                   /> */}
@@ -540,16 +588,18 @@ const CreateOrganization = () => {
                   type="text"
                   placeholder="Enter Business Name"
                   {...register("businessName")}
-                  disabled={mode === "view"}
+                  readOnly={mode1}
                 /> */}
                   <div>
-                  <InputField
-                    label="Registration ID*"
-                    type="text"
-                    placeholder="Enter Registration ID"
-                    {...register("registrationId",{ required: "registration id is required."})}
-                    disabled={mode === "view"}
-                  />
+                    <InputField
+                      label="Registration ID*"
+                      type="text"
+                      placeholder="Enter Registration ID"
+                      {...register("registrationId", {
+                        required: "registration id is required.",
+                      })}
+                      readOnly={mode1}
+                    />
                   </div>
                   {/* <Controller
                     name="designation"
@@ -583,7 +633,7 @@ const CreateOrganization = () => {
                         value={field.value}
                         onChange={(value) => field.onChange(value)}
                         className="p-1"
-                        disabled={mode === "view"}
+                        readOnly={mode1}
                       />
                     )}
                   /> */}
@@ -595,54 +645,82 @@ const CreateOrganization = () => {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div>
-                <InputField
-                  label={"Bank Name*"}
-                  type={"text"}
-                  placeholder={"Enter Bank Name"}
-                  {...register("bankName",{ required: "bankname is required."})}
-                  disabled={mode === "view"}
-                />
-                {errors.bankName && <p className="text-red-500 text-xs">{errors.bankName.message}</p>}
+                  <InputField
+                    label={"Bank Name*"}
+                    type={"text"}
+                    placeholder={"Enter Bank Name"}
+                    {...register("bankName", {
+                      required: "bankname is required.",
+                    })}
+                    readOnly={mode1}
+                  />
+                  {errors.bankName && (
+                    <p className="text-red-500 text-xs">
+                      {errors.bankName.message}
+                    </p>
+                  )}
                 </div>
-               <div>
-               <InputField
-                  label={"Organization Account Number*"}
-                  type={"text"}
-                  placeholder={"Enter Account Number"}
-                  {...register("accountNumber",{ required: "account number is required."})}
-                  disabled={mode === "view"}
-                />
-                {errors.accountNumber && <p className="text-red-500 text-xs">{errors.accountNumber.message}</p>}
-               </div>
                 <div>
-                <InputField
-                  label={"Account Holder Name*"}
-                  type={"text"}
-                  placeholder={"Enter Account Holder Name"}
-                  {...register("accountHolder",{ required: "Account Holder is required."})}
-                  disabled={mode === "view"}
-                />
-                {errors.accountHolder && <p className="text-red-500 text-xs">{errors.accountHolder.message}</p>}
+                  <InputField
+                    label={"Organization Account Number*"}
+                    type={"text"}
+                    placeholder={"Enter Account Number"}
+                    {...register("accountNumber", {
+                      required: "account number is required.",
+                    })}
+                    readOnly={mode1}
+                  />
+                  {errors.accountNumber && (
+                    <p className="text-red-500 text-xs">
+                      {errors.accountNumber.message}
+                    </p>
+                  )}
                 </div>
-               <div>
-               <InputField
-                  label={"IFSC Code*"}
-                  type={"text"}
-                  placeholder={"Enter IFSC Code"}
-                  {...register("ifscCode",{ required: "IFSC code is required."})}
-                  disabled={mode === "view"}
-                />
-                {errors.ifscCode && <p className="text-red-500 text-xs">{errors.ifscCode.message}</p>}
-               </div>
                 <div>
-                <InputField
-                  label={"UPI ID*"}
-                  type={"text"}
-                  placeholder={"Enter UPI ID"}
-                  {...register("upiId",{ required: "UPI ID is required."})}
-                  disabled={mode === "view"}
-                />
-                {errors.upiId && <p className="text-red-500 text-xs">{errors.upiId.message}</p>}
+                  <InputField
+                    label={"Account Holder Name*"}
+                    type={"text"}
+                    placeholder={"Enter Account Holder Name"}
+                    {...register("accountHolder", {
+                      required: "Account Holder is required.",
+                    })}
+                    readOnly={mode1}
+                  />
+                  {errors.accountHolder && (
+                    <p className="text-red-500 text-xs">
+                      {errors.accountHolder.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <InputField
+                    label={"IFSC Code*"}
+                    type={"text"}
+                    placeholder={"Enter IFSC Code"}
+                    {...register("ifscCode", {
+                      required: "IFSC code is required.",
+                    })}
+                    readOnly={mode1}
+                  />
+                  {errors.ifscCode && (
+                    <p className="text-red-500 text-xs">
+                      {errors.ifscCode.message}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <InputField
+                    label={"UPI ID*"}
+                    type={"text"}
+                    placeholder={"Enter UPI ID"}
+                    {...register("upiId", { required: "UPI ID is required." })}
+                    readOnly={mode1}
+                  />
+                  {errors.upiId && (
+                    <p className="text-red-500 text-xs">
+                      {errors.upiId.message}
+                    </p>
+                  )}
                 </div>
               </div>
               {dynamicId.includes(watch("organizationType_id")) && (
@@ -651,6 +729,7 @@ const CreateOrganization = () => {
                   <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
                     <div className="w-full sm:w-1/2">
                       <Select
+                      isDisabled={mode1==="view"}
                         value={
                           newService.id
                             ? {
@@ -728,6 +807,9 @@ const CreateOrganization = () => {
                       </span>
                       <input
                         type="number"
+                        min={0}
+                        readOnly={mode1 === "view"}
+                        disabled={mode1 === "view"}
                         placeholder="Price"
                         value={newService.price}
                         onChange={(e) =>
@@ -749,6 +831,7 @@ const CreateOrganization = () => {
                         </span>
                       ) : (
                         <span
+                        disabled={mode1 === "view"}
                           onClick={handleSaveService}
                           className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
                         >
@@ -790,41 +873,43 @@ const CreateOrganization = () => {
                         </div>
                         <span
                           onClick={() => handleEditService(index)}
+                          disabled={mode1 === "view"}
                           className="px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer"
                         >
                           Edit
                         </span>
                         <span
-  onClick={() => handleDeleteService(index)} // Pass the correct index
-  className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer"
->
-  Delete
-</span>
+                        disabled={mode1 === "view"}
+                          onClick={() => handleDeleteService(index)} // Pass the correct index
+                          className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer"
+                        >
+                          Delete
+                        </span>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
+              <div>
+                {/* File Upload Input */}
+                <Controller
+                  name="file1"
+                  control={control}
+                  defaultValue={[]}
+                  render={({ field }) => (
+                    <FileUpload
+                      name="file1"
+                      label="Choose file for profile*"
+                      multiple={false}
+                      readOnly={mode1}
+                      onChange={handleChange} // Ensure this is correctly handling file selection
+                    />
+                  )}
+                />
 
-<div>
-  {/* File Upload Input */}
-  <Controller
-    name="file1"
-    control={control}
-    defaultValue={[]}
-    render={({ field }) => (
-      <FileUpload
-        name="file1"
-        label="Choose file for profile*"
-        multiple={false}
-        onChange={handleChange} // Ensure this is correctly handling file selection
-      />
-    )}
-  />
-
-  {/* Display the image preview */}
-  {/* {formData.imgPreview && (
+                {/* Display the image preview */}
+                {/* {formData.imgPreview && (
     <div className="mt-2 w-[50px] h-[50px]">
       <img
         src={formData.imgPreview}
@@ -834,38 +919,55 @@ const CreateOrganization = () => {
     </div>
   )} */}
 
-  {/* Display the existing image if in edit/view mode */}
-  {organization?.file1 && !formData.imgPreview && (
-    <div className="mt-2 w-[50px] h-[50px]">
-      <img
-        src={organization.file1}
-        alt="Existing"
-        className="w-full h-full rounded-md"
-      />
-    </div>
-  )}
-</div>
-
-              <div>
-              <Controller
-                name="file2"
-                control={control}
-                defaultValue={[]}
-                render={({ field }) => (
-                  <FileUpload
-                    name="file2"
-                    label="Choose file (Max 3 images)"
-                    multiple={true}
-                    onChange={handleImageUpload}
-                    
-                  />
-                  
+                {/* Display the existing image if in edit/view mode1 */}
+                {organization?.file1 && !formData.imgPreview && (
+                  <div className="mt-2 w-[50px] h-[50px]">
+                    <img
+                      src={organization.file1}
+                      alt="Existing"
+                      className="w-full h-full rounded-md"
+                    />
+                  </div>
                 )}
-                
-              />
               </div>
 
-              {mode !== "view" && (
+              <div>
+                <Controller
+                  name="file2"
+                  control={control}
+                  defaultValue={[]}
+                  render={({ field }) => (
+                    <FileUpload
+                      name="file2"
+                      label="Choose file (Max 3 images)"
+                      multiple={true}
+                      readOnly={mode1}
+                      onChange={handleImageUpload}
+                    />
+                  )}
+                />
+
+{organization?.file2 && (
+<div className="flex gap-3">
+{
+  organization?.file2.map((item)=>(
+    <div className="mt-2 w-[50px] h-[50px]">
+                        <img
+                          src={item}
+                          alt="Existing"
+                          className="w-full h-full rounded-md"
+                        />
+                      </div>
+    ))
+}
+
+</div>
+
+                  
+                )}
+              </div>
+
+              {mode1 !== "view" && (
                 <div className="flex justify-end gap-3 mt-4">
                   <button
                     type="reset"
@@ -897,7 +999,7 @@ const CreateOrganization = () => {
                           "white",
                         ]}
                       />
-                    ) : mode === "edit" ? (
+                    ) : mode1 === "edit" ? (
                       "Update"
                     ) : (
                       "Save"

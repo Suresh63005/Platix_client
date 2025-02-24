@@ -118,6 +118,7 @@ const OrganizationList = () => {
 
   const handleEdit = (id) => {
     navigate("/createorganization", { state: { id, mode: "edit" } });
+    
   };
 
   const handleView = (id) => {

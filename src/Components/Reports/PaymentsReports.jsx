@@ -149,7 +149,7 @@ const PaymentsReports = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "Order_Reports.csv");
+    link.setAttribute("download", "Payment_Reports.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
