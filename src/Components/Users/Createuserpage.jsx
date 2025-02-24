@@ -217,7 +217,7 @@ const CreateUserPage = () => {
           <SelectField
             label="Prefix*"
             defaultplaceholder="Select Prefix"
-            options={[{ value: "mr", label: "Mr" }, { value: "mrs", label: "Mrs" }]}
+            options={[{ value: "mr", label: "Mr" }, { value: "mrs", label: "Mrs" }, { value: "dr", label: "Dr" }]}
             value={field.value}
             onChange={(value) => field.onChange(value)}
             disabled={mode === "view"}
