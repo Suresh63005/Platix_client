@@ -73,24 +73,32 @@ const UserReports = () => {
       }
 
       const response = await api.get(endpoint);
-      console.log(response,"filtered date users")
+      console.log(response, "filtered date users");
       const apiData = response.data.users || [];
-
-      const dateOnly = apiData?.dateOfBirth.toISOString().split('T')[0];
-
-      const formattedData = apiData.map((user,index) => ({
-        id: `user${(index + 1).toString().padStart(4, '0')}`,
-        username: user?.Username || "N/A",
-        organization:user?.organization?.name || "N/A",
-        email: user?.email || "N/A",
-        dateOfBirth: dateOnly || "N/A",
-        designation: user?.designation || "N/A",
-        whatsappNo: user?.whatsappNo || "N/A",
-        role: user?.Role || "N/A",
-        address: user?.address || "N/A",
-        mobileNo: user?.mobileNo || "N/A",
-        createdAt: user?.createdAt || "N/A",
-      }));
+      
+      // Format the date inside the map function
+      const formattedData = apiData.map((user, index) => {
+        const dateOnly = user?.dateOfBirth
+          ? new Date(user.dateOfBirth).toISOString().split('T')[0]
+          : "N/A";
+      
+        return {
+          id: `user${(index + 1).toString().padStart(4, '0')}`,
+          username: user?.Username || "N/A",
+          organization: user?.organization?.name || "N/A",
+          email: user?.email || "N/A",
+          dateOfBirth: dateOnly,
+          designation: user?.designation || "N/A",
+          whatsappNo: user?.whatsappNo || "N/A",
+          role: user?.Role || "N/A",
+          address: user?.address || "N/A",
+          mobileNo: user?.mobileNo || "N/A",
+          createdAt: user?.createdAt || "N/A",
+        };
+      });
+      
+      console.log(formattedData, "Formatted user data with date only");
+      
 
       setData(formattedData);
       setFilteredData(formattedData);
