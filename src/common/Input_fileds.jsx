@@ -137,7 +137,7 @@ export const WhatsAppInput = forwardRef(({ label, value,readOnly, onChange, name
         ref={ref}
         type="text"
         name={name}
-        disabled={readOnly === "View"}
+        disabled={readOnly==="view"}
         placeholder="Enter WhatsApp number"
         value={value}
         onChange={onChange}
