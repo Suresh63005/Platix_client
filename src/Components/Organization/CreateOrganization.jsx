@@ -21,6 +21,7 @@ import { Vortex } from "react-loader-spinner";
 import api from "../../utils/api";
 import { useLoading } from "../../context/LoadingContext";
 import { organizationTypesData } from "../../Data/data";
+import { toast, Toaster } from 'react-hot-toast';
 
 const CreateOrganization = () => {
   const location = useLocation();
@@ -42,7 +43,7 @@ const CreateOrganization = () => {
     setError,
     clearErrors,
   } = useForm();
-  const [PImages, setPImages] = useState([]);
+  
   const [loading, setloading] = useState(false);
   const [formData, setFormData] = useState({
     id: id || null,
@@ -68,6 +69,7 @@ const CreateOrganization = () => {
     ifscCode: "",
     upiId: "",
   });
+
   const [availableServices, setAvailableServices] = useState([]);
   const [userServices, setUserServices] = useState([]);
   const [newService, setNewService] = useState({ name: "", price: "" });
@@ -84,6 +86,13 @@ const CreateOrganization = () => {
     return () => clearTimeout(timer);
   }, [id, location, setIsLoading]);
 
+  const[orgTypeEditId,setOrgTypeEditId] = useState("");
+
+
+  
+
+  
+
   useEffect(() => {
     if (id && (mode1 === "edit" || mode1 === "view")) {
       api
@@ -92,6 +101,12 @@ const CreateOrganization = () => {
           const orgData = response.data.data;
 
           setOrganization(orgData);
+
+          
+          setOrgTypeEditId(orgData.organizationType_id);
+
+
+          // handleOrginazationtypeid()
 
           // Populate form fields
           Object.keys(orgData).forEach((key) => {
@@ -153,6 +168,9 @@ const CreateOrganization = () => {
       });
   }, [id, mode1, setValue]);
 
+
+ 
+
   const dentistId = orgType.find((option) => option.label === "Dentist")?.value;
   const dynamicId = orgType
     .filter((option) =>
@@ -168,24 +186,91 @@ const CreateOrganization = () => {
 
   const handleChange = (e) => {
     const { name, files } = e.target;
+  
     if (files && files.length > 0) {
       const file = files[0];
+      const maxSize = 1 * 1024 * 1024; 
+  
+     
+      if (file.size > maxSize) {
+        
+        toast.dismiss();
+      toast.error('Image must be lessthan 1Mb');
+        return;
+      }
+  
       const previewUrl = URL.createObjectURL(file);
       setFormData((prev) => ({
         ...prev,
         file1: file,
         imgPreview: previewUrl,
-        // [name]: files[0],
       }));
-      setValue(name, files[0]);
+      setValue(name, file);
     }
   };
+  
+  const [PImages, setPImages] = useState([]);
+  const [imageExtra, setImageExtra]= useState([]);
+ 
+
+  useEffect(() => {
+    if (organization?.file2) {
+      setImageExtra(organization.file2);
+    }
+  }, [organization?.file2]);
+
+ 
+
+
+
+
+ 
+
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
+    const maxFiles = 3;
+    const maxSize = 1 * 1024 * 1024; 
+  
+    
+    if (files.length > maxFiles) {
+      toast.dismiss();
+      toast.error('Only 3 images are allowed');
+      return;
+    }
+  
+    
+    const oversizedImages = files.filter((file) => file.size > maxSize);
+    if (oversizedImages.length > 0) {
+      toast.dismiss();
+      toast.error('Each image must be less than 1MB.');
+      
+      return;
+    }
+  
     setPImages(files);
     setValue("file2", files);
   };
+
+  const handleDeleteImage = (index) => {
+
+    const updatedImages = organization.file2.filter((_, i) => i !== index);
+    setOrganization((prev) => ({
+      ...prev,
+      file2: updatedImages,
+    }));
+
+
+    
+    const updatedImages1 = PImages.filter((_, i) => i !== index);
+
+    setImageExtra(updatedImages1);
+  };
+
+
+  
+  
+  
 
   const handleAddService = () => {
     if (newService.id && newService.price) {
@@ -265,6 +350,10 @@ const CreateOrganization = () => {
         });
       }
 
+      
+          form.append("fileextras", imageExtra);
+      
+
       const response = await api.post("api/organization/upsert", form, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -290,7 +379,7 @@ const CreateOrganization = () => {
       }, 2000);
     } catch (error) {
       Swal.fire({
-        text: "Error submitting the form.",
+        text: "Each image must be less than 1MB",
         icon: "error",
       });
       console.error("Form submission error:", error);
@@ -301,6 +390,9 @@ const CreateOrganization = () => {
 
   const [servicesList, setServicesList] = useState({});
 
+
+  console.log(servicesList,"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
+
   async function handleOrginazationtypeid(id) {
     try {
       const filteredList = orgType.filter((data) => data.value === id);
@@ -309,6 +401,11 @@ const CreateOrganization = () => {
       console.log(error);
     }
   }
+
+
+  useEffect(()=>{
+    handleOrginazationtypeid(orgTypeEditId);
+  },[orgType]);
 
   return (
     <div>
@@ -824,26 +921,40 @@ const CreateOrganization = () => {
                     <div className="flex gap-2">
                       {editingIndex === null ? (
                         <span
-                          onClick={handleAddService}
-                          className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
-                        >
-                          Add
-                        </span>
+                        onClick={mode1 ==="view" ? handleAddService : null}
+                        className={`px-4 py-1 rounded-md ${
+                          mode1 ==="view"
+                            ? 'bg-gray-400 text-white cursor-not-allowed pointer-events-none'
+                            : 'bg-[#660F5D] text-white cursor-pointer'
+                        }`}
+                      >
+                        Add
+                      </span>
+                      
                       ) : (
                         <span
-                        disabled={mode1 === "view"}
-                          onClick={handleSaveService}
-                          className="px-4 py-1 bg-[#660F5D] text-white rounded-md cursor-pointer"
+                        onClick={mode1 ==="view" ? handleAddService : null}
+                          
+                        className={`px-4 py-1 rounded-md ${
+                          mode1 ==="view"
+                            ? 'bg-gray-400 text-white cursor-not-allowed pointer-events-none'
+                            : 'bg-[#660F5D] text-white cursor-pointer'
+                        }`}
                         >
                           Save
                         </span>
                       )}
                       <span
-                        onClick={() => setNewService({ name: "", price: "" })}
-                        className="px-7 py-1 bg-white text-gray-400 border-gray-700 border rounded-md cursor-pointer"
-                      >
-                        Clear
-                      </span>
+  onClick={mode1 !== "view" ? () => setNewService({ name: "", price: "" }) : undefined}
+  className={`px-7 py-1 border rounded-md ${
+    mode1 !== "view"
+      ? 'bg-white text-gray-700 border-gray-700 cursor-pointer'
+      : 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed pointer-events-none'
+  }`}
+>
+  Clear
+</span>
+
                     </div>
                   </div>
                   <hr />
@@ -872,19 +983,26 @@ const CreateOrganization = () => {
                           />
                         </div>
                         <span
-                          onClick={() => handleEditService(index)}
-                          disabled={mode1 === "view"}
-                          className="px-4 py-2 bg-[#FAFAFA] text-[#660F5D] rounded-md cursor-pointer"
-                        >
-                          Edit
-                        </span>
-                        <span
-                        disabled={mode1 === "view"}
-                          onClick={() => handleDeleteService(index)} // Pass the correct index
-                          className="px-4 py-2 bg-white border border-gray-700 text-gray-700 rounded-md cursor-pointer"
-                        >
-                          Delete
-                        </span>
+  onClick={mode1 !== "view" ? () => handleEditService(index) : null}
+  className={`px-4 py-2 rounded-md ${
+    mode1 !== "view"
+      ? 'bg-[#FAFAFA] text-[#660F5D] cursor-pointer'
+      : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
+  }`}
+>
+  Edit
+</span>
+
+<span
+  onClick={mode1 !== "view" ? () => handleDeleteService(index) : null}
+  className={`px-4 py-2 border rounded-md ${
+    mode1 !== "view"
+      ? 'bg-white border-gray-700 text-gray-700 cursor-pointer'
+      : 'bg-gray-200 border-gray-300 text-gray-400 cursor-not-allowed pointer-events-none'
+  }`}
+>
+  Delete
+</span>
                       </div>
                     ))}
                   </div>
@@ -950,16 +1068,24 @@ const CreateOrganization = () => {
 {organization?.file2 && (
 <div className="flex gap-3">
 {
-  organization?.file2.map((item)=>(
-    <div className="mt-2 w-[50px] h-[50px]">
-                        <img
-                          src={item}
-                          alt="Existing"
-                          className="w-full h-full rounded-md"
-                        />
-                      </div>
-    ))
+  organization?.file2.map((item, index) => (
+    <div key={index} className="mt-2 w-[50px] h-[50px] relative">
+      <img
+        src={item}
+        alt="Existing"
+        className="w-full h-full rounded-md object-cover"
+      />
+      {/* Delete button */}
+      <button
+        onClick={() => handleDeleteImage(index)}
+        className="absolute top-[-5px] right-[-5px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+      >
+        ✕
+      </button>
+    </div>
+  ))
 }
+
 
 </div>
 
@@ -1011,6 +1137,7 @@ const CreateOrganization = () => {
           </div>
         </div>
       </div>
+      <Toaster position="top-right" reverseOrder={false} toastOptions={{ duration: 2000 }} />
     </div>
   );
 };

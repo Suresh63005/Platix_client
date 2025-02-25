@@ -61,6 +61,8 @@ const UserReports = () => {
     "Starting Date": "createdAt",
   };
 
+ 
+
   // Fetch data when component mounts or date filters change
   const fetchData = async () => {
     setLoading(true);
@@ -74,12 +76,14 @@ const UserReports = () => {
       console.log(response,"filtered date users")
       const apiData = response.data.users || [];
 
+      const dateOnly = apiData?.dateOfBirth.toISOString().split('T')[0];
+
       const formattedData = apiData.map((user,index) => ({
         id: `user${(index + 1).toString().padStart(4, '0')}`,
         username: user?.Username || "N/A",
         organization:user?.organization?.name || "N/A",
         email: user?.email || "N/A",
-        dateOfBirth: user?.dateOfBirth || "N/A",
+        dateOfBirth: dateOnly || "N/A",
         designation: user?.designation || "N/A",
         whatsappNo: user?.whatsappNo || "N/A",
         role: user?.Role || "N/A",

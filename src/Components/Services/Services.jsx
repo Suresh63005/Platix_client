@@ -169,9 +169,13 @@ const Services = () => {
       return;
     }
 
+    const organizationTypee = orgTypeOptions.find((item)=>item.value === selectedOrgType);
+
+
+
     Swal.fire({
       title: "Are you sure?",
-      text: `Assign selected services to organization type ${selectedOrgType}?`,
+      text: `Assign selected services to  ${organizationTypee?.label}?`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes, Assign",
@@ -188,12 +192,15 @@ const Services = () => {
           })
           .then(() => {
             Swal.fire("Success", "Services assigned successfully!", "success");
+            
           })
           .catch((error) => {
             console.error("Error assigning services:", error);
             Swal.fire("Error", "Failed to assign services.", "error");
           });
+          
       }
+      setSelectedItems([]);
     });
   };
   // const handleFilterChange = (value) => {
@@ -220,9 +227,9 @@ const Services = () => {
           setPage(1);
         }}
         filterPlaceholder="Filter"
-        showRoleAssign={true} // Enable organization type assignment
-        roleValue={selectedOrgType} // Using org type instead of role
-        organizationChange={setSelectedOrgType} // Updating selected organization type
+        showRoleAssign={true} 
+        roleValue={selectedOrgType} 
+        organizationChange={setSelectedOrgType} 
         organizationOptions={orgTypeOptions}
         organizationType_id={organizationType_id}
         setOrganizationType_id={setOrganizationType_id}
