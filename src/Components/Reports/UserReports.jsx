@@ -79,6 +79,7 @@ const UserReports = () => {
        const dateOnly = user?.dateOfBirth
           ? new Date(user.dateOfBirth).toISOString().split('T')[0]
           : "N/A";
+      
       const formattedData = apiData.map((user,index) => ({
         id: `user${(index + 1).toString().padStart(4, '0')}`,
         username: user?.Username || "N/A",
