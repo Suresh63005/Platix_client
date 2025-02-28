@@ -15,6 +15,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
 
   // Function to convert data to CSV and trigger download
   const downloadCSV = (data, filename) => {
+
     if (!data.length) {
       alert("No data available for download!");
       return;
@@ -35,6 +36,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
 
   // Single Row Download
   const handleSingleDownload = (item) => {
+    console.log(item,"sureshyuuuuuuuuuuuuuuuuuuuuuuu");
     downloadCSV([item], `Report_${item.id}.csv`);
   };
 
