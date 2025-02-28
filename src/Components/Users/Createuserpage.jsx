@@ -26,6 +26,8 @@ const CreateUserPage = () => {
   console.log(organization_id)
   const { isLoading,setIsLoading }=useLoading();
   const [mode, setMode] = useState(initialMode || "create");
+
+ 
   const [designationOptions, setDesignationOptions] = useState([]);
   const [roles, setRoles] = useState([]); // State to store fetched roles
   const [showDesignationField, setShowDesignationField] = useState(false);
@@ -220,7 +222,7 @@ const CreateUserPage = () => {
             options={[{ value: "mr", label: "Mr" }, { value: "mrs", label: "Mrs" }, { value: "dr", label: "Dr" }]}
             value={field.value}
             onChange={(value) => field.onChange(value)}
-            disabled={mode === "view"}
+            disabled={mode}
           />
         )}
       />
@@ -244,7 +246,7 @@ const CreateUserPage = () => {
               field.onChange(value);
               handleRoleChange(value);
             }}
-            disabled={mode === "view"}
+            disabled={mode}
           />
         )}
       />
@@ -263,7 +265,7 @@ const CreateUserPage = () => {
             label="First Name*"
             placeholder="Enter First Name"
             {...field}
-            disabled={mode === "view"}
+            readOnly={mode}
           />
         )}
       />
@@ -282,7 +284,7 @@ const CreateUserPage = () => {
             label="Last Name*"
             placeholder="Enter Last Name"
             {...field}
-            disabled={mode === "view"}
+            readOnly={mode}
           />
         )}
       />
@@ -302,7 +304,7 @@ const CreateUserPage = () => {
             label="Date of Birth"
             type="date"
             {...field}
-            disabled={mode === "view"}
+            readOnly={mode}
           />
         )}
       />
@@ -321,7 +323,7 @@ const CreateUserPage = () => {
             type="email"
             placeholder="Enter Email"
             {...field}
-            disabled={mode === "view"}
+            readOnly={mode}
           />
         )}
       />
@@ -342,7 +344,7 @@ const CreateUserPage = () => {
               defaultCountry="IN"
               placeholder="Enter Mobile Number"
               className="p-1"
-              disabled={mode === "view"}
+              readOnly={mode}
               onChange={(value) => {
                 field.onChange(value);
                 if (value && value.length > 13) {
@@ -369,7 +371,7 @@ const CreateUserPage = () => {
               label="WhatsApp Number*"
               {...field}
               className="p-1"
-              disabled={mode === "view"}
+              readOnly={mode}
               onChange={(e) => {
                 const value = e.target.value.replace(/[^0-9]/g, ""); // Allow only numbers
                 field.onChange(value);
@@ -401,7 +403,7 @@ const CreateUserPage = () => {
           options={designationOptions || []}
           value={field.value}
           onChange={(value) => field.onChange(value)}
-          disabled={mode === "view"}
+          disabled={mode}
         />
       )}
     />
@@ -411,7 +413,7 @@ const CreateUserPage = () => {
         label="Organization Name"
         placeholder="Organization Name"
         value={organizationName}
-        readOnly
+        readOnly ={mode}
         className="p-1"
       />
     

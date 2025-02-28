@@ -1076,12 +1076,15 @@ const CreateOrganization = () => {
         className="w-full h-full rounded-md object-cover"
       />
       {/* Delete button */}
-      <button
+      {
+        mode1 !== "view" && <button
         onClick={() => handleDeleteImage(index)}
+        
         className="absolute top-[-5px] right-[-5px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
       >
         ✕
       </button>
+      }
     </div>
   ))
 }

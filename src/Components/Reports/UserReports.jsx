@@ -132,22 +132,36 @@ const UserReports = () => {
   }, [debouncedSearchQuery, data]);
 
   const handleBulkDownload = () => {
+
+    console.log(filteredData,"from userdataaaaaaaaaaaaaaaa")
+
     if (!filteredData.length) {
       alert("No data available for download!");
       return;
     }
 
+    console.log(columnKeyMapping,"userrrr column mappingggggggg");
+
     const headers = Object.keys(columnKeyMapping);
     const keys = Object.values(columnKeyMapping);
+
+    
 
     const csvRows = [
       headers.join(","),
       ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(",")),
     ];
 
+
+    console.log(csvRows,"csvrowwwwwwwwwwwwwww from userrrdata");
+
     const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
 
+    console.log(csvContent,"csvContent from userdata");
+
     const encodedUri = encodeURI(csvContent);
+
+    console.log(encodedUri,"encodedUri from userdataa");
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     link.setAttribute("download", "User_Reports.csv");

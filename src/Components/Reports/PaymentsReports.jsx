@@ -59,7 +59,6 @@ const PaymentsReports = () => {
     "To": "to",
     "Contact Name": "contactName",
     "Contact Number": "contactNumber",
-    // "Invoice": "invoice",
     "Invoice Amount": "amount",
     "Paid amount": "paidAmount",
     "Balance": "balance",
@@ -82,21 +81,22 @@ const PaymentsReports = () => {
       const apiData = response.data.data || [];
 
         const formattedOrders = apiData.map((order) => ({
-          orderId: order.orderId || "N/A",
-          id: order.id || "N/A",
-          orderDate: order.orderDate || "N/A",
-          from: order.fromOrg?.name || "N/A",
-          username: order.user?.firstName || "N/A",
-          userContact: order.MobileNo || "N/A",
+          orderId: order?.orderId || "N/A",
+          id: order?.id || "N/A",
+          orderDate: order?.orderDate || "N/A",
+          from: order?.fromOrg?.name || "N/A",
+          username: order?.user?.firstName || "N/A",
+          userContact: order?.MobileNo || "N/A",
           to: order.toOrg?.name || "N/A",
-          contactName: order.patientName || "N/A",
-          contactNumber: order.MobileNo || "N/A",
-          invoice: "INV-" + order.id.substring(0, 5),
-          amount: order.totalAmount || "N/A",
-          paidAmount: order.paidAmount || "N/A",
-          balance: order.totalAmount && order.paidAmount ? order.totalAmount - order.paidAmount : "N/A",
-          modeOfPayment: order.paymentMethod || "N/A",
+          contactName: order?.patientName || "N/A",
+          contactNumber: order?.MobileNo || "N/A",
+          invoice: "INV-" + order?.id.substring(0, 5),
+          amount: order?.totalAmount || "N/A",
+          paidAmount: order?.paidAmount || "N/A",
+          balance: order?.totalAmount && order?.paidAmount ? order?.totalAmount - order?.paidAmount : "N/A",
+          modeOfPayment: order?.paymentMethod || "N/A",
         }));
+console.log(formattedOrders,"formmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
 
         setData(formattedOrders);
         setFilteredData(formattedOrders);
@@ -128,9 +128,8 @@ const PaymentsReports = () => {
     }
   }, [debouncedSearchQuery, data]);
 
+
   const handleBulkDownload = () => {
-    console.log("Download button clicked!"); // ✅ Debugging log
-  
     if (!filteredData.length) {
       alert("No data available for download!");
       return;
@@ -138,14 +137,29 @@ const PaymentsReports = () => {
   
     const headers = Object.keys(columnKeyMapping);
     const keys = Object.values(columnKeyMapping);
-  
+
+    console.log(headers,"headersssssssssssssssssss");
+    console.log(keys,"keysssssssssssssssssssssssss");
+
+    filteredData.map((row) => keys.map((key) => console.log(row[key],"111111111111111111111111111111111111111" ) ));
+
+    // Generate the rows of CSV based on the keys
     const csvRows = [
-      headers.join(","), 
-      ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(",")) 
+      headers.join(","), // Column headers
+      ...filteredData.map((row) =>
+        keys
+          .map((key) => `"${row[key] || ''}"`) // Extract the value for each column
+          .join(",")
+      ),
     ];
+
   
+    // Create CSV content
     const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
   
+    console.log(csvContent,"csvContent from paymentreportsssssss");
+
+    // Encode and create a download link
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -154,8 +168,12 @@ const PaymentsReports = () => {
     link.click();
     document.body.removeChild(link);
   };
+  
+
+  
+  
   if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
+    return <div className="text-center w-[100vw] h-[100vh] mt-5">Loading...</div>;
   }
 
   if (error) {

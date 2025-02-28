@@ -21,7 +21,7 @@ const Userspage = () => {
   const [userTypeFilter, setUserTypeFilter] = useState(""); // User type filter state
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOptions, setFilterOptions] = useState([]); // Search query state
- console.log(filterOptions,"kkkkkkkkkkkkkkkkkkk")
+
   const usersPerPage = 10; // Number of users per page
   const navigate = useNavigate();
 
