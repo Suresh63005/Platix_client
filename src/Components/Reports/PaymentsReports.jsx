@@ -82,7 +82,8 @@ const PaymentsReports = () => {
       const apiData = response.data.data || [];
 
         const formattedOrders = apiData.map((order) => ({
-          orderId: order.id || "N/A",
+          orderId: order.orderId || "N/A",
+          id: order.id || "N/A",
           orderDate: order.orderDate || "N/A",
           from: order.fromOrg?.name || "N/A",
           username: order.user?.firstName || "N/A",
@@ -148,7 +149,7 @@ const PaymentsReports = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "Order_Reports.csv");
+    link.setAttribute("download", "Payment_Reports.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

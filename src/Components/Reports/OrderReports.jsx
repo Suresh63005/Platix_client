@@ -68,7 +68,7 @@ const OrderReports = () => {
 
         const formattedData = apiData.map((order) => ({
           id: order.id || "N/A",
-          orderId: order.id || "N/A",
+          orderId: order.orderId || "N/A",
           orderDate: order.orderDate || "N/A",
           from: order.fromOrg?.name || "N/A",
           username: order.user?.firstName || "N/A",

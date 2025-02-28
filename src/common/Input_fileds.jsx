@@ -16,13 +16,14 @@ export const Header = forwardRef(({ name }, ref) => (
 ));
 
 // Input Field Component with forwardRef
-export const InputField = forwardRef(({ label, type, placeholder, value, onChange, name }, ref) => (
+export const InputField = forwardRef(({ label, type, placeholder,readOnly, value, onChange, name }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <input
       ref={ref}
       type={type}
       name={name}
+      disabled={readOnly==="view"}
       placeholder={placeholder}
       value={value}
       onChange={onChange}
@@ -32,7 +33,7 @@ export const InputField = forwardRef(({ label, type, placeholder, value, onChang
 ));
 
 // Select Field Component using react-select with forwardRef
-export const SelectField = forwardRef(({ label, options, value, onChange, name, defaultplaceholder,handleOrginazationtypeid=()=>{} }, ref) => (
+export const SelectField = forwardRef(({ label,disabled, options, value, onChange, name, defaultplaceholder,handleOrginazationtypeid=()=>{} }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <Select
@@ -48,6 +49,9 @@ export const SelectField = forwardRef(({ label, options, value, onChange, name, 
         handleOrginazationtypeid(selectedOption?.value)
       }}
       options={options}
+      
+      
+      isDisabled={disabled === "view"}
       name={name}
       className="text-[12px]" // Additional classes
       styles={{
@@ -101,7 +105,7 @@ export const SelectField = forwardRef(({ label, options, value, onChange, name, 
 ));
 
 // Phone Input Component with forwardRef
-export const PhoneNumberInput = forwardRef(({ label, value, onChange, defaultCountry, name }, ref) => (
+export const PhoneNumberInput = forwardRef(({ label, value,readOnly, onChange, defaultCountry, name }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <div className="flex items-center rounded-md border border-[#EAEAFF] focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] overflow-hidden font-medium text-[#757575]">
@@ -110,6 +114,7 @@ export const PhoneNumberInput = forwardRef(({ label, value, onChange, defaultCou
         placeholder="Enter phone number"
         name={name}
         value={value}
+        disabled ={readOnly === "view"}
         onChange={onChange}
         defaultCountry={defaultCountry}
         className="w-full p-2 text-sm focus-visible:outline-0 h-[42px] "
@@ -123,7 +128,7 @@ export const PhoneNumberInput = forwardRef(({ label, value, onChange, defaultCou
 ));
 
 // WhatsApp Input Component with forwardRef
-export const WhatsAppInput = forwardRef(({ label, value, onChange, name }, ref) => (
+export const WhatsAppInput = forwardRef(({ label, value,readOnly, onChange, name }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <div className="flex items-center rounded-md border border-[#EAEAFF] focus-within:border-[#660F5D] focus-within:ring-2 focus-within:ring-[#660F5D] overflow-hidden font-medium text-[#757575]">
@@ -132,17 +137,18 @@ export const WhatsAppInput = forwardRef(({ label, value, onChange, name }, ref) 
         ref={ref}
         type="text"
         name={name}
+        disabled={readOnly==="view"}
         placeholder="Enter WhatsApp number"
         value={value}
         onChange={onChange}
-        className="w-full p-2 text-sm outline-none h-[42px] "
+        className="w-full p-2 text-sm outline-none h-[42px]"
       />
     </div>
   </div>
 ));
 
 // File Upload Component with forwardRef
-export const FileUpload = forwardRef(({ name, onChange, label, multiple = false }, ref) => {
+export const FileUpload = forwardRef(({ name, onChange, readOnly, label, multiple = false }, ref) => {
   const [files, setFiles] = useState([]);
   const fileInputRef = useRef(null); // Reference to the file input
 
@@ -206,6 +212,8 @@ export const FileUpload = forwardRef(({ name, onChange, label, multiple = false 
           type="file"
           name={name}
           id={name}
+          disabled={readOnly==="view"}
+          accept="image/png, image/jpeg"
           multiple={multiple}
           onChange={handleFileChange}
           className="w-full sm:w-[350px] border border-gray-300 rounded-md p-1 text-sm"
