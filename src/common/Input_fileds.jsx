@@ -22,6 +22,7 @@ export const InputField = forwardRef(({ label, type, placeholder,readOnly, value
     <input
       ref={ref}
       type={type}
+      autoComplete="off"
       name={name}
       disabled={readOnly==="view"}
       placeholder={placeholder}
@@ -113,6 +114,7 @@ export const PhoneNumberInput = forwardRef(({ label, value,readOnly, onChange, d
         ref={ref}
         placeholder="Enter phone number"
         name={name}
+        autoComplete={0}
         value={value}
         disabled ={readOnly === "view"}
         onChange={onChange}
@@ -136,6 +138,7 @@ export const WhatsAppInput = forwardRef(({ label, value,readOnly, onChange, name
       <input
         ref={ref}
         type="text"
+        autoComplete="off"
         name={name}
         disabled={readOnly==="view"}
         placeholder="Enter WhatsApp number"
@@ -313,6 +316,7 @@ export const ServiceForm = forwardRef((props, ref) => {
       <div className="mt-4">
         <input
           type="text"
+          autoComplete="name"
           value={serviceName}
           onChange={(e) => setServiceName(e.target.value)}
           placeholder="Service Name"
@@ -320,6 +324,7 @@ export const ServiceForm = forwardRef((props, ref) => {
         />
         <input
           type="number"
+          autoComplete="name"
           value={servicePrice}
           onChange={(e) => setServicePrice(e.target.value)}
           placeholder="Service Price"

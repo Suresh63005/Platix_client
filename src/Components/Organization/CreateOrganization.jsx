@@ -273,9 +273,19 @@ const CreateOrganization = () => {
   
 
   const handleAddService = () => {
-    if (newService.id && newService.price) {
-      setUserServices([...userServices, { ...newService }]); // ✅ Ensuring 'name' is included
+    if (newService.id && newService.price ) {
+      if(editingIndex !== null ){
+        const updatedServices = [...userServices]; 
+        updatedServices[editingIndex] = newService; 
+      
+        setUserServices(updatedServices); 
+        setEditingIndex(null); 
+        setNewService({ id: "", name: "", price: "" });
+      }else{
+        setUserServices([...userServices, { ...newService }]); 
       setNewService({ id: "", name: "", price: "" });
+      }
+      
     } else {
       Swal.fire({
         icon: "warning",
@@ -294,6 +304,7 @@ const CreateOrganization = () => {
   };
 
   const handleEditService = (index) => {
+    
     const serviceToEdit = userServices[index];
     setEditingIndex(index);
     setNewService({
@@ -921,7 +932,7 @@ const CreateOrganization = () => {
                     <div className="flex gap-2">
                       {editingIndex === null ? (
                         <span
-                        onClick={mode1 ==="view" ? handleAddService : null}
+                        onClick={handleAddService}
                         className={`px-4 py-1 rounded-md ${
                           mode1 ==="view"
                             ? 'bg-gray-400 text-white cursor-not-allowed pointer-events-none'
@@ -933,7 +944,7 @@ const CreateOrganization = () => {
                       
                       ) : (
                         <span
-                        onClick={mode1 ==="view" ? handleAddService : null}
+                        onClick={ handleAddService }
                           
                         className={`px-4 py-1 rounded-md ${
                           mode1 ==="view"
@@ -945,7 +956,7 @@ const CreateOrganization = () => {
                         </span>
                       )}
                       <span
-  onClick={mode1 !== "view" ? () => setNewService({ name: "", price: "" }) : undefined}
+  onClick={ () => setNewService({ name: "", price: "" })}
   className={`px-7 py-1 border rounded-md ${
     mode1 !== "view"
       ? 'bg-white text-gray-700 border-gray-700 cursor-pointer'
@@ -983,7 +994,7 @@ const CreateOrganization = () => {
                           />
                         </div>
                         <span
-  onClick={mode1 !== "view" ? () => handleEditService(index) : null}
+  onClick={ () => handleEditService(index)}
   className={`px-4 py-2 rounded-md ${
     mode1 !== "view"
       ? 'bg-[#FAFAFA] text-[#660F5D] cursor-pointer'
@@ -994,7 +1005,7 @@ const CreateOrganization = () => {
 </span>
 
 <span
-  onClick={mode1 !== "view" ? () => handleDeleteService(index) : null}
+  onClick={ () => handleDeleteService(index)}
   className={`px-4 py-2 border rounded-md ${
     mode1 !== "view"
       ? 'bg-white border-gray-700 text-gray-700 cursor-pointer'
