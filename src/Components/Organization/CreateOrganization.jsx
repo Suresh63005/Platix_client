@@ -402,7 +402,7 @@ const CreateOrganization = () => {
   const [servicesList, setServicesList] = useState({});
 
 
-  console.log(servicesList,"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
+  
 
   async function handleOrginazationtypeid(id) {
     try {
@@ -416,7 +416,7 @@ const CreateOrganization = () => {
 
   useEffect(()=>{
     handleOrginazationtypeid(orgTypeEditId);
-  },[orgType]);
+  },[loading,isLoading]);
 
   return (
     <div>
