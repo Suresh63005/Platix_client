@@ -40,15 +40,6 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
     downloadCSV([item], `Report_${item.id}.csv`);
   };
 
-  // Bulk Download (Selected Rows or All)
-  // const handleBulkDownload = () => {
-  //   const filteredData = selectedItems.length
-  //     ? data.filter(item => selectedItems.includes(item.id)) // Download only selected rows
-  //     : data; // Download all if none selected
-
-  //   downloadCSV(filteredData, "All_Reports.csv");
-  // };
-
   // Select all items on current page
   const handleSelectAll = (event) => {
     if (event.target.checked) {
