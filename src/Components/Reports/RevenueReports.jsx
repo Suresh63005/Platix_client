@@ -127,23 +127,24 @@ const RevenueReports = () => {
 
     const headers = Object.keys(columnKeyMapping);
     const keys = Object.values(columnKeyMapping);
-
     const csvRows = [
-      headers.join(","),
-      ...filteredData.map((row) =>
-        keys.map((key) => `"${row[key] || ''}"`).join(",")
-      ),
+      headers.join(","), 
+      ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(","))
     ];
 
-    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
-    const encodedUri = encodeURI(csvContent);
+    const csvContent = "\uFEFF" + csvRows.join("\r\n"); 
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    link.setAttribute("href", url);
     link.setAttribute("download", "Revenue_Reports.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
+    URL.revokeObjectURL(url);
+
+    };
 
   if (loading) {
     return <div className="text-center mt-5">Loading...</div>;
