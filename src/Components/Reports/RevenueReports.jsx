@@ -80,23 +80,20 @@ const RevenueReports = () => {
         const orders = response.data.data || [];
 
         const formattedOrders = orders.map((order) => ({
-          orderId: order.id || "N/A",
+          orderId: order.orderId || "N/A",
           orderDate: order.orderDate || "N/A",
-          from: order.fromOrg?.organizationType || "N/A",
+          from: order.fromOrg?.name || "N/A", 
           username: order.user?.firstName || "N/A",
           userContact: order.MobileNo || "N/A",
-          to: order.toOrg?.organizationType || "N/A",
+          to: order.toOrg?.name || "N/A", 
           contactName: order.patientName || "N/A",
           contactNumber: order.MobileNo || "N/A",
-          invoice: "INV-" + order.id.substring(0, 5),
+          invoice: order.id ? "INV-" + order.id.substring(0, 5) : "N/A", 
           amount: order.totalAmount || "N/A",
           paidAmount: order.paidAmount || "N/A",
-          balance:
-            order.totalAmount && order.paidAmount
-              ? order.totalAmount - order.paidAmount
-              : "N/A",
+          balance: (order.totalAmount && order.paidAmount) ? order.totalAmount - order.paidAmount : "N/A", 
           modeOfPayment: order.paymentMethod || "N/A",
-        }));
+        }));        
 
         setData(formattedOrders);
         setFilteredData(formattedOrders);
@@ -109,7 +106,7 @@ const RevenueReports = () => {
     };
 
     fetchData();
-  }, [fromDate, toDate]); // Refetch data when dates change
+  }, [fromDate, toDate]); 
 
   useEffect(() => {
     if (debouncedSearchQuery) {

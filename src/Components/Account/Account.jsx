@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import Header from "../../common/Header";
 import { InputField, PhoneNumberInput } from "../../common/Input_fileds";
 import PasswordInput from "../../common/PasswordInput";
 import { Icon } from "@iconify/react";
-import ProfileICon from "../../assets/images/User-100.svg";
+import ProfileICon from "../../assets/images/User-100.svg"; 
 import api from "../../utils/api";
 
 const Account = () => {
-  const token = Cookies.get("token"); // Get token from cookies
-
-  // Extract admin ID from JWT
+  const token = Cookies.get("token");
+  const [loading, setLoading] = useState(false);
   let adminId = null;
+
   if (token) {
     try {
       const decodedToken = jwtDecode(token);
-      adminId = decodedToken.id; // Adjust based on your JWT structure
+      adminId = decodedToken.id;
     } catch (error) {
       console.error("Invalid token:", error);
     }
@@ -31,23 +30,17 @@ const Account = () => {
     password: "",
     confirmPassword: "",
     profileImage: null,
-    imgPreview:null,
+    imgPreview: ProfileICon, 
   });
 
-  const [loading, setLoading] = useState(false);
-
-  // Fetch Profile on Load
   useEffect(() => {
-    if (!adminId) return; // Stop if no valid admin ID
+    if (!adminId) return;
 
     const fetchProfile = async () => {
       try {
-        const response = await api.get(
-          `admin/profile`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await api.get(`admin/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         const data = response.data;
         console.log("Fetched Data:", data);
@@ -57,9 +50,10 @@ const Account = () => {
           dateOfBirth: data.dateOfBirth || "",
           phoneNumber: data.phoneNumber || "",
           email: data.email || "",
-          password:"",
+          password: "",
           confirmPassword: "",
           profileImage: data.profileImage || ProfileICon,
+          imgPreview: data.profileImage || ProfileICon, 
         });
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -69,16 +63,16 @@ const Account = () => {
     fetchProfile();
   }, [adminId, token]);
 
-  // Handle Input Change
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
     if (files && files.length > 0) {
       const file = files[0];
       const previewUrl = URL.createObjectURL(file);
+
       setProfile((prevData) => ({
         ...prevData,
-        profileImage: file, 
+        profileImage: file,
         imgPreview: previewUrl, 
       }));
     } else {
@@ -87,9 +81,8 @@ const Account = () => {
         [name]: value,
       }));
     }
-  };  
+  };
 
-  // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -99,27 +92,22 @@ const Account = () => {
     }
 
     const formData = new FormData();
-    formData.append("name",profile.name);
-    formData.append("dateOfBirth",profile.dateOfBirth);
-    formData.append("phoneNumber",profile.phoneNumber);
-    formData.append("confirmPassword",profile.confirmPassword);
-    formData.append("email",profile.email);
-    formData.append("password",profile.password);
-    if(profile.profileImage) formData.append("profileImage",profile.profileImage);
-    
+    formData.append("name", profile.name);
+    formData.append("dateOfBirth", profile.dateOfBirth);
+    formData.append("phoneNumber", profile.phoneNumber);
+    formData.append("confirmPassword", profile.confirmPassword);
+    formData.append("email", profile.email);
+    formData.append("password", profile.password);
+    if (profile.profileImage) formData.append("profileImage", profile.profileImage);
 
     setLoading(true);
     try {
-      
-      await api.put(
-        `admin/profile/update`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      alert("Profile updated successfully!");
+      const response=await api.put(`admin/profile/update`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if(response.status === 200){
+        alert(response.data.message);
+      }
     } catch (error) {
       console.error("Update failed:", error);
       alert("Failed to update profile.");
@@ -137,14 +125,14 @@ const Account = () => {
           <div className="relative bg-white rounded-lg w-full flex justify-center p-6">
             <div className="relative">
               <img
-                src={profile.profileImage || profile.imgPreview}
+                src={profile.imgPreview} 
                 alt="Profile"
                 className="w-[60px] h-[60px] rounded-full object-cover object-center"
               />
               <label
                 htmlFor="profile-upload"
                 className="absolute bottom-0 right-0 text-[#660F5D] border border-[#660F5D] bg-white rounded-full p-1 cursor-pointer"
-                title="Click to change profile picture" 
+                title="Click to change profile picture"
               >
                 <Icon icon="mdi:plus" width={10} />
               </label>
@@ -154,11 +142,10 @@ const Account = () => {
               type="file"
               className="hidden"
               accept="image/*"
-              onChange={handleChange}
+              onChange={handleChange} 
             />
           </div>
         </div>
-
 
         {/* Account Details Section */}
         <div className="bg-white shadow-lg rounded-lg px-6 py-6">
@@ -207,7 +194,7 @@ const Account = () => {
                     name="email"
                     type="email"
                     value={profile.email}
-                    readOnly // Email should be read-only
+                    // readOnly 
                   />
                 </div>
               </div>
@@ -231,7 +218,10 @@ const Account = () => {
                     name="confirmPassword"
                     value={profile.confirmPassword}
                     onChange={(e) =>
-                      setProfile((prev) => ({ ...prev, confirmPassword: e.target.value }))
+                      setProfile((prev) => ({
+                        ...prev,
+                        confirmPassword: e.target.value,
+                      }))
                     }
                     placeholder={"Confirm Password"}
                   />

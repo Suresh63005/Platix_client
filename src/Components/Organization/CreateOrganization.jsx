@@ -778,12 +778,12 @@ const CreateOrganization = () => {
                     label="choose file for profile*"
                     multiple={false}
                     onChange={handleChange}
-                    {...register("file1",{ required: "organization image is required."})}
+                    // {...register("file1",{ required: "organization image is required."})}
                   />
                 )}
                 
               />
-              {errors.file1 && <p className="text-red-500 text-xs">{errors.file1.message}</p>}
+              {/* {errors.file1 && <p className="text-red-500 text-xs">{errors.file1.message}</p>} */}
               </div>
 
               <div>

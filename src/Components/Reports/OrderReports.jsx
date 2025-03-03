@@ -49,19 +49,20 @@ const OrderReports = () => {
       
       const response = await api.get(endpoint);
       const apiData = response.data.data || [];
-        console.log(apiData)
+        // console.log(apiData)
         // Transform API response to match table format
         const formattedData = apiData.map((order) => ({
-          id: order.id ? order.id :"N/A",
-          orderId: order.id ? order.id :"N/A",
-          orderDate: order.orderDate ? order.orderDate :"N/A",
-          from: order.fromOrg?.organizationType || "N/A",
+          id: order.id || "N/A",
+          orderId: order.orderId || "N/A",
+          orderDate: order.orderDate || "N/A",
+          from: order.fromOrg?.name || "N/A",  
           username: order.user?.firstName || "N/A",
-          to: order.toOrg?.organizationType || "N/A",
-          orderStatus: order.orderStatus ? order.orderStatus :"N/A",
-          mobileNo: order.MobileNo ? order.MobileNo :"N/A",
-          patientDetails: order.patientName ? order.patientName :"N/A",
+          to: order.toOrg?.name || "N/A",  
+          orderStatus: order.orderStatus || "N/A",
+          mobileNo: order.MobileNo || "N/A",
+          patientDetails: order.patientName || "N/A",
         }));
+        
 
         setData(formattedData);
         setFilteredData(formattedData);
@@ -88,7 +89,7 @@ const OrderReports = () => {
   };
 
   const handleBulkDownload = () => {
-    console.log("Download button clicked!"); // ✅ Debugging log
+    console.log("Download button clicked!"); 
   
     if (!filteredData.length) {
       alert("No data available for download!");
