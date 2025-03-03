@@ -11,6 +11,8 @@ import api from "../../utils/api";
 const Account = () => {
   const token = Cookies.get("token");
   const [loading, setLoading] = useState(false);
+
+  // Extract admin ID from JWT
   let adminId = null;
 
   if (token) {

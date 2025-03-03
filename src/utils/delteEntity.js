@@ -28,8 +28,8 @@ export const deleteItem = async (url, id, setData, forceDelete = false) => {
     if (response.status === 200) {
       Swal.fire({
         text: forceDelete
-          ? "Item Permanently Deleted Successfully"
-          : "Item Soft Deleted Successfully",
+          ? "Item Deleted Successfully"
+          : "Item Deleted Successfully",
         imageUrl: TickSquare,
         imageWidth: 50,
         imageHeight: 50,

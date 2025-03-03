@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../utils/api";
 
@@ -10,6 +11,7 @@ const Createnewpass = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setErrorState] = useState("");
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
@@ -42,6 +44,7 @@ const Createnewpass = () => {
       );
 
       setSuccess("Password updated successfully!");
+      navigate("/")
       setErrorState("");
     } catch (error) {
       if (error.response?.status === 400) {

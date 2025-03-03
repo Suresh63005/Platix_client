@@ -26,9 +26,12 @@ const CreateUserPage = () => {
   console.log(organization_id)
   const { isLoading,setIsLoading }=useLoading();
   const [mode, setMode] = useState(initialMode || "create");
+
+ 
   const [designationOptions, setDesignationOptions] = useState([]);
   const [roles, setRoles] = useState([]); // State to store fetched roles
   const [showDesignationField, setShowDesignationField] = useState(false);
+  const [organizationName, setOrganizationName] = useState("");
 
   const {
     register,
@@ -37,7 +40,7 @@ const CreateUserPage = () => {
     watch,
     control,
     reset,
-    formState: { errors },
+    formState: { errors }, setError, clearErrors,
   } = useForm();
 
   const formData = watch();
@@ -49,7 +52,21 @@ const CreateUserPage = () => {
     }, 1000);
     return () => clearTimeout(timer)
   },[])
-
+  useEffect(() => {
+    if (organization_id) {
+      api
+        .get(`api/organization/getby/${organization_id}`)
+        .then((response) => {
+          const orgName = response.data.data.name;
+          setOrganizationName(orgName);
+          setValue("organizationName", orgName);
+        })
+        .catch((error) => {
+          console.error("Error fetching organization name:", error);
+          setOrganizationName("");
+        });
+    }
+  }, [organization_id, setValue]);
   // Fetch roles dynamically
   useEffect(() => {
         const token = Cookies.get("token");
@@ -184,132 +201,201 @@ const CreateUserPage = () => {
         onBackClick={handleBackClick}
       />
 
-      <div className="create-user-form-container flex-1 bg-white px-6 py-4 rounded-lg shadow-md mx-4 mb-4">
-        <form className="user-form-container space-y-4" onSubmit={handleSubmit(onSubmit)}>
-          <h3 className="form-title p-2 font-bold">
-            {mode === "view" ? "View User" : mode === "edit" ? "Edit User" : "Create User"}
-          </h3>
+<div className="create-user-form-container flex-1 bg-white px-6 py-4 rounded-lg shadow-md mx-4 mb-4">
+  <form className="user-form-container space-y-4" onSubmit={handleSubmit(onSubmit)}>
+    <h3 className="form-title p-2 font-bold">
+      {mode === "view" ? "View User" : mode === "edit" ? "Edit User" : "Create User"}
+    </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Controller
-              name="prefix"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <SelectField
-                  label="Prefix*"
-                  defaultplaceholder="Select Prefix"
-                  options={[{ value: "mr", label: "Mr" }, { value: "mrs", label: "Mrs" }]}
-                  value={field.value}
-                  onChange={(value) => field.onChange(value)}
-                  disabled={mode === "view"}
-                />
-              )}
-            />
-            <Controller
-              name="role_id"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <SelectField
-                  label="Role*"
-                  defaultplaceholder="Select Role"
-                  options={roles}
-                  value={field.value}
-                  onChange={(value) => {
-                    field.onChange(value);
-                    handleRoleChange(value);
-                  }}
-                  disabled={mode === "view"}
-                />
-              )}
-            />
-            <Controller
-              name="firstName"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <InputField
-                  label="First Name*"
-                  placeholder="Enter First Name"
-                  {...field}
-                  disabled={mode === "view"}
-                />
-              )}
-            />
-            <Controller
-              name="lastName"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <InputField
-                  label="Last Name*"
-                  placeholder="Enter Last Name"
-                  {...field}
-                  disabled={mode === "view"}
-                />
-              )}
-            />
-          </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Prefix Field */}
+      <div>
+      <Controller
+        name="prefix"
+        control={control}
+        defaultValue=""
+        rules={{ required: "Prefix is required." }}
+        render={({ field }) => (
+          <SelectField
+            label="Prefix*"
+            defaultplaceholder="Select Prefix"
+            options={[{ value: "mr", label: "Mr" }, { value: "mrs", label: "Mrs" }, { value: "dr", label: "Dr" }]}
+            value={field.value}
+            onChange={(value) => field.onChange(value)}
+            disabled={mode}
+          />
+        )}
+      />
+      {errors.prefix && <p className="text-red-500 text-xs">{errors.prefix.message}</p>}
+      </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Controller
-              name="dateOfBirth*"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <InputField label="Date of Birth" type="date" {...field} disabled={mode === "view"} />
-              )}
-            />
-            <Controller
-              name="email"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <InputField
-                  label="Email*"
-                  type="email"
-                  placeholder="Enter Email"
-                  {...field}
-                  disabled={mode === "view"}
-                />
-              )}
-            />
-            <Controller
-              name="mobileNo"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <PhoneNumberInput
-                  label="Mobile Number*"
-                  value={field.value}
-                  onChange={(value) => field.onChange(value)}
-                  defaultCountry="IN"
-                  disabled={mode === "view"}
-                />
-              )}
-            />
-            <Controller
-              name="whatsappNo"
-              control={control}
-              defaultValue=""
-              render={({ field }) => (
-                <WhatsAppInput
-                  label="WhatsApp Number*"
-                  value={field.value}
-                  onChange={(value) => field.onChange(value)}
-                  disabled={mode === "view"}
-                />
-              )}
-            />
-          </div>
+      {/* Role Field */}
+      <div>
+      <Controller
+        name="role_id"
+        control={control}
+        defaultValue=""
+        rules={{ required: "Role is required." }}
+        render={({ field }) => (
+          <SelectField
+            label="Role*"
+            defaultplaceholder="Select Role"
+            options={roles}
+            value={field.value}
+            onChange={(value) => {
+              field.onChange(value);
+              handleRoleChange(value);
+            }}
+            disabled={mode}
+          />
+        )}
+      />
+      {errors.role_id && <p className="text-red-500 text-xs">{errors.role_id.message}</p>}
+      </div>
 
-          {showDesignationField && (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+     <div>
+       {/* First Name */}
+       <Controller
+        name="firstName"
+        control={control}
+        defaultValue=""
+        rules={{ required: "First Name is required." }}
+        render={({ field }) => (
+          <InputField
+            label="First Name*"
+            placeholder="Enter First Name"
+            {...field}
+            readOnly={mode}
+          />
+        )}
+      />
+      {errors.firstName && <p className="text-red-500 text-xs">{errors.firstName.message}</p>}
+
+     </div>
+      {/* Last Name */}
+     <div>
+     <Controller
+        name="lastName"
+        control={control}
+        defaultValue=""
+        rules={{ required: "Last Name is required." }}
+        render={({ field }) => (
+          <InputField
+            label="Last Name*"
+            placeholder="Enter Last Name"
+            {...field}
+            readOnly={mode}
+          />
+        )}
+      />
+      {errors.lastName && <p className="text-red-500 text-xs">{errors.lastName.message}</p>}
+     </div>
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Date of Birth */}
+    <div>
+    <Controller
+        name="dateOfBirth"
+        control={control}
+        defaultValue=""
+        render={({ field }) => (
+          <InputField
+            label="Date of Birth"
+            type="date"
+            {...field}
+            readOnly={mode}
+          />
+        )}
+      />
+    </div>
+
+      <div>
+        {/* Email */}
+      <Controller
+        name="email"
+        control={control}
+        defaultValue=""
+        rules={{ required: "Email is required.", pattern: { value: /^\S+@\S+\.\S+$/, message: "Invalid email format" } }}
+        render={({ field }) => (
+          <InputField
+            label="Email*"
+            type="email"
+            placeholder="Enter Email"
+            {...field}
+            readOnly={mode}
+          />
+        )}
+      />
+      {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
+      </div>
+
+      {/* Mobile Number */}
+      <div>
+        <Controller
+          name="mobileNo"
+          control={control}
+          defaultValue=""
+          rules={{ required: "Mobile number is required." }}
+          render={({ field }) => (
+            <PhoneNumberInput
+              label="Mobile Number*"
+              {...field}
+              defaultCountry="IN"
+              placeholder="Enter Mobile Number"
+              className="p-1"
+              readOnly={mode}
+              onChange={(value) => {
+                field.onChange(value);
+                if (value && value.length > 13) {
+                  setError("mobileNo", { type: "manual", message: "Mobile number cannot exceed 12 digits." });
+                } else {
+                  clearErrors("mobileNo");
+                }
+              }}
+            />
+          )}
+        />
+        {errors.mobileNo && <p className="text-red-500 text-xs">{errors.mobileNo.message}</p>}
+      </div>
+
+      {/* WhatsApp Number */}
+      <div>
+        <Controller
+          name="whatsappNo"
+          control={control}
+          defaultValue=""
+          rules={{ required: "WhatsApp number is required." }}
+          render={({ field }) => (
+            <WhatsAppInput
+              label="WhatsApp Number*"
+              {...field}
+              className="p-1"
+              readOnly={mode}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9]/g, ""); // Allow only numbers
+                field.onChange(value);
+                if (value.length > 10) {
+                  setError("whatsappNo", { type: "manual", message: "WhatsApp number cannot exceed 10 digits." });
+                } else {
+                  clearErrors("whatsappNo");
+                }
+              }}
+            />
+          )}
+        />
+        {errors.whatsappNo && <p className="text-red-500 text-xs">{errors.whatsappNo.message}</p>}
+      </div>
+    </div>
+
+    {/* Specialization (Designation) Field */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  {showDesignationField && (
     <Controller
       name="designation"
       control={control}
       defaultValue=""
+      rules={{ required: "Designation is required." }}
       render={({ field }) => (
         <SelectField
           label="Specialization*"
@@ -317,30 +403,41 @@ const CreateUserPage = () => {
           options={designationOptions || []}
           value={field.value}
           onChange={(value) => field.onChange(value)}
-          disabled={mode === "view"}
+          disabled={mode}
         />
       )}
     />
-  </div>
-)}
-          {mode !== "view" && (
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                type="reset"
-                className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm"
-              >
-                {mode === "edit" ? "Update" : "Save"}
-              </button>
-            </div>
-          )}
-        </form>
+  )}
+
+      <InputField
+        label="Organization Name"
+        placeholder="Organization Name"
+        value={organizationName}
+        readOnly ={mode}
+        className="p-1"
+      />
+    
+  
+</div>
+
+    {/* Submit Buttons */}
+    {mode !== "view" && (
+      <div className="flex justify-end gap-3 mt-4">
+        <button
+          type="reset"
+          onClick={() => navigate(`/userspage/${organization_id}`)}
+          className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
+        >
+          Cancel
+        </button>
+        <button type="submit" className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm">
+          {mode === "edit" ? "Update" : "Save"}
+        </button>
       </div>
+    )}
+  </form>
+</div>
+
     </div>
     </div>
   );

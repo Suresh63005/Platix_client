@@ -39,12 +39,12 @@ const PaymentsReports = () => {
     "Order Date",
     "From",
     "Username",
-    "User Contact",
+    "User Contact no",
     "To",
     "Contact Name",
     "Contact Number",
-    "Invoice",
-    "Amount",
+    // "Invoice",
+    "Invoice Amount",
     "Paid amount",
     "Balance",
     "Mode of Payment",
@@ -59,8 +59,7 @@ const PaymentsReports = () => {
     "To": "to",
     "Contact Name": "contactName",
     "Contact Number": "contactNumber",
-    "Invoice": "invoice",
-    "Amount": "amount",
+    "Invoice Amount": "amount",
     "Paid amount": "paidAmount",
     "Balance": "balance",
     "Mode of Payment": "modeOfPayment",
@@ -75,11 +74,12 @@ const PaymentsReports = () => {
 
         let endpoint = "admin/getallorder";
       if (fromDate && toDate) {
-        endpoint = `user/getbydate/${fromDate}/${toDate}`;
+        endpoint = `order/getbyorderdate/${fromDate}/${toDate}`;
       }
       
       const response = await api.get(endpoint);
       const apiData = response.data.data || [];
+
 
       const formattedOrders = apiData.map((order) => ({
         orderId: order.orderId || "N/A",
@@ -96,6 +96,7 @@ const PaymentsReports = () => {
         balance: (order.totalAmount && order.paidAmount) ? order.totalAmount - order.paidAmount : "N/A",  // Handling the balance calculation
         modeOfPayment: order.paymentMethod || "N/A",
       }));      
+
 
         setData(formattedOrders);
         setFilteredData(formattedOrders);
@@ -114,19 +115,21 @@ const PaymentsReports = () => {
   useEffect(() => {
     if (debouncedSearchQuery) {
       const lowerCaseQuery = debouncedSearchQuery.toLowerCase();
-      const result = data.filter(
-        (item) =>
-          item.orderId.toLowerCase().includes(lowerCaseQuery) ||
-          item.username.toLowerCase().includes(lowerCaseQuery)
+  
+      const result = data.filter((item) =>
+        Object.values(columnKeyMapping).some(
+          (key) => item[key] && item[key].toString().toLowerCase().includes(lowerCaseQuery)
+        )
       );
+  
       setFilteredData(result);
     } else {
       setFilteredData(data);
     }
   }, [debouncedSearchQuery, data]);
 
+
   const handleBulkDownload = () => {
-  
     if (!filteredData.length) {
       alert("No data available for download!");
       return;
@@ -134,14 +137,29 @@ const PaymentsReports = () => {
   
     const headers = Object.keys(columnKeyMapping);
     const keys = Object.values(columnKeyMapping);
-  
+
+    console.log(headers,"headersssssssssssssssssss");
+    console.log(keys,"keysssssssssssssssssssssssss");
+
+    filteredData.map((row) => keys.map((key) => console.log(row[key],"111111111111111111111111111111111111111" ) ));
+
+    // Generate the rows of CSV based on the keys
     const csvRows = [
-      headers.join(","), 
-      ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(",")) 
+      headers.join(","), // Column headers
+      ...filteredData.map((row) =>
+        keys
+          .map((key) => `"${row[key] || ''}"`) // Extract the value for each column
+          .join(",")
+      ),
     ];
+
   
+    // Create CSV content
     const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
   
+    console.log(csvContent,"csvContent from paymentreportsssssss");
+
+    // Encode and create a download link
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -150,8 +168,12 @@ const PaymentsReports = () => {
     link.click();
     document.body.removeChild(link);
   };
+  
+
+  
+  
   if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
+    return <div className="text-center w-[100vw] h-[100vh] mt-5">Loading...</div>;
   }
 
   if (error) {

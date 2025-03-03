@@ -31,17 +31,15 @@ const OrganizationList = () => {
       params: {
         page,
         limit: orgsPerPage,
-        filter,
+        filter: filter === "" ? "all" : filter, // Set "all" when filter is empty
         search: searchQuery,
       },
     })
     .then((response) => {
-      console.log("API Response in Frontend:", response.data); // ✅ Log response
+      console.log("API Response in Frontend:", response.data);
   
       const { data } = response;
       const filteredOrgs = data.data || []; 
-  
-      console.log("Processed Organizations Data:", filteredOrgs); // ✅ Log data after processing
   
       setOrganizations(filteredOrgs);
       setTotalPages(Math.ceil(data.pagination.total / orgsPerPage)); 
@@ -120,6 +118,7 @@ const OrganizationList = () => {
 
   const handleEdit = (id) => {
     navigate("/createorganization", { state: { id, mode: "edit" } });
+    
   };
 
   const handleView = (id) => {
