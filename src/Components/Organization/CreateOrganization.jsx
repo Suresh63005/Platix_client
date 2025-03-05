@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -24,14 +25,19 @@ import { organizationTypesData } from "../../Data/data";
 import { toast, Toaster } from 'react-hot-toast';
 
 const CreateOrganization = () => {
+  const latitudeRegex = /^-?([1-8]?\d(\.\d+)?|90(\.0+)?)$/;
+  const longitudeRegex = /^-?((1[0-7]\d(\.\d+)?)|([1-9]?\d(\.\d+)?))$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const bankRegex = /^[a-zA-Z\s]{2,100}$/; // Only letters & spaces, min 2 chars
+  const AccountNumberRegex = /^[0-9]{8,18}$/; // 8-18 digits only
+  const accountHolderRegex = /^[a-zA-Z\s]{2,100}$/; // Only letters & spaces, min 2 chars
   const location = useLocation();
   const navigate = useNavigate();
   const { id, mode } = location.state || {};
-  
   const { isLoading, setIsLoading } = useLoading();
   const [mode1, setMode1] = useState(mode || "create");
-  
   const [organization, setOrganization] = useState(null);
+  const [files, setFiles] = useState([]);
   const {
     register,
     handleSubmit,
@@ -42,12 +48,13 @@ const CreateOrganization = () => {
     formState: { errors },
     setError,
     clearErrors,
+    trigger,
   } = useForm();
-  
+
   const [loading, setloading] = useState(false);
   const [formData, setFormData] = useState({
     id: id || null,
-    address: "",
+    address: [],
     businessName: null,
     file1: null,
     file2: null,
@@ -75,7 +82,51 @@ const CreateOrganization = () => {
   const [newService, setNewService] = useState({ name: "", price: "" });
   const [editingIndex, setEditingIndex] = useState(null);
   const [orgType, setOrgTYpe] = useState([]);
-  // console.log(orgType, "from sdhfjghlj.gkfdjshfdgh.")
+  console.log(orgType,"orggggggggggggggggggggggggggggggggggggg")
+  const [servicesList, setServicesList] = useState({});
+  const [orgTypeEditId, setOrgTypeEditId] = useState("")
+  const [PImages, setPImages] = useState([]);
+  const [imageExtra, setImageExtra] = useState([]);
+  const [addresses, setAddresses] = useState([]); // Stores added addresses
+  const [newAddress, setNewAddress] = useState(""); // Holds input value for a new/editing address
+  const [editingIndex2, setEditingIndex2] = useState(null); // Tracks which address is being edited
+
+  const handleAddAddress = () => {
+    if (newAddress.trim() !== "") {
+      if (editingIndex2 !== null) {
+        // Edit existing address
+        const updatedAddresses = [...addresses];
+        updatedAddresses[editingIndex2] = newAddress;
+        setAddresses(updatedAddresses);
+        setEditingIndex2(null);
+      } else {
+        // Add new address
+        setAddresses([...addresses, newAddress]);
+      }
+      setNewAddress(""); // Clear input after adding/editing
+    } else {
+      Swal.fire({
+        icon: "warning",
+        text: "Please enter an address!",
+      });
+    }
+  };
+  
+  const handleEditAddress = (index) => {
+    setNewAddress(addresses[index]); // Set input field with existing address
+    setEditingIndex2(index); // Set the index for editing
+  };
+  
+  const handleDeleteAddress = (index) => {
+    const updatedAddresses = addresses.filter((_, i) => i !== index);
+    setAddresses(updatedAddresses);
+  };
+  
+  const handleClearAddress = () => {
+    setNewAddress(""); // Clear input field
+    setEditingIndex2(null); // Exit edit mode
+  };
+  
 
   useEffect(() => {
     setIsLoading(true);
@@ -86,56 +137,61 @@ const CreateOrganization = () => {
     return () => clearTimeout(timer);
   }, [id, location, setIsLoading]);
 
-  const[orgTypeEditId,setOrgTypeEditId] = useState("");
-
-
-  
-
-  
-
   useEffect(() => {
-    if (id && (mode1 === "edit" || mode1 === "view")) {
-      api
-        .get(`api/organization/getby/${id}`)
-        .then((response) => {
-          const orgData = response.data.data;
-
-          setOrganization(orgData);
-
-          
-          setOrgTypeEditId(orgData.organizationType_id);
-
-
-          // handleOrginazationtypeid()
-
-          // Populate form fields
-          Object.keys(orgData).forEach((key) => {
-            if (orgData[key] !== null && typeof orgData[key] === "object") {
-              Object.keys(orgData[key]).forEach((nestedKey) => {
-                setValue(`${key}.${nestedKey}`, orgData[key][nestedKey]);
-              });
-            } else {
-              setValue(key, orgData[key]);
-            }
-          });
-
-          // Set services if available
-          if (orgData.services) {
-            const servicesWithNames = orgData.services.map((service) => ({
-              id: service.serviceDetail.id,
-              name: service.serviceDetail.servicename || service.name,
-              price: service.price,
-            }));
-            setUserServices(servicesWithNames);
-          }
-        })
-        .catch((error) =>
-          console.error("Error fetching organization data:", error)
-        );
-    } else {
-      setMode1("create");
-    }
+  if (id && (mode1 === "edit" || mode1 === "view")) {
     api
+      .get(`api/organization/getby/${id}`)
+      .then((response) => {
+        const orgData = response.data.data;
+        setOrganization(orgData);
+        setOrgTypeEditId(orgData.organizationType_id);
+
+        Object.keys(orgData).forEach((key) => {
+          if (orgData[key] !== null && typeof orgData[key] === "object") {
+            Object.keys(orgData[key]).forEach((nestedKey) => {
+              setValue(`${key}.${nestedKey}`, orgData[key][nestedKey]);
+            });
+          } else {
+            setValue(key, orgData[key]);
+          }
+        });
+
+        // ✅ Fix Address Handling
+        let parsedAddress = [];
+        if (typeof orgData.address === "string") {
+          try {
+            // Attempt to parse if it's a JSON string
+            parsedAddress = JSON.parse(orgData.address);
+            if (!Array.isArray(parsedAddress)) {
+              parsedAddress = [parsedAddress]; // Convert single value to array
+            }
+          } catch (error) {
+            parsedAddress = [orgData.address]; // Store as single element array if parsing fails
+          }
+        } else if (Array.isArray(orgData.address)) {
+          parsedAddress = orgData.address;
+        }
+
+        setAddresses(parsedAddress); // ✅ Set normalized address list
+
+        // ✅ Fix Services Handling
+        if (orgData.services) {
+          const servicesWithNames = orgData.services.map((service) => ({
+            id: service.serviceDetail.id,
+            name: service.serviceDetail.servicename || service.name,
+            price: service.price,
+          }));
+          setUserServices(servicesWithNames);
+        }
+      })
+      .catch((error) =>
+        console.error("Error fetching organization data:", error)
+      );
+  } else {
+    setMode1("create");
+  }
+
+  api
       .get("admin/allservices")
       .then((response) => {
         const servicesData = response.data.services;
@@ -150,7 +206,7 @@ const CreateOrganization = () => {
         console.error("Error fetching services:", error);
       });
 
-    api
+      api
       .get("organization/getall")
       .then((response) => {
         const OrgData = response.data.results;
@@ -166,10 +222,9 @@ const CreateOrganization = () => {
       .catch((error) => {
         console.error("Error fetching services:", error);
       });
-  }, [id, mode1, setValue]);
 
+}, [id, mode1, setValue]);
 
- 
 
   const dentistId = orgType.find((option) => option.label === "Dentist")?.value;
   const dynamicId = orgType
@@ -186,19 +241,14 @@ const CreateOrganization = () => {
 
   const handleChange = (e) => {
     const { name, files } = e.target;
-  
+
     if (files && files.length > 0) {
       const file = files[0];
-      const maxSize = 1 * 1024 * 1024; 
-  
-     
-      if (file.size > maxSize) {
-        
-        toast.dismiss();
-      toast.error('Image must be lessthan 1Mb');
-        return;
-      }
-  
+      const maxSize = 1 * 1024 * 1024;
+
+
+
+
       const previewUrl = URL.createObjectURL(file);
       setFormData((prev) => ({
         ...prev,
@@ -208,10 +258,12 @@ const CreateOrganization = () => {
       setValue(name, file);
     }
   };
-  
-  const [PImages, setPImages] = useState([]);
-  const [imageExtra, setImageExtra]= useState([]);
- 
+
+  useEffect(() => {
+
+    setPImages(files);
+
+  }, [files]);
 
   useEffect(() => {
     if (organization?.file2) {
@@ -219,73 +271,61 @@ const CreateOrganization = () => {
     }
   }, [organization?.file2]);
 
- 
-
-
-
-
- 
-
-
   const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
+
+
+
+    const filess = Array.from(e.target.files);
     const maxFiles = 3;
-    const maxSize = 1 * 1024 * 1024; 
-  
-    
-    if (files.length > maxFiles) {
-      toast.dismiss();
-      toast.error('Only 3 images are allowed');
-      return;
-    }
-  
-    
-    const oversizedImages = files.filter((file) => file.size > maxSize);
-    if (oversizedImages.length > 0) {
-      toast.dismiss();
-      toast.error('Each image must be less than 1MB.');
-      
-      return;
-    }
-  
-    setPImages(files);
-    setValue("file2", files);
+    const maxSize = 1 * 1024 * 1024;
+
+    // if((files.length + imageExtra.length) > maxFiles){
+    //   toast.dismiss();
+    //   toast.error('exceeded the maximum number of files');
+    //   return;
+    // }
+
+    // if (files.length > maxFiles) {
+    //   toast.dismiss();
+    //   toast.error('Only 3 images are allowed');
+    //   return;
+    // }
+    // const oversizedImages = files.filter((file) => file.size > maxSize);
+    // if (oversizedImages.length > 0) {
+    //   toast.dismiss();
+    //   toast.error('Each image must be less than 1MB.');
+    //   return;
+    // }
+    setPImages(filess);
+    setValue("file2", filess);
   };
 
-  const handleDeleteImage = (index) => {
 
+
+  const handleDeleteImage = (index) => {
     const updatedImages = organization.file2.filter((_, i) => i !== index);
     setOrganization((prev) => ({
       ...prev,
       file2: updatedImages,
     }));
-
-
-    
     const updatedImages1 = PImages.filter((_, i) => i !== index);
-
     setImageExtra(updatedImages1);
   };
 
-
-  
-  
-  
-
   const handleAddService = () => {
-    if (newService.id && newService.price ) {
-      if(editingIndex !== null ){
-        const updatedServices = [...userServices]; 
-        updatedServices[editingIndex] = newService; 
-      
-        setUserServices(updatedServices); 
-        setEditingIndex(null); 
+    if (newService.id && newService.price) {
+      if (editingIndex !== null) {
+        const updatedServices = [...userServices];
+        updatedServices[editingIndex] = newService;
+
+        setUserServices(updatedServices);
+        setEditingIndex(null);
         setNewService({ id: "", name: "", price: "" });
-      }else{
-        setUserServices([...userServices, { ...newService }]); 
-      setNewService({ id: "", name: "", price: "" });
+      } else {
+        setUserServices([...userServices, { ...newService }]);
+        setNewService({ id: "", name: "", price: "" });
       }
-      
+
     } else {
       Swal.fire({
         icon: "warning",
@@ -304,7 +344,6 @@ const CreateOrganization = () => {
   };
 
   const handleEditService = (index) => {
-    
     const serviceToEdit = userServices[index];
     setEditingIndex(index);
     setNewService({
@@ -316,19 +355,21 @@ const CreateOrganization = () => {
 
   const handleDeleteService = (index) => {
     const updatedServices = userServices.filter((_, i) => i !== index);
-
     setUserServices(updatedServices);
   };
 
+
+
   const onSubmit = async (data) => {
     setloading(true);
+  
     try {
-      console.log("Services before submission:", userServices); // Log the services
-      console.log(data);
+      console.log("Services before submission:", userServices);
+      console.log("Addresses before submission:", addresses); // Log the addresses
+  
       const form = new FormData();
       form.append("name", data.name);
       form.append("organizationType_id", data.organizationType_id);
-      form.append("address", data.address);
       form.append("googleCoordinates", JSON.stringify(data.googleCoordinates));
       form.append("mobile", data.mobile);
       form.append("whatsapp", data.whatsapp);
@@ -343,51 +384,66 @@ const CreateOrganization = () => {
       form.append("accountHolder", data.accountHolder);
       form.append("ifscCode", data.ifscCode);
       form.append("upiId", data.upiId);
-
-      // Add services to FormData
+  
+      // Add services & addresses as JSON
       form.append("services", JSON.stringify(userServices));
-
+      form.append("addresses", JSON.stringify(addresses));
+  
       if (id) {
         form.append("id", id);
       }
-
+  
       if (data.file1) {
         form.append("file1", data.file1);
       }
-
+  
       if (PImages.length > 0) {
         PImages.forEach((file) => {
           form.append("file2", file);
         });
       }
+      form.append("fileextras", imageExtra);
 
+      const maxSize = 1 * 1024 * 1024;
+      const oversizedImages = PImages.filter((file) => file.size > maxSize);
+
+
+      if ((PImages.length + imageExtra.length) > 3) {
+        toast.dismiss();
+        toast.error('exceeded the maximum number of images');
+        return;
+      }
+      else if (oversizedImages.length > 0) {
+        toast.dismiss();
+        toast.error('Each image must be less than 1MB.');
+        return;
+      }
+      else{
+
+        const response = await api.post("api/organization/upsert", form, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+    
+        setTimeout(() => {
+          if (response.status === 201 || response.status === 200) {
+            Swal.fire({
+              text: mode1 === "edit" ? "Organization Updated Successfully" : "Organization Added Successfully",
+              icon: "success",
+              timer: 2000,
+              showConfirmButton: false,
+              willClose: () => {
+                navigate("/organizationlist");
+              },
+            });
+          }
+        }, 2000);
+        
+      }
+  
       
-          form.append("fileextras", imageExtra);
-      
-
-      const response = await api.post("api/organization/upsert", form, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      setTimeout(() => {
-        if (response.status === 201 || response.status === 200) {
-          Swal.fire({
-            text:
-              mode1 === "edit"
-                ? "Organization Updated Successfully"
-                : "Organization Added Successfully",
-            icon: "success",
-            timer: 2000,
-            showConfirmButton: false,
-            willClose: () => {
-              navigate("/organizationlist");
-            },
-          });
-          // reset();
-        }
-      }, 2000);
+  
     } catch (error) {
       Swal.fire({
         text: "Each image must be less than 1MB",
@@ -398,10 +454,6 @@ const CreateOrganization = () => {
       setloading(false);
     }
   };
-
-  const [servicesList, setServicesList] = useState({});
-
-
   
 
   async function handleOrginazationtypeid(id) {
@@ -414,9 +466,9 @@ const CreateOrganization = () => {
   }
 
 
-  useEffect(()=>{
+  useEffect(() => {
     handleOrginazationtypeid(orgTypeEditId);
-  },[loading,isLoading]);
+  }, [orgType]);
 
   return (
     <div>
@@ -429,8 +481,8 @@ const CreateOrganization = () => {
               mode1 === "edit"
                 ? "Edit Organization"
                 : mode1 === "view"
-                ? "View Organization"
-                : "Create Organization"
+                  ? "View Organization"
+                  : "Create Organization"
             }
             onBackClick={handleBackClick}
           />
@@ -442,8 +494,8 @@ const CreateOrganization = () => {
               {mode1 === "view"
                 ? "View Organization"
                 : mode1 === "edit"
-                ? "Edit Organization"
-                : "Create Organization"}
+                  ? "Edit Organization"
+                  : "Create Organization"}
             </h3>
 
             <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
@@ -493,28 +545,11 @@ const CreateOrganization = () => {
                   )}
                 </div>
 
-                <div>
-                  <InputField
-                    label={"Address*"}
-                    type={"text"}
-                    placeholder={"Enter Address"}
-                    {...register("address", {
-                      required: "address is required.",
-                    })}
-                    readOnly={mode1}
-                  />
-                  {errors.address && (
-                    <p className="text-red-500 text-xs">
-                      {errors.address.message}
-                    </p>
-                  )}
-                </div>
+                
+
                 <div>
                   <div className="flex flex-col p-1 mt-[-5px]">
-                    <label
-                      htmlFor="google-coordinates"
-                      className="block text-xs font-medium"
-                    >
+                    <label htmlFor="google-coordinates" className="block text-xs font-medium">
                       Google Coordinates*
                     </label>
                     <div className="flex gap-2">
@@ -522,22 +557,43 @@ const CreateOrganization = () => {
                         type={"text"}
                         placeholder={"Latitude"}
                         {...register("googleCoordinates.latitude", {
-                          required: "Coordinates is required.",
+                          required: "Latitude is required.",
+                          pattern: {
+                            value: latitudeRegex,
+                            message: "Please enter a valid latitude (-90 to 90).",
+                          },
                         })}
+                        onChange={(e) => {
+                          setValue("googleCoordinates.latitude", e.target.value);
+                          trigger("googleCoordinates.latitude");
+                        }}
                         readOnly={mode1}
                       />
                       <InputField
                         type={"text"}
                         placeholder={"Longitude"}
                         {...register("googleCoordinates.longitude", {
-                          required: "Coordinates is required.",
+                          required: "Longitude is required.",
+                          pattern: {
+                            value: longitudeRegex,
+                            message: "Please enter a valid longitude (-180 to 180).",
+                          },
                         })}
+                        onChange={(e) => {
+                          setValue("googleCoordinates.longitude", e.target.value);
+                          trigger("googleCoordinates.longitude");
+                        }}
                         readOnly={mode1}
                       />
                     </div>
                     {errors.googleCoordinates?.longitude && (
                       <p className="text-red-500 text-xs">
                         {errors.googleCoordinates?.longitude.message}
+                      </p>
+                    )}
+                    {errors.googleCoordinates?.latitude && (
+                      <p className="text-red-500 text-xs">
+                        {errors.googleCoordinates?.latitude.message}
                       </p>
                     )}
                   </div>
@@ -548,7 +604,7 @@ const CreateOrganization = () => {
                     name="mobile"
                     control={control}
                     defaultValue=""
-                    rules={{ required: "Mobile number is required." }} // Validation rule directly inside Controller
+                    rules={{ required: "Mobile number is required." }}
                     render={({ field }) => (
                       <PhoneNumberInput
                         label={"Mobile Number*"}
@@ -627,8 +683,18 @@ const CreateOrganization = () => {
                     label={"Email*"}
                     type={"email"}
                     placeholder={"Enter Email"}
-                    {...register("email", { required: "email is required." })}
+                    {...register("email", {
+                      required: "Email is required.",
+                      pattern: {
+                        value: emailRegex,
+                        message: "Please enter a valid email address.",
+                      },
+                    })}
                     readOnly={mode1}
+                    onChange={(e) => {
+                      setValue("email", e.target.value);
+                      trigger("email");
+                    }}
                   />
                   {errors.email && (
                     <p className="text-red-500 text-xs">
@@ -646,10 +712,9 @@ const CreateOrganization = () => {
                     readOnly={mode1}
                   />
                 </div>
-              </div>
-
-              {dynamicId.includes(watch("organizationType_id")) && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div>
+                {dynamicId.includes(watch("organizationType_id")) && (
+                // <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <div>
                     <InputField
                       label="GST*"
@@ -666,38 +731,94 @@ const CreateOrganization = () => {
                       </p>
                     )}
                   </div>
-                  {/* <Controller
-                    name="designation"
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <SelectField
-                        label="Designation*"
-                        defaultplaceholder={"Select Designation"}
-                        options={[
-                          { value: "Owner", label: "Owner" },
-                          { value: "Technician", label: "Technician" },
-                          { value: "Delivery Boy", label: "Delivery Boy" },
-                        ]}
-                        value={field.value}
-                        onChange={(value) => field.onChange(value)}
-                        className="p-1"
-                        readOnly={mode1}
-                      />
-                    )}
-                  /> */}
-                </div>
+                // </div>
               )}
+                </div>
+              </div>
+
+              
+              <div className="">
+  <h3 className="text-lg font-semibold mb-4">Addresses</h3>
+  
+  {/* Address Input */}
+  <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
+    <div className="w-full sm:w-2/3">
+      <input
+        type="text"
+        placeholder="Enter Address"
+        value={newAddress}
+        onChange={(e) => setNewAddress(e.target.value)}
+        readOnly={mode1 === "view"}
+        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#660F5D]"
+      />
+    </div>
+
+    {/* Add / Save & Clear Buttons */}
+    <div className="flex gap-2">
+      <span
+        onClick={handleAddAddress}
+        className={`px-4 py-1 rounded-md ${
+          mode1 === "view"
+            ? "bg-gray-400 text-white cursor-not-allowed pointer-events-none"
+            : "bg-[#660F5D] text-white cursor-pointer"
+        }`}
+      >
+        {editingIndex2 !== null ? "Save" : "Add"}
+      </span>
+
+      <span
+        onClick={handleClearAddress}
+        className={`px-7 py-1 border rounded-md ${
+          mode1 !== "view"
+            ? "bg-white text-gray-700 border-gray-700 cursor-pointer"
+            : "bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed pointer-events-none"
+        }`}
+      >
+        Clear
+      </span>
+    </div>
+  </div>
+
+  <hr />
+
+  {/* Address List */}
+  <div className="space-y-4">
+    {addresses.map((address, index) => (
+      <div
+        key={index}
+        className="flex flex-col sm:flex-row items-center gap-4 p-4"
+      >
+        <input type="text" value={address} readOnly className="flex-1 px-3 py-2 border rounded-md bg-white" />
+
+        {/* Edit & Delete Buttons */}
+        <span
+          onClick={() => handleEditAddress(index)}
+          className={`px-4 py-2 rounded-md ${
+            mode1 !== "view"
+              ? "bg-[#FAFAFA] text-[#660F5D] cursor-pointer"
+              : "bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none"
+          }`}
+        >
+          Edit
+        </span>
+
+        <span
+          onClick={() => handleDeleteAddress(index)}
+          className={`px-4 py-2 border rounded-md ${
+            mode1 !== "view"
+              ? "bg-white border-gray-700 text-gray-700 cursor-pointer"
+              : "bg-gray-200 border-gray-300 text-gray-400 cursor-not-allowed pointer-events-none"
+          }`}
+        >
+          Delete
+        </span>
+      </div>
+    ))}
+  </div>
+</div>
 
               {watch("organizationType_id") === dentistId && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  {/* <InputField
-                  label="Business Name"
-                  type="text"
-                  placeholder="Enter Business Name"
-                  {...register("businessName")}
-                  readOnly={mode1}
-                /> */}
                   <div>
                     <InputField
                       label="Registration ID*"
@@ -709,42 +830,7 @@ const CreateOrganization = () => {
                       readOnly={mode1}
                     />
                   </div>
-                  {/* <Controller
-                    name="designation"
-                    control={control}
-                    defaultValue=""
-                    render={({ field }) => (
-                      <SelectField
-                        label="Designation*"
-                        defaultplaceholder={"Select Designation"}
-                        options={[
-                          { value: "Dentist", label: "Dentist" },
-                          { value: "Orthodontist", label: "Orthodontist" },
-                          { value: "Prosthodontist", label: "Prosthodontist" },
-                          { value: "Oral surgeon", label: "Oral surgeon" },
-                          { value: "Periodontist", label: "Periodontist" },
-                          { value: "Implantologist", label: "Implantologist" },
-                          {
-                            value: "Oral Pathologist",
-                            label: "Oral Pathologist",
-                          },
-                          {
-                            value: "Oral Medicine & Radiologist",
-                            label: "Oral Medicine & Radiologist",
-                          },
-                          {
-                            value: "Community dentist",
-                            label: "Community dentist",
-                          },
-                          { value: "Paeddontist", label: "Paeddontist" },
-                        ]}
-                        value={field.value}
-                        onChange={(value) => field.onChange(value)}
-                        className="p-1"
-                        readOnly={mode1}
-                      />
-                    )}
-                  /> */}
+
                 </div>
               )}
               {/* Organization Account Details */}
@@ -759,7 +845,15 @@ const CreateOrganization = () => {
                     placeholder={"Enter Bank Name"}
                     {...register("bankName", {
                       required: "bankname is required.",
+                      pattern: {
+                        value: bankRegex,
+                        message: "Enter a valid Bank Name (only letters and spaces)."
+                      }
                     })}
+                    onChange={(e) => {
+                      setValue("bankName", e.target.value)
+                      trigger("bankName")
+                    }}
                     readOnly={mode1}
                   />
                   {errors.bankName && (
@@ -775,7 +869,15 @@ const CreateOrganization = () => {
                     placeholder={"Enter Account Number"}
                     {...register("accountNumber", {
                       required: "account number is required.",
+                      pattern: {
+                        value: AccountNumberRegex,
+                        message: "Enter a valid account number (8-18 digits)."
+                      }
                     })}
+                    onChange={(e) => {
+                      setValue("accountNumber", e.target.value)
+                      trigger("accountNumber")
+                    }}
                     readOnly={mode1}
                   />
                   {errors.accountNumber && (
@@ -791,7 +893,15 @@ const CreateOrganization = () => {
                     placeholder={"Enter Account Holder Name"}
                     {...register("accountHolder", {
                       required: "Account Holder is required.",
+                      pattern: {
+                        value: accountHolderRegex,
+                        message: "Enter a valid name (only letters and spaces)."
+                      }
                     })}
+                    onChange={(e) => {
+                      setValue("accountHolder", e.target.value)
+                      trigger("accountHolder")
+                    }}
                     readOnly={mode1}
                   />
                   {errors.accountHolder && (
@@ -837,14 +947,14 @@ const CreateOrganization = () => {
                   <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
                     <div className="w-full sm:w-1/2">
                       <Select
-                      isDisabled={mode1==="view"}
+                        isDisabled={mode1 === "view"}
                         value={
                           newService.id
                             ? {
-                                id: newService.id,
-                                value: newService.id,
-                                label: newService.name,
-                              }
+                              id: newService.id,
+                              value: newService.id,
+                              label: newService.name,
+                            }
                             : null
                         }
                         onChange={(selectedOption) =>
@@ -932,39 +1042,36 @@ const CreateOrganization = () => {
                     <div className="flex gap-2">
                       {editingIndex === null ? (
                         <span
-                        onClick={handleAddService}
-                        className={`px-4 py-1 rounded-md ${
-                          mode1 ==="view"
+                          onClick={handleAddService}
+                          className={`px-4 py-1 rounded-md ${mode1 === "view"
                             ? 'bg-gray-400 text-white cursor-not-allowed pointer-events-none'
                             : 'bg-[#660F5D] text-white cursor-pointer'
-                        }`}
-                      >
-                        Add
-                      </span>
-                      
+                            }`}
+                        >
+                          Add
+                        </span>
+
                       ) : (
                         <span
-                        onClick={ handleAddService }
-                          
-                        className={`px-4 py-1 rounded-md ${
-                          mode1 ==="view"
+                          onClick={handleAddService}
+
+                          className={`px-4 py-1 rounded-md ${mode1 === "view"
                             ? 'bg-gray-400 text-white cursor-not-allowed pointer-events-none'
                             : 'bg-[#660F5D] text-white cursor-pointer'
-                        }`}
+                            }`}
                         >
                           Save
                         </span>
                       )}
                       <span
-  onClick={ () => setNewService({ name: "", price: "" })}
-  className={`px-7 py-1 border rounded-md ${
-    mode1 !== "view"
-      ? 'bg-white text-gray-700 border-gray-700 cursor-pointer'
-      : 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed pointer-events-none'
-  }`}
->
-  Clear
-</span>
+                        onClick={() => setNewService({ name: "", price: "" })}
+                        className={`px-7 py-1 border rounded-md ${mode1 !== "view"
+                          ? 'bg-white text-gray-700 border-gray-700 cursor-pointer'
+                          : 'bg-gray-200 text-gray-400 border-gray-300 cursor-not-allowed pointer-events-none'
+                          }`}
+                      >
+                        Clear
+                      </span>
 
                     </div>
                   </div>
@@ -994,26 +1101,24 @@ const CreateOrganization = () => {
                           />
                         </div>
                         <span
-  onClick={ () => handleEditService(index)}
-  className={`px-4 py-2 rounded-md ${
-    mode1 !== "view"
-      ? 'bg-[#FAFAFA] text-[#660F5D] cursor-pointer'
-      : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
-  }`}
->
-  Edit
-</span>
+                          onClick={() => handleEditService(index)}
+                          className={`px-4 py-2 rounded-md ${mode1 !== "view"
+                            ? 'bg-[#FAFAFA] text-[#660F5D] cursor-pointer'
+                            : 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none'
+                            }`}
+                        >
+                          Edit
+                        </span>
 
-<span
-  onClick={ () => handleDeleteService(index)}
-  className={`px-4 py-2 border rounded-md ${
-    mode1 !== "view"
-      ? 'bg-white border-gray-700 text-gray-700 cursor-pointer'
-      : 'bg-gray-200 border-gray-300 text-gray-400 cursor-not-allowed pointer-events-none'
-  }`}
->
-  Delete
-</span>
+                        <span
+                          onClick={() => handleDeleteService(index)}
+                          className={`px-4 py-2 border rounded-md ${mode1 !== "view"
+                            ? 'bg-white border-gray-700 text-gray-700 cursor-pointer'
+                            : 'bg-gray-200 border-gray-300 text-gray-400 cursor-not-allowed pointer-events-none'
+                            }`}
+                        >
+                          Delete
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -1026,8 +1131,9 @@ const CreateOrganization = () => {
                 <Controller
                   name="file1"
                   control={control}
-                  defaultValue={[]}
+                  defaultValue={null}
                   render={({ field }) => (
+
                     <FileUpload
                       name="file1"
                       label="Choose file for profile*"
@@ -1064,38 +1170,40 @@ const CreateOrganization = () => {
                       multiple={true}
                       readOnly={mode1}
                       onChange={handleImageUpload}
+                      setFiles={setFiles}
+                      files={files}
                     />
                   )}
                 />
 
-{organization?.file2 && (
-<div className="flex gap-3">
-{
-  organization?.file2.map((item, index) => (
-    <div key={index} className="mt-2 w-[50px] h-[50px] relative">
-      <img
-        src={item}
-        alt="Existing"
-        className="w-full h-full rounded-md object-cover"
-      />
-      {/* Delete button */}
-      {
-        mode1 !== "view" && <button
-        onClick={() => handleDeleteImage(index)}
-        
-        className="absolute top-[-5px] right-[-5px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
-      >
-        ✕
-      </button>
-      }
-    </div>
-  ))
-}
+                {organization?.file2 && (
+                  <div className="flex gap-3">
+                    {
+                      organization?.file2.map((item, index) => (
+                        <div key={index} className="mt-2 w-[50px] h-[50px] relative">
+                          <img
+                            src={item}
+                            alt="Existing"
+                            className="w-full h-full rounded-md object-cover"
+                          />
+                          {/* Delete button */}
+                          {
+                            mode1 !== "view" && <span
+                              onClick={() => handleDeleteImage(index)}
+
+                              className="absolute cursor-pointer top-[-5px] right-[-5px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                            >
+                              ✕
+                            </span>
+                          }
+                        </div>
+                      ))
+                    }
 
 
-</div>
+                  </div>
 
-                  
+
                 )}
               </div>
 

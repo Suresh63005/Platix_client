@@ -69,6 +69,7 @@ const Rolespage = () => {
           totalPages={totalPages}
           setPage={setPage}
           showActions={false} // Hide actions and view columns on Rolespage
+          currentPage='roles'
         />
       </div>
     </div>

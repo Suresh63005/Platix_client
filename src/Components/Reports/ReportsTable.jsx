@@ -99,7 +99,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
                     aria-label="Select All"
                   />
                 </th>
-                <th className="p-2 text-center font-medium">Sr</th>
+                <th className="p-2 text-center font-medium">S.No.</th>
                 {columns.map((column, index) => (
                   <th
                     key={index}

@@ -159,6 +159,7 @@ const CreateOrganizationType = () => {
             <div className="flex flex-col">
               <InputField
                 label="From Date"
+                restrictDate={new Date().toISOString().split("T")[0]}
                 type="date"
                 {...register("fromDate", { required: "From Date is required" })}
                 error={errors.fromDate}
@@ -170,6 +171,7 @@ const CreateOrganizationType = () => {
             <div className="flex flex-col">
               <InputField
                 label="To Date"
+                restrictDate={new Date().toISOString().split("T")[0]}
                 type="date"
                 {...register("toDate", { required: "To Date is required" })}
                 error={errors.toDate}

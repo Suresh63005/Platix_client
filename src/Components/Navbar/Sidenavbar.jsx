@@ -49,7 +49,7 @@ const Sidenavbar = () => {
     ) {
       setActiveItem("organizationType");
     } else if (
-      ["/userreports", "/orderreports", "/paymentreports","/revenuereports"].includes(currentPath)
+      ["/userreports", "/orderreports", "/paymentreports", "/revenuereports"].includes(currentPath)
     ) {
       setActiveItem("reports");
     } else if (currentPath.includes("/reports")) {
@@ -90,6 +90,9 @@ const Sidenavbar = () => {
     },
     [navigate]
   );
+  const homePage=()=>{
+    navigate("/organizationlist")
+  }
 
   const renderNavItem = (defaultIcon, activeIcon, label, itemKey, route) => {
     const isActive = activeItem === itemKey;
@@ -98,9 +101,8 @@ const Sidenavbar = () => {
     return (
       <div
         onClick={(e) => handleClick(itemKey, route, false, e)}
-        className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${
-          isActive ? "bg-white text-[#660F5D] rounded-lg" : "text-white"
-        }`}
+        className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${isActive ? "bg-white text-[#660F5D] rounded-lg" : "text-white"
+          }`}
         role="menuitem"
         aria-label={label}
       >
@@ -112,137 +114,135 @@ const Sidenavbar = () => {
 
   return (
     <div className="flex">
-<div
-  className={`fixed sm:static top-0 left-0 md:w-[20vw] sm:w-[250px]  bg-[#660F5D] text-white transform ${
-    isSidebarOpen
-      ? "translate-x-0"
-      : "-translate-x-full overflow-y-auto scrollbar-hidden"
-  } sm:translate-x-0 transition-transform duration-300 z-50 h-full sm:h-auto`}
->
-  {/* Logo Section */}
-  <div className="h-[60px] w-full bg-white flex items-center justify-center sticky top-0 z-50">
-    <img
-      src="/assets/images/Frame 427319709.png"
-      alt="logo"
-      className="h-full w-full object-contain"
-    />
-    {isSidebarOpen && (
-      <button
-        className="absolute top-4 right-4 sm:hidden z-60 p-2 rounded-full bg-white"
-        onClick={() => setIsSidebarOpen(false)}
-        aria-label="Close menu"
-      >
-        <CloseIcon className="text-[#660F5D]" />
-      </button>
-    )}
-  </div>
-
-  {/* Navigation Menu */}
-  <div className="flex-1 overflow-y-auto mt-4 scrollbar-hidden">
-    <div className="space-y-4 font-medium md:">
-      {renderNavItem(
-        OrganizationIcon,
-        ActiveorganizationIcon,
-        "Organization",
-        "organization",
-        "/organizationlist"
-      )}
-      {renderNavItem(
-        OrganizationTypeIcon,
-        ActiveOrganizationTypeIcon,
-        "Organization Type",
-        "organizationType",
-        "/organizationtypelist"
-      )}
-      {renderNavItem(
-        RolesICon,
-        ActiveRolesIcon,
-        "Roles",
-        "roles",
-        "/roles-list"
-      )}
-      {renderNavItem(
-        ServiceIcon,
-        ActiveServiceIcon,
-        "Services",
-        "services",
-        "/services"
-      )}
-
-      {/* Reports Section */}
       <div
-  onClick={(e) => handleClick("reports", "", false, e)}
-  className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${
-    activeItem === "reports"
-      ? "bg-white text-[#660F5D] rounded-lg"
-      : "text-white"
-  }`}
-  role="menuitem"
-  aria-expanded={isReportsOpen}
-  aria-label="Reports"
->
-  <img
-    src={activeItem === "reports" ? ActiveReportsIcon : ReportsIcon}
-    alt="Reports Icon"
-    className="w-5 h-5"
-  />
-  <span className="ml-4">Reports</span>
-  {isReportsOpen ? (
-    <ArrowDropUp className="ml-auto" />
-  ) : (
-    <ArrowRightIcon className="ml-auto" />
-  )}
-</div>
-
-{/* Reports Submenu */}
-<Collapse style={{ margin: "0px" }} in={isReportsOpen}>
-  <div className="pl-6 space-y-4">
-    {[{ label: "User Reports", route: "/userreports" },
-      { label: "Order Reports", route: "/orderreports" },
-      { label: "Payment Reports", route: "/paymentreports" },
-      { label: "Revenue Reports", route: "/revenuereports" },
-    ].map((report) => (
-      <div
-        key={report.label}
-        onClick={(e) =>
-          handleClick(report.label, report.route, true, e)
-        }
-        className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${
-          activeReport === report.label || location.pathname.includes(report.route)
-            ? "bg-[#F3E6F2] text-[#660F5D] rounded-lg"  // Slightly lighter background for the selected report option
-            : "text-white"
-        }`}
-        role="menuitem"
-        aria-label={report.label}
+        className={`fixed sm:static top-0 left-0 md:w-[20vw] sm:w-[250px]  bg-[#660F5D] text-white transform ${isSidebarOpen
+            ? "translate-x-0"
+            : "-translate-x-full overflow-y-auto scrollbar-hidden"
+          } sm:translate-x-0 transition-transform duration-300 z-50 h-full sm:h-auto`}
       >
-        {/* <ArrowRightIcon className="w-5 h-5 mr-2" /> */}
-        {report.label}
+        {/* Logo Section */}
+        <div className="h-[60px] w-full bg-white flex items-center justify-center sticky top-0 z-50">
+          <img
+            src="/assets/images/Frame 427319709.png"
+            alt="logo"
+            className="h-full w-full object-contain cursor-pointer"
+            onClick={homePage}
+          />
+          {isSidebarOpen && (
+            <button
+              className="absolute top-4 right-4 sm:hidden z-60 p-2 rounded-full bg-white"
+              onClick={() => setIsSidebarOpen(false)}
+              aria-label="Close menu"
+            >
+              <CloseIcon className="text-[#660F5D]" />
+            </button>
+          )}
+        </div>
+
+        {/* Navigation Menu */}
+        <div className="flex-1 overflow-y-auto mt-4 scrollbar-hidden">
+          <div className="space-y-4 font-medium md:">
+            {renderNavItem(
+              OrganizationIcon,
+              ActiveorganizationIcon,
+              "Organization",
+              "organization",
+              "/organizationlist"
+            )}
+            {renderNavItem(
+              OrganizationTypeIcon,
+              ActiveOrganizationTypeIcon,
+              "Organization Type",
+              "organizationType",
+              "/organizationtypelist"
+            )}
+            {renderNavItem(
+              RolesICon,
+              ActiveRolesIcon,
+              "Roles",
+              "roles",
+              "/roles-list"
+            )}
+            {renderNavItem(
+              ServiceIcon,
+              ActiveServiceIcon,
+              "Services",
+              "services",
+              "/services"
+            )}
+
+            {/* Reports Section */}
+            <div
+              onClick={(e) => handleClick("reports", "", false, e)}
+              className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${activeItem === "reports"
+                  ? "bg-white text-[#660F5D] rounded-lg"
+                  : "text-white"
+                }`}
+              role="menuitem"
+              aria-expanded={isReportsOpen}
+              aria-label="Reports"
+            >
+              <img
+                src={activeItem === "reports" ? ActiveReportsIcon : ReportsIcon}
+                alt="Reports Icon"
+                className="w-5 h-5"
+              />
+              <span className="ml-4">Reports</span>
+              {isReportsOpen ? (
+                <ArrowDropUp className="ml-auto" />
+              ) : (
+                <ArrowRightIcon className="ml-auto" />
+              )}
+            </div>
+
+            {/* Reports Submenu */}
+            <Collapse style={{ margin: "0px" }} in={isReportsOpen}>
+              <div className="pl-6 space-y-4">
+                {[{ label: "User Reports", route: "/userreports" },
+                { label: "Order Reports", route: "/orderreports" },
+                { label: "Payment Reports", route: "/paymentreports" },
+                { label: "Revenue Reports", route: "/revenuereports" },
+                ].map((report) => (
+                  <div
+                    key={report.label}
+                    onClick={(e) =>
+                      handleClick(report.label, report.route, true, e)
+                    }
+                    className={`flex items-center cursor-pointer p-2 m-4 text-[12px] ${activeReport === report.label || location.pathname.includes(report.route)
+                        ? "bg-[#F3E6F2] text-[#660F5D] rounded-lg"  // Slightly lighter background for the selected report option
+                        : "text-white"
+                      }`}
+                    role="menuitem"
+                    aria-label={report.label}
+                  >
+                    {/* <ArrowRightIcon className="w-5 h-5 mr-2" /> */}
+                    {report.label}
+                  </div>
+                ))}
+              </div>
+            </Collapse>
+
+            {renderNavItem(
+              SettingsIcon,
+              ActiveSettingsIcon,
+              "Settings",
+              "settings",
+              "/settings"
+            )}
+
+            {/* Logout Option */}
+            <div
+              onClick={handleLogout}
+              className="flex items-center cursor-pointer p-2 m-4 text-[12px] text-white rounded-lg"
+              role="menuitem"
+              aria-label="Logout"
+            >
+              <LogoutIcon className="w-5 h-5 mr-4" />
+              <span>Logout</span>
+            </div>
+          </div>
+        </div>
       </div>
-    ))}
-  </div>
-</Collapse>
-
-{renderNavItem(
-  SettingsIcon,
-  ActiveSettingsIcon,
-  "Settings",
-  "settings",
-  "/settings"
-)}
-
-{/* Logout Option */}
-<div
-  onClick={handleLogout}
-  className="flex items-center cursor-pointer p-2 m-4 text-[12px] text-white rounded-lg"
-  role="menuitem"
-  aria-label="Logout"
->
-  <LogoutIcon className="w-5 h-5 mr-4" />
-  <span>Logout</span>
-</div>
-    </div>
-  </div>
-</div>
 
       {/* Mobile Menu Toggle */}
       <button

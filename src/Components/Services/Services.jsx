@@ -6,24 +6,22 @@ import Pagetitle from "../../common/pagetitle";
 import Table from "../../common/UserTable";
 import api from "../../utils/api";
 import Cookies from "js-cookie";
+import { deleteItem } from "../../utils/delteEntity";
 
 const Services = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [filter,setFilter] = useState("")
- const [servicesFilteroptions,setServicesFilteroptions] = useState()
+  const [filter, setFilter] = useState("")
+  const [servicesFilteroptions, setServicesFilteroptions] = useState()
   const [selectedFilter, setSelectedFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [deleteServiceId, setDeleteServiceId] = useState(null);
   const [selectedOrgType, setSelectedOrgType] = useState(null);
-  console.log(selectedOrgType,"selected organization")
-  const [orgTypeOptions, setOrgTypeOptions] = useState([]);; 
-  console.log(orgTypeOptions, "from orgggggggggggggggggg")
-  const [organizationType_id,setOrganizationType_id] = useState(null);
-  
+  const [orgTypeOptions, setOrgTypeOptions] = useState([]);;
+  const [organizationType_id, setOrganizationType_id] = useState(null);
   const itemsPerPage = 10;
 
   // Fetch services from API
@@ -42,6 +40,7 @@ const Services = () => {
         });
 
         setServices(response.data.services);
+        
         setTotalPages(response.data.totalPages);
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -62,25 +61,8 @@ const Services = () => {
   };
 
   // Handle delete confirmation
-  const handleDelete = (serviceId) => {
-    if (!serviceId) {
-      Swal.fire("Error", "Service ID is missing!", "error");
-      return;
-    }
-
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this action!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setDeleteServiceId(serviceId);
-      }
-    });
+  const handleDelete = (id, forceDelete = false, deletedType = "Service") => {
+    deleteItem("admin/deleteservice", id, setServices, forceDelete, deletedType)
   };
 
   // Perform delete when deleteServiceId is set
@@ -88,9 +70,9 @@ const Services = () => {
     const token = Cookies.get("token");
     if (deleteServiceId) {
       api
-      .delete(`admin/deleteservice/${deleteServiceId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+        .delete(`admin/deleteservice/${deleteServiceId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then(() => {
           Swal.fire("Deleted!", "Service has been deleted.", "success");
           setServices(services.filter((service) => service.id !== deleteServiceId));
@@ -136,14 +118,15 @@ const Services = () => {
         const response = await api.get("admin/allservices", {
           headers: { Authorization: `Bearer ${token}` },
         });
-  
+
         console.log("Services Filter Response:", response);
-        
+
         if (response.data && Array.isArray(response.data.services)) {
           setServicesFilteroptions(
             response.data.services.map(service => ({
               value: service.id, // Service ID for filtering
               label: service.servicename, // Displayed service name
+              organizationType: service.organizationType, // Organization type ID
             }))
           );
         } else {
@@ -154,7 +137,7 @@ const Services = () => {
         setServicesFilteroptions([]); // Fallback to an empty array on error
       }
     };
-  
+
     fetchServiceFilterOptions();
   }, []);
   // Handle service assignment to organization type
@@ -168,11 +151,7 @@ const Services = () => {
       Swal.fire("Error", "Please select at least one service.", "error");
       return;
     }
-
-    const organizationTypee = orgTypeOptions.find((item)=>item.value === selectedOrgType);
-
-
-
+    const organizationTypee = orgTypeOptions.find((item) => item.value === selectedOrgType);
     Swal.fire({
       title: "Are you sure?",
       text: `Assign selected services to  ${organizationTypee?.label}?`,
@@ -185,28 +164,24 @@ const Services = () => {
         api
           .post("/admin/assign-service", {
             organizationType_id: organizationType_id,
-    service_id: selectedItems
+            service_id: selectedItems
           },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          })
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            })
           .then(() => {
             Swal.fire("Success", "Services assigned successfully!", "success");
-            
+
           })
           .catch((error) => {
             console.error("Error assigning services:", error);
             Swal.fire("Error", "Failed to assign services.", "error");
           });
-          
+
       }
       setSelectedItems([]);
     });
   };
-  // const handleFilterChange = (value) => {
-  //   setFilter(value);
-  //   setPage(1);
-  // };
 
   return (
     <div className="bg-gray-100 h-full">
@@ -227,9 +202,9 @@ const Services = () => {
           setPage(1);
         }}
         filterPlaceholder="Filter"
-        showRoleAssign={true} 
-        roleValue={selectedOrgType} 
-        organizationChange={setSelectedOrgType} 
+        showRoleAssign={true}
+        roleValue={selectedOrgType}
+        organizationChange={setSelectedOrgType}
         organizationOptions={orgTypeOptions}
         organizationType_id={organizationType_id}
         setOrganizationType_id={setOrganizationType_id}
@@ -239,10 +214,11 @@ const Services = () => {
 
       <div className="overflow-x-auto sm:overflow-x-visible">
         <Table
-          columns={["Service Name", "From Date", "To Date"]}
-          fields={["servicename", "fromdate", "todate"]}
+          columns={["Service Name","Organization Type", "From Date", "To Date"]}
+          fields={["servicename","organizationType", "fromdate", "todate"]}
           data={services}
           page={page}
+          
           totalPages={totalPages}
           setPage={setPage}
           handleEdit={handleEdit}

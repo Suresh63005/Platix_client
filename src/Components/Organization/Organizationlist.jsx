@@ -124,8 +124,8 @@ const OrganizationList = () => {
   const handleView = (id) => {
     navigate("/createorganization", { state: { id, mode: "view" } });
   };
-  const handleDelete = (id,forceDelete=false) => {
-    deleteItem("api/organization/delete",id,setOrganizations,forceDelete)
+  const handleDelete = (id,forceDelete=false,deletedType="Organization") => {
+    deleteItem("api/organization/delete",id,setOrganizations,forceDelete,deletedType)
   };
 
 
