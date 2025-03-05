@@ -16,8 +16,8 @@ import Loader from "../../common/Loader";
 const CreateOrganizationType = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { id, mode: initialMode } = location.state || {};
-  const mode = initialMode || "create";
+  const { id, mode } = location.state || {};
+  const mode1 = mode || "create";
   const [loading, setloading] = useState(false)
   const { isLoading,setIsLoading }= useLoading()
   
@@ -36,9 +36,9 @@ const CreateOrganizationType = () => {
     }, 1000);
     return ()=>clearTimeout(timer)
   },[])
-  // Fetch organization type details if in edit or view mode
+  // Fetch organization type details if in edit or view mode1
   useEffect(() => {
-    if (id && (mode === "edit" || mode === "view")) {
+    if (id && (mode1 === "edit" || mode1 === "view")) {
 
       api.get(`organization/getbyid/${id}`)
         .then((response) => {
@@ -53,7 +53,7 @@ const CreateOrganizationType = () => {
           console.error("Error fetching organization type:", error);
         });
     }
-  }, [id, mode, setValue]);
+  }, [id, mode1, setValue]);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -110,9 +110,9 @@ const CreateOrganizationType = () => {
       <Header name="Organization Types" />
       <PageNavigation
         title={
-          mode === "edit"
+          mode1 === "edit"
             ? "Edit Organization Type"
-            : mode === "view"
+            : mode1 === "view"
             ? "View Organization Type"
             : "Create Organization Type"
         }
@@ -122,9 +122,9 @@ const CreateOrganizationType = () => {
       <div className="create-organization-form-container border border-[#EAEAFF] flex-1 bg-white px-6 py-4 rounded-lg shadow-md mx-4 mb-4 max-h-[max-content]">
         <form className="organization-form-container space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <h3 className="form-title p-2 font-bold">
-            {mode === "edit"
+            {mode1 === "edit"
               ? "Edit Organization Type"
-              : mode === "view"
+              : mode1 === "view"
               ? "View Organization Type"
               : "Create Organization Type"}
           </h3>
@@ -137,7 +137,7 @@ const CreateOrganizationType = () => {
                 placeholder="Enter Organization Type Name"
                 {...register("organizationType", { required: "Organization Type is required" })}
                 error={errors.organizationType}
-                readOnly={mode === "view"}
+                readOnly={mode1}
               />
               {errors.organizationType && <p className="text-red-500 text-xs mt-1">{errors.organizationType.message}</p>}
 
@@ -150,7 +150,7 @@ const CreateOrganizationType = () => {
                 placeholder="Enter Description"
                 {...register("description", { required: "Description is required" })}
                 error={errors.description}
-                readOnly={mode === "view"}
+                readOnly={mode1}
               />
               {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
 
@@ -162,7 +162,7 @@ const CreateOrganizationType = () => {
                 type="date"
                 {...register("fromDate", { required: "From Date is required" })}
                 error={errors.fromDate}
-                readOnly={mode === "view"}
+                readOnly={mode1}
               />
               {errors.fromDate && <p className="text-red-500 text-xs mt-1">{errors.fromDate.message}</p>}
             </div>
@@ -173,17 +173,18 @@ const CreateOrganizationType = () => {
                 type="date"
                 {...register("toDate", { required: "To Date is required" })}
                 error={errors.toDate}
-                readOnly={mode === "view"}
+                readOnly={mode1}
               />
               {errors.toDate && <p className="text-red-500 text-xs mt-1">{errors.toDate.message}</p>}
             </div>
 
           </div>
 
-          {mode !== "view" && (
+          {mode1 !== "view" && (
             <div className="flex justify-end gap-3 mt-4">
               <button
                 type="reset"
+                onClick={() => navigate("/organizationtypelist")}
                 className="flex items-center bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm gap-2"
               >
                 <Cancelbtnicon className="w-4 h-4" />
@@ -201,7 +202,7 @@ const CreateOrganizationType = () => {
                     colors={['white', 'white', 'white', 'white', 'white', 'white']}
                   />
                 ) : (
-                  mode === "edit" ? "Update" : "Save"
+                  mode1 === "edit" ? "Update" : "Save"
                 )}
               </button>
             </div>

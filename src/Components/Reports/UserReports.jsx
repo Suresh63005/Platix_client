@@ -75,7 +75,7 @@ const UserReports = () => {
       const response = await api.get(endpoint);
       console.log(response, "filtered date users");
       const apiData = response.data.users || [];
-      console.log(apiData)
+      
       // Format the date inside the map function
       const formattedData = apiData.map((user, index) => {
         const dateOnly = user?.dateOfBirth

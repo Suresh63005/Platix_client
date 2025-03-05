@@ -22,16 +22,6 @@ const useDebounce = (value, delay) => {
 };
 
 const OrderReports = () => {
-  const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
-
   const columns = [
     "Order ID",
     "Order Date",
@@ -54,51 +44,63 @@ const OrderReports = () => {
     "Patient Details": "patientDetails",
   };
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      let endpoint = "order/getallorderedreport";
-      if (fromDate && toDate) {
-        endpoint = `order/getbyorderdate/${fromDate}/${toDate}`;
-      }
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
-      const response = await api.get(endpoint);
-      const apiData = response.data.data || [];
-      
-      const formattedData = apiData.map((order, index) => ({
-        id: `order${(index + 1).toString().padStart(4, '0')}`,
-        orderId: order?.orderId || "N/A",
-        orderDate: order?.orderDate || "N/A",
-        from: order?.fromOrg?.name || "N/A",
-        username: order?.user?.firstName || "N/A",
-        to: order?.toOrg?.name || "N/A",
-        orderStatus: order?.orderStatus || "N/A",
-        mobileNo: order?.mobileNo || "N/A",
-        patientDetails: order?.patientName || "N/A",
-      }));
-
-      setData(formattedData);
-      setFilteredData(formattedData);
-    } catch (err) {
-      console.error("Error fetching order reports:", err);
-      setError("Failed to load data");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        let endpoint = "order/getallorderedreport";
+        if (fromDate && toDate) {
+          endpoint = `order/getbyorderdate/${fromDate}/${toDate}`;
+        }
+
+        const response = await api.get(endpoint);
+        const apiData = response.data.data || [];
+
+        const formattedData = apiData.map((order) => ({
+          id: order.id || "N/A",
+          orderId: order.orderId || "N/A",
+          orderDate: order.orderDate || "N/A",
+          from: order.fromOrg?.name || "N/A",
+          username: order.user?.firstName || "N/A",
+          to: order.toOrg?.name || "N/A",
+          orderStatus: order.orderStatus || "N/A",
+          mobileNo: order.MobileNo || "N/A",
+          patientDetails: order.patientName || "N/A",
+        }));
+
+        setData(formattedData);
+        setFilteredData(formattedData);
+      } catch (error) {
+        console.error("Error fetching order reports:", error);
+        setError("Failed to load data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchData();
   }, [fromDate, toDate]);
 
   useEffect(() => {
     if (debouncedSearchQuery) {
       const lowerCaseQuery = debouncedSearchQuery.toLowerCase();
+
       const result = data.filter((item) =>
         Object.values(columnKeyMapping).some(
           (key) => item[key] && item[key].toString().toLowerCase().includes(lowerCaseQuery)
         )
       );
+
       setFilteredData(result);
     } else {
       setFilteredData(data);
@@ -113,28 +115,30 @@ const OrderReports = () => {
 
     const headers = Object.keys(columnKeyMapping);
     const keys = Object.values(columnKeyMapping);
+
     const csvRows = [
-      headers.join(","), 
-      ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(","))
+      headers.join(","),
+      ...filteredData.map((row) => keys.map((key) => `"${row[key] || ''}"`).join(",")),
     ];
 
-    const csvContent = "\uFEFF" + csvRows.join("\r\n"); 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
 
+    const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
-    link.setAttribute("href", url);
+    link.setAttribute("href", encodedUri);
     link.setAttribute("download", "Order_Reports.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  };
 
-    };
+  if (loading) {
+    return <div className="text-center mt-5">Loading...</div>;
+  }
 
-
-  if (loading) return <div className="text-center mt-5">Loading...</div>;
-  if (error) return <div className="text-center text-red-500 mt-5">Error: {error}</div>;
+  if (error) {
+    return <div className="text-center text-red-500 mt-5">Error: {error}</div>;
+  }
 
   return (
     <div className="bg-gray-100 h-full">
@@ -149,8 +153,12 @@ const OrderReports = () => {
         onToDateChange={(e) => setToDate(e.target.value)}
         onDownloadClick={handleBulkDownload}
       />
-      <div className="overflow-x-auto">
-        <ReportsTable columns={columns} data={filteredData} columnKeyMapping={columnKeyMapping} />
+      <div className="overflow-x-auto report-table">
+        <ReportsTable
+          columns={columns}
+          data={filteredData}
+          columnKeyMapping={columnKeyMapping}
+        />
       </div>
     </div>
   );

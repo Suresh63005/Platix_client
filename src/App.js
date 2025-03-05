@@ -46,7 +46,7 @@ function App() {
 
           {/* Protected Route with Sidebar Layout */}
           <Route
-            path="/userpage"
+            path="/userspage/:organization_id"
             element={<ProtectedRoute >
               <LayoutSidebar>
                 <Userspage />
@@ -55,7 +55,7 @@ function App() {
             }
           />
           <Route
-            path="/createuser"
+            path="/createuser/:organization_id"
             element={<ProtectedRoute >
               <LayoutSidebar>
                 <Createuser />

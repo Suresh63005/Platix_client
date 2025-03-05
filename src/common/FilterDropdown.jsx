@@ -2,8 +2,10 @@ import React from "react";
 import Select from "react-select";
 import { ReactComponent as DownArrow } from "../assets/images/Down Arrow.svg"; // Import DownArrow
 
-const FilterDropdown = ({ filterValue, onFilterChange, options, placeholder, className }) => {
+const FilterDropdown = ({ filterValue, onFilterChange, options, placeholder, className,valueKey,  // Default key for value
+  labelKey = "organizationType" }) => {
   // Custom styles directly in the component
+  console.log(options,"from zzzzzzzzzzzzz")
   const customStyles = {
     control: (base, { isFocused }) => ({
       ...base,
@@ -48,10 +50,15 @@ const FilterDropdown = ({ filterValue, onFilterChange, options, placeholder, cla
   };
 
   // Transform options into React Select's format
-  const formattedOptions = options.map((option) => ({
-    value: option,
-    label: option,
-  }));
+    const formattedOptions = [
+    { value: "all", label: "All" },  // Add "All" at the beginning
+    ...(Array.isArray(options)
+      ? options.map((option) => ({
+        value: option.value, 
+        label: option.label, 
+        }))
+      : [])
+  ];
 
   return (
     <div className="relative w-full">

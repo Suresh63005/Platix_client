@@ -15,9 +15,9 @@ import Cookies from "js-cookie";
 const CreateService = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id, mode: initialMode } = location.state || {};
+  const { id, mode } = location.state || {};
   const { isLoading,setIsLoading }=useLoading()
-  const [mode, setMode] = useState(initialMode || "create");
+  const [mode1, setMode1] = useState(mode || "create");
   const {
     register,
     handleSubmit,
@@ -37,7 +37,7 @@ const CreateService = () => {
   useEffect(() => {
     const token = Cookies.get("token");
 
-    if (id && (mode === "edit" || mode === "view")) {
+    if (id && (mode1 === "edit" || mode1 === "view")) {
       api
         .get(`admin/getbyid/${id}`,{
           headers: { Authorization: `Bearer ${token}` }
@@ -58,9 +58,9 @@ const CreateService = () => {
         })
         .catch((error) => console.error("Error fetching service data:", error));
     } else {
-      setMode("create");
+      setMode1("create");
     }
-  }, [id, mode, setValue, location.state]);
+  }, [id, mode1, setValue, location.state]);
 
   const handleBackClick = () => {
     navigate(-1);
@@ -86,7 +86,7 @@ const CreateService = () => {
       });
       console.log(response.data);
       Swal.fire({
-        text: mode === "edit" ? "Service updated successfully" : "Service created successfully",
+        text: mode1 === "edit" ? "Service updated successfully" : "Service created successfully",
         imageUrl: TickSquare,
         imageWidth: 50,
         imageHeight: 50,
@@ -117,13 +117,13 @@ const CreateService = () => {
       <Header name={"Services"} />
 
       <PageNavigation
-        title={mode === "edit" ? "Edit Service" : mode === "view" ? "View Service" : "Create Service"}
+        title={mode1 === "edit" ? "Edit Service" : mode1 === "view" ? "View Service" : "Create Service"}
         onBackClick={handleBackClick}
       />
 
       <div className="bg-white shadow-lg rounded-lg p-4 mt-0 m-[12px] border">
         <h3 className="form-title p-2 pb-3 font-bold">
-          {mode === "edit" ? "Edit Service" : mode === "view" ? "View Service" : "Create Service"}
+          {mode1 === "edit" ? "Edit Service" : mode1 === "view" ? "View Service" : "Create Service"}
         </h3>
         <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -134,7 +134,7 @@ const CreateService = () => {
               placeholder="Enter Service Name"
               {...register("servicename", { required: "Service Name is required" })}
               error={errors.servicename}
-              readOnly={mode === "view"}
+              readOnly={mode1}
             />
             {errors.servicename && <p className="text-red-500 text-xs mt-1">{errors.servicename.message}</p>}
           </div>
@@ -146,7 +146,7 @@ const CreateService = () => {
               placeholder="Enter Service Description"
               {...register("servicedescription", { required: "Description is required" })}
               error={errors.servicedescription}
-              readOnly={mode === "view"}
+              readOnly={mode1}
             />
             {errors.servicedescription && <p className="text-red-500 text-xs mt-1">{errors.servicedescription.message}</p>}
           </div>
@@ -157,7 +157,7 @@ const CreateService = () => {
               type="date"
               {...register("fromdate", { required: "From Date is required" })}
               error={errors.fromdate}
-              readOnly={mode === "view"}
+              readOnly={mode1}
             />
             {errors.fromdate && <p className="text-red-500 text-xs mt-1">{errors.fromdate.message}</p>}
           </div>
@@ -168,19 +168,19 @@ const CreateService = () => {
               type="date"
               {...register("todate", { required: "To Date is required" })}
               error={errors.todate}
-              readOnly={mode === "view"}
+              readOnly={mode1}
             />
             {errors.todate && <p className="text-red-500 text-xs mt-1">{errors.todate.message}</p>}
           </div>
         </div>
 
-          {mode !== "view" && (
+          {mode1 !== "view" && (
             <div className="flex justify-end gap-3 mt-4">
-              <button type="reset" className="bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm">
+              <button type="reset" onClick={() => navigate("/services")}className="bg-white text-gray-500 px-4 py-1 rounded-md border border-gray-300 text-sm">
                 Cancel
               </button>
               <button type="submit" className="bg-[#660F5D] text-white px-7 py-1 rounded-md text-sm">
-                {mode === "edit" ? "Update" : "Save"}
+                {mode1 === "edit" ? "Update" : "Save"}
               </button>
             </div>
           )}
