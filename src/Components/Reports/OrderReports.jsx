@@ -39,8 +39,8 @@ const OrderReports = () => {
     "From": "from",
     "Username": "username",
     "To": "to",
-    "Mobile No": "mobileNo",
     "Order Status": "orderStatus",
+    "Mobile No": "mobileNo",
     "Patient Details": "patientDetails",
   };
 

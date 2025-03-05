@@ -6,9 +6,11 @@ import ReportsTitle from "./ReportsTitle";
 import api from "../../utils/api";
 
 const useDebounce = (value, delay) => {
+
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
+    
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
@@ -96,7 +98,7 @@ const PaymentsReports = () => {
           balance: order?.totalAmount && order?.paidAmount ? order?.totalAmount - order?.paidAmount : "N/A",
           modeOfPayment: order?.paymentMethod || "N/A",
         }));
-console.log(formattedOrders,"formmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
+
 
         setData(formattedOrders);
         setFilteredData(formattedOrders);
@@ -138,8 +140,7 @@ console.log(formattedOrders,"formmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm")
     const headers = Object.keys(columnKeyMapping);
     const keys = Object.values(columnKeyMapping);
 
-    console.log(headers,"headersssssssssssssssssss");
-    console.log(keys,"keysssssssssssssssssssssssss");
+  
 
     filteredData.map((row) => keys.map((key) => console.log(row[key],"111111111111111111111111111111111111111" ) ));
 
