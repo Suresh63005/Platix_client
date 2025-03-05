@@ -2,13 +2,13 @@ import Swal from "sweetalert2";
 import TickSquare from "../assets/images/TickSquare.svg";
 import api from "./api";
 
-// ✅ Improved Delete Function with Confirmation
-export const deleteItem = async (url, id, setData, forceDelete = false) => {
-  console.log(url);
+export const deleteItem = async (url, id, setData, forceDelete = false, deletedType) => {
+  const confirmationText = deletedType === "Organization Type"
+    ? `This ${deletedType} is associated with organizations. Are you sure you want to delete this ${deletedType}?`
+    : `Are you sure you want to delete this ${deletedType}?`;
 
-  // Show confirmation alert before deleting
   const result = await Swal.fire({
-    text: "Are you sure you want to delete this item?",
+    text: confirmationText,
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "Yes, Delete",
@@ -17,7 +17,6 @@ export const deleteItem = async (url, id, setData, forceDelete = false) => {
     color: "black",
   });
 
-  // If user cancels, do nothing
   if (!result.isConfirmed) return;
 
   try {
@@ -27,9 +26,7 @@ export const deleteItem = async (url, id, setData, forceDelete = false) => {
 
     if (response.status === 200) {
       Swal.fire({
-        text: forceDelete
-          ? "Item Deleted Successfully"
-          : "Item Deleted Successfully",
+        text: `${deletedType} deleted successfully`,
         imageUrl: TickSquare,
         imageWidth: 50,
         imageHeight: 50,
@@ -39,14 +36,16 @@ export const deleteItem = async (url, id, setData, forceDelete = false) => {
         timer: 1500,
       });
 
-      // ✅ Ensure setData updates state correctly
-      setData((prev) => (Array.isArray(prev) ? prev.filter((item) => item.id !== id) : prev));
+      setData((prev) =>
+        Array.isArray(prev) ? prev.filter((item) => item.id !== id) : prev
+      );
     }
   } catch (error) {
     console.error("Error deleting item:", error);
 
+    const errorMessage = error.response?.data?.error || "Something went wrong! Please try again.";
     Swal.fire({
-      text: error.response?.data?.error || "Something went wrong! Please try again.",
+      text: errorMessage,
       icon: "error",
       background: "white",
       color: "black",

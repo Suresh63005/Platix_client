@@ -18,13 +18,15 @@ const Table = ({
   handleView,
   handleDelete,
   setSelectedItems,
-  selectedItems
+  selectedItems,
+  currentPage
 }) => {
 
+  console.log(data,"boloooooooooooooooooooooooooooooooooooo")
   console.log(selectedItems,"select items")
   
   const [editingItem, setEditingItem] = useState(null);
-
+  const isCheckboxVisible = currentPage !=="roles"
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       const allItems = data.map((item) => item.id);
@@ -67,14 +69,18 @@ const Table = ({
           <thead className="text-[12px]">
             <tr className="border-b-[1px] border-[#F3E6F2] bg-white">
               <th className="p-2 text-center text-[12px]">
-                <input
+                {
+                  isCheckboxVisible && (
+                    <input
                   type="checkbox"
                   className="border-none cursor-pointer th-checkbox"
                   onChange={handleSelectAll}
                   checked={selectedItems?.length === data?.length}
                 />
+                  )
+                }
               </th>
-              <th className="p-2 font-medium text-left">Sr</th>
+              <th className="p-2 font-medium text-left">S.No.</th>
               {columns.map((column, index) => {
                 // Extract label and style if column is an object
                 const label =
@@ -103,12 +109,16 @@ const Table = ({
               <tr key={item.id} className="border-b border-[#F3E6F2] ">
                 <td className="p-2 text-center text-[12px]">
                   <div className="custom-checkbox">
-                    <input
+                    {
+                      isCheckboxVisible && (
+                        <input
                       type="checkbox"
                       className="cursor-pointer text-[12px]"
                       onChange={(e) => handleSelectItem(e, item.id)}
                       checked={selectedItems?.includes(item?.id)}
                     />
+                      )
+                    }
                     <div className="custom-checkbox-box"></div>{" "}
                     {/* Custom checkbox box */}
                   </div>
@@ -117,31 +127,41 @@ const Table = ({
                   {(page - 1) * 10 + (index + 1)}
                 </td>
                 {fields.map((field, idx) => (
-                  <td
-                    key={idx}
-                    className="p-2 text-left text-[12px] font-medium text-[#4D5D6B]"
-                  >
-                    {editingItem === item.id ? (
-                      <input
-                        type="text"
-                        value={item[field]}
-                        onChange={(e) => {
-                          const updatedItem = {
-                            ...item,
-                            [field]: e.target.value,
-                          };
-                          setData(
-                            data.map((dataItem) =>
-                              dataItem.id === item.id ? updatedItem : dataItem
-                            )
-                          );
-                        }}
-                      />
-                    ) : (
-                      item[field]
-                    )}
-                  </td>
-                ))}
+  <td
+    key={idx}
+    className="p-2 text-left text-[12px] font-medium text-[#4D5D6B]"
+  >
+    {editingItem === item.id ? (
+      <input
+        type="text"
+        value={item[field]}
+        onChange={(e) => {
+          const updatedItem = {
+            ...item,
+            [field]: e.target.value,
+          };
+          setData(
+            data.map((dataItem) =>
+              dataItem.id === item.id ? updatedItem : dataItem
+            )
+          );
+        }}
+      />
+    ) : field === "organizationType" && Array.isArray(item[field]) ? (
+      // Check if the field is an array and then map through it
+      item[field].map((orgType, idx) => (
+        <span className="flex flex-col justify-center p-1 mt-1" key={idx}>
+          {orgType}
+          {idx < item[field].length - 1 && ""} {/* Add a comma if it's not the last item */}
+        </span>
+      ))
+    ) : (
+      // Default display for non-array fields
+      item[field]
+    )}
+  </td>
+))}
+
                 {showActions && (
                   <>
                     <td className="p-2 text-center">

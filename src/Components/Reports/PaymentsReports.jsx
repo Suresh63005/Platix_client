@@ -6,11 +6,9 @@ import ReportsTitle from "./ReportsTitle";
 import api from "../../utils/api";
 
 const useDebounce = (value, delay) => {
-
   const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
-    
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
@@ -82,22 +80,22 @@ const PaymentsReports = () => {
       const response = await api.get(endpoint);
       const apiData = response.data.data || [];
 
-        const formattedOrders = apiData.map((order) => ({
-          orderId: order?.orderId || "N/A",
-          id: order?.id || "N/A",
-          orderDate: order?.orderDate || "N/A",
-          from: order?.fromOrg?.name || "N/A",
-          username: order?.user?.firstName || "N/A",
-          userContact: order?.MobileNo || "N/A",
-          to: order.toOrg?.name || "N/A",
-          contactName: order?.patientName || "N/A",
-          contactNumber: order?.MobileNo || "N/A",
-          invoice: "INV-" + order?.id.substring(0, 5),
-          amount: order?.totalAmount || "N/A",
-          paidAmount: order?.paidAmount || "N/A",
-          balance: order?.totalAmount && order?.paidAmount ? order?.totalAmount - order?.paidAmount : "N/A",
-          modeOfPayment: order?.paymentMethod || "N/A",
-        }));
+
+      const formattedOrders = apiData.map((order) => ({
+        orderId: order.orderId || "N/A",
+        orderDate: order.orderDate || "N/A",
+        from: order.fromOrg?.name || "N/A",
+        username: order.user?.firstName || "N/A",
+        userContact: order.MobileNo || "N/A",
+        to: order.toOrg?.name || "N/A",  // Extracting the actual string value here as well
+        contactName: order.patientName || "N/A",
+        contactNumber: order.MobileNo || "N/A",
+        invoice: "INV-" + (order.id ? order.id.substring(0, 5) : "N/A"),  // Safely handling the case if order.id is missing
+        amount: order.totalAmount || "N/A",
+        paidAmount: order.paidAmount || "N/A",
+        balance: (order.totalAmount && order.paidAmount) ? order.totalAmount - order.paidAmount : "N/A",  // Handling the balance calculation
+        modeOfPayment: order.paymentMethod || "N/A",
+      }));      
 
 
         setData(formattedOrders);
@@ -140,7 +138,8 @@ const PaymentsReports = () => {
     const headers = Object.keys(columnKeyMapping);
     const keys = Object.values(columnKeyMapping);
 
-  
+    console.log(headers,"headersssssssssssssssssss");
+    console.log(keys,"keysssssssssssssssssssssssss");
 
     filteredData.map((row) => keys.map((key) => console.log(row[key],"111111111111111111111111111111111111111" ) ));
 

@@ -127,9 +127,9 @@ const OrganizationTypelist = () => {
     navigate("/createorganizationtype", { state: { id, mode: "view" } });
   };
 
-  const handleDelete = (id, forceDelete = false) => {
+  const handleDelete = (id, forceDelete = false,deletedType="Organization Type") => {
     // const url=
-    deleteItem("organization/delete", id, setOrganizationTypes, forceDelete);
+    deleteItem("organization/delete", id, setOrganizationTypes, forceDelete,deletedType);
   };
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-100">
