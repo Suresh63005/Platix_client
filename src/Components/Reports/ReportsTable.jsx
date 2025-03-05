@@ -36,8 +36,8 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
 
   // Single Row Download
   const handleSingleDownload = (item) => {
-    console.log(item,"sureshyuuuuuuuuuuuuuuuuuuuuuuu");
-    downloadCSV([item], `Report_${item.id}.csv`);
+    downloadCSV([item], `Report_${item.orderId}.csv`);
+
   };
 
   // Select all items on current page
@@ -99,7 +99,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
                     aria-label="Select All"
                   />
                 </th>
-                <th className="p-2 text-center font-medium">Sr</th>
+                <th className="p-2 text-center font-medium">S.No.</th>
                 {columns.map((column, index) => (
                   <th
                     key={index}

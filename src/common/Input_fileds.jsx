@@ -16,13 +16,15 @@ export const Header = forwardRef(({ name }, ref) => (
 ));
 
 // Input Field Component with forwardRef
-export const InputField = forwardRef(({ label, type, placeholder,readOnly, value, onChange, name }, ref) => (
+export const InputField = forwardRef(({ label, restrictDate,maxrestrictDate, type, placeholder,readOnly, value, onChange, name }, ref) => (
   <div className="mb-0">
     <label className="block text-xs font-medium mb-1">{label}</label>
     <input
       ref={ref}
       type={type}
       autoComplete="off"
+      min={type === "date"  ? restrictDate  : null}
+      max={label === "Date of Birth" ? maxrestrictDate : null}
       name={name}
       disabled={readOnly==="view"}
       placeholder={placeholder}
@@ -151,17 +153,18 @@ export const WhatsAppInput = forwardRef(({ label, value,readOnly, onChange, name
 ));
 
 // File Upload Component with forwardRef
-export const FileUpload = forwardRef(({ name, onChange, readOnly, label, multiple = false }, ref) => {
-  const [files, setFiles] = useState([]);
-  const fileInputRef = useRef(null); // Reference to the file input
+export const FileUpload = forwardRef(({ name, onChange, readOnly, files = [], setFiles, label, multiple = false }, ref) => {
+  const fileInputRef = useRef(null); 
 
   const handleFileChange = (event) => {
     const newFiles = Array.from(event.target.files);
-
     const updatedFiles = multiple ? [...files, ...newFiles] : newFiles;
-    setFiles(updatedFiles);
+    
+    // If setFiles is provided, update the state
+    if (setFiles) {
+      setFiles(updatedFiles);
+    }
 
-    // Pass the files to the parent form
     if (onChange) {
       onChange({
         target: {
@@ -172,37 +175,30 @@ export const FileUpload = forwardRef(({ name, onChange, readOnly, label, multipl
     }
   };
 
-
-
   const handleDelete = (fileToDelete) => {
-    setFiles((prevFiles) =>
-      prevFiles.filter(
-        (file) =>
-          file.name !== fileToDelete.name ||
-          file.lastModified !== fileToDelete.lastModified
-      )
+    const updatedFiles = files.filter(
+      (file) =>
+        file.name !== fileToDelete.name ||
+        file.lastModified !== fileToDelete.lastModified
     );
 
-    // Update parent form after deletion
+    if (setFiles) {
+      setFiles(updatedFiles);
+    }
+
     if (onChange) {
       onChange({
         target: {
           name,
-          files: files,
+          files: updatedFiles,
         },
       });
     }
 
-    // Clear the file input after deleting
     if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Reset the file input value
+      fileInputRef.current.value = "";
     }
   };
-
-
-  
-
- 
 
   return (
     <div ref={ref} className="mt-4">
@@ -211,11 +207,11 @@ export const FileUpload = forwardRef(({ name, onChange, readOnly, label, multipl
       </label>
       <div className="flex flex-wrap gap-4 mb-4 items-center">
         <input
-          ref={fileInputRef} // Add the reference to the file input
+          ref={fileInputRef}
           type="file"
           name={name}
           id={name}
-          disabled={readOnly==="view"}
+          disabled={readOnly === "view"}
           accept="image/png, image/jpeg"
           multiple={multiple}
           onChange={handleFileChange}
@@ -224,7 +220,7 @@ export const FileUpload = forwardRef(({ name, onChange, readOnly, label, multipl
       </div>
 
       <div className="flex flex-col gap-2">
-        {files.map((file, index) => (
+        {files?.map((file, index) => (
           <div
             key={index}
             className="flex items-center justify-between bg-white-100 w-full sm:w-[400px] border-b-2 rounded-md p-2"
@@ -244,6 +240,7 @@ export const FileUpload = forwardRef(({ name, onChange, readOnly, label, multipl
     </div>
   );
 });
+
 
 // Service Form Component with forwardRef
 export const ServiceForm = forwardRef((props, ref) => {
