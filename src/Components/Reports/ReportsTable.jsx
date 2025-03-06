@@ -36,7 +36,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
 
   // Single Row Download
   const handleSingleDownload = (item) => {
-    downloadCSV([item], `Report_${item.orderId}.csv`);
+    downloadCSV([item], `Report_${item.orderId || item.id}.csv`);
 
   };
 
