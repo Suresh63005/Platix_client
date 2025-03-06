@@ -445,8 +445,9 @@ const CreateOrganization = () => {
       
   
     } catch (error) {
+      
       Swal.fire({
-        text: "Something went wrong. Please try again.",
+        text: error.response?.data?.error || "An error occurred. Please try again.",
         icon: "error",
       });
       console.error("Form submission error:", error);
