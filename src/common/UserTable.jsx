@@ -63,7 +63,7 @@ const Table = ({
   };
 
   return (
-    <div className="userlist-container p-4 flex-1 overflow-auto scrollbar-color">
+    <div className="userlist-container p-4 flex-1 overflow-auto scrollbar-color h-[78vh]">
       <div className="usertable-container bg-white border border-[#EAEAFF] shadow-sm rounded-md p-4 h-[max-content] ">
         <table className="w-full table text-[12px] ">
           <thead className="text-[12px]">

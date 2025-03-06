@@ -23,7 +23,7 @@ export const InputField = forwardRef(({ label, restrictDate,maxrestrictDate, typ
       ref={ref}
       type={type}
       autoComplete="off"
-      min={type === "date"  ? restrictDate  : null}
+      min={readOnly !== 'edit' && type === "date"  ? restrictDate  : null}
       max={label === "Date of Birth" ? maxrestrictDate : null}
       name={name}
       disabled={readOnly==="view"}

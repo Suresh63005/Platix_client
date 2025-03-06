@@ -445,8 +445,9 @@ const CreateOrganization = () => {
       
   
     } catch (error) {
+      
       Swal.fire({
-        text: "Each image must be less than 1MB",
+        text: error.response?.data?.error || "An error occurred. Please try again.",
         icon: "error",
       });
       console.error("Form submission error:", error);

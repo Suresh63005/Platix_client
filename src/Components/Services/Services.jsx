@@ -174,8 +174,14 @@ const Services = () => {
 
           })
           .catch((error) => {
+            
             console.error("Error assigning services:", error);
-            Swal.fire("Error", "Failed to assign services.", "error");
+            Swal.fire({
+              text:error.response.data.message,
+              icon: "error",
+
+            });
+            
           });
 
       }
