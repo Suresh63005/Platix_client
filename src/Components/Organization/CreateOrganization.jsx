@@ -468,8 +468,10 @@ const CreateOrganization = () => {
 
 
   useEffect(() => {
-    handleOrginazationtypeid(orgTypeEditId);
-  }, [orgType]);
+    if (orgTypeEditId) {
+      handleOrginazationtypeid(orgTypeEditId);
+    }
+  }, [orgTypeEditId]);
 
   return (
     <div>
