@@ -68,6 +68,7 @@ const Login = () => {
                 </span>
                 <input
                   type="email"
+                  id="email"
                   {...register("email", { required: "Email is required" })}
                   className="w-full email py-3 px-0 text-[12px] text-black focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="Enter your email"
@@ -87,6 +88,7 @@ const Login = () => {
                 </span>
                 <input
                   type={showPassword ? "text" : "password"}
+                  id="password"
                   {...register("password", { required: "Password is required" })}
                   className="w-full password py-3 px-0 text-[12px] focus:outline-none focus:ring-0 focus:border-none"
                   placeholder="Enter your password"
