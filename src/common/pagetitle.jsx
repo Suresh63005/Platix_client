@@ -2,6 +2,8 @@ import React from "react";
 import FilterDropdown from "./FilterDropdown";
 import SelectRoleDropdown from "./SelectRoleDropdown";
 import { ReactComponent as Searchicon } from "../assets/images/search_normal.svg";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import { useNavigate } from 'react-router-dom';
 
 const Pagetitle = ({
   title,
@@ -64,11 +66,22 @@ const Pagetitle = ({
       }),
     }),
   };
+  const navigate = useNavigate();
+  const handleBackClick = () => {
+    navigate(-1);
+  };
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-center p-2 space-y-4 md:space-y-0 pl-5">
       <div className="font-[700px] text-left w-full md:w-auto">
-        <h3 className="font-semibold text-[16px] md:text-[20px]">{title}</h3>
+        
+      <h3
+        className="flex items-center text-lg font-medium cursor-pointer"
+        onClick={handleBackClick}
+      >
+        <NavigateBeforeIcon className="mr-1" />
+        {title}
+      </h3>
       </div>
 
       <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
