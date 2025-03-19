@@ -736,7 +736,25 @@ const CreateOrganization = () => {
                   </div>
                 // </div>
               )}
+              {watch("organizationType_id") === dentistId && (
+                <div className="grid gap-3">
+                  <div>
+                    <InputField
+                      label="Registration ID*"
+                      type="text"
+                      placeholder="Enter Registration ID"
+                      {...register("registrationId", {
+                        required: "registration id is required.",
+                      })}
+                      readOnly={mode1}
+                    />
+                  </div>
+
                 </div>
+              )}
+                </div>
+
+                
               </div>
 
               
@@ -755,6 +773,8 @@ const CreateOrganization = () => {
         className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#660F5D]"
       />
     </div>
+
+    
 
     {/* Add / Save & Clear Buttons */}
     <div className="flex gap-2">
@@ -781,6 +801,8 @@ const CreateOrganization = () => {
       </span>
     </div>
   </div>
+
+  
 
   <hr />
 
@@ -820,22 +842,7 @@ const CreateOrganization = () => {
   </div>
 </div>
 
-              {watch("organizationType_id") === dentistId && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div>
-                    <InputField
-                      label="Registration ID*"
-                      type="text"
-                      placeholder="Enter Registration ID"
-                      {...register("registrationId", {
-                        required: "registration id is required.",
-                      })}
-                      readOnly={mode1}
-                    />
-                  </div>
-
-                </div>
-              )}
+              
               {/* Organization Account Details */}
               <h3 className="text-lg font-bold mb-4 mt-6">
                 Organization Account Details
