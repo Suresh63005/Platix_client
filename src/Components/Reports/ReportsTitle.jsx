@@ -1,3 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+
+
 const ReportsTitle = ({
   title,
   searchPlaceholder,
@@ -8,10 +12,22 @@ const ReportsTitle = ({
   onFromDateChange,
   onToDateChange,
 }) => {
+
+  const navigate = useNavigate();
+  
+  const handleBackClick = () => {
+    navigate(-1);
+  };
   return (
     <div className="flex flex-col md:flex-row justify-between items-center p-4 space-y-4 md:space-y-0">
       <div className="font-medium text-left w-full md:w-auto">
-        <h3 className="font-semibold text-[16px] md:text-[20px]">{title}</h3>
+      <h3
+  className="flex items-center text-lg font-medium cursor-pointer"
+  onClick={handleBackClick}
+>
+  <NavigateBeforeIcon className="mr-1" />
+  {title}
+</h3>
       </div>
 
       <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
