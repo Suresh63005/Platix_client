@@ -84,7 +84,7 @@ const UserReports = () => {
           : "N/A";
       
         return {
-          id: `user${(index + 1).toString().padStart(4, '0')}`,
+          id: `user${user.id.substring(0, 8)}`,
           username: user?.Username || "N/A",
           organization: user?.organization?.name || "N/A",
           email: user?.email || "N/A",
@@ -134,7 +134,7 @@ const UserReports = () => {
 
   const handleBulkDownload = () => {
 
-    console.log(filteredData,"from userdataaaaaaaaaaaaaaaa")
+    
 
     if (!filteredData.length) {
       alert("No data available for download!");

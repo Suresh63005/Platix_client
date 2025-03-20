@@ -12,81 +12,115 @@ const Services = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [filter, setFilter] = useState("")
-  const [servicesFilteroptions, setServicesFilteroptions] = useState()
+  const [filter, setFilter] = useState("");
+  const [servicesFilteroptions, setServicesFilteroptions] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [deleteServiceId, setDeleteServiceId] = useState(null);
   const [selectedOrgType, setSelectedOrgType] = useState(null);
-  const [orgTypeOptions, setOrgTypeOptions] = useState([]);;
+  const [orgTypeOptions, setOrgTypeOptions] = useState([]);
   const [organizationType_id, setOrganizationType_id] = useState(null);
   const itemsPerPage = 10;
 
-  // Fetch services from API
+  // ✅ Fetch services from API (updates services list automatically)
+  const fetchServices = async () => {
+    const token = Cookies.get("token");
+    try {
+      const response = await api.get("admin/allservices", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          filter: filter === "all" ? "" : filter,
+          search: searchQuery,
+          page,
+          limit: itemsPerPage,
+        },
+      });
+
+      setServices(response.data.services);
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
+
+
+
+    // // Handle edit
+    // const handleEdit = (id) => {
+    //   navigate("/createservice", { state: { id, mode: "edit" } });
+    // };
+  
+    // // Handle view
+    // const handleView = (id) => {
+    //   navigate("/createservice", { state: { id, mode: "view" } });
+    // };
+  
+    // // Handle delete confirmation
+    // const handleDelete = (id, forceDelete = false, deletedType = "Service") => {
+    //   deleteItem("admin/deleteservice", id, setServices, forceDelete, deletedType)
+    // };
+
+
+
   useEffect(() => {
-    const fetchServices = async () => {
-      const token = Cookies.get("token");
-      try {
-        const response = await api.get("admin/allservices", {
-          headers: { Authorization: `Bearer ${token}` },
-          params: {
-            filter: filter === "all" ? "" : filter,
-            search: searchQuery,
-            page,
-            limit: itemsPerPage,
-          },
-        });
-
-        setServices(response.data.services);
-        
-        setTotalPages(response.data.totalPages);
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      }
-    };
-
     fetchServices();
   }, [filter, searchQuery, page]);
 
-  // Handle edit
-  const handleEdit = (id) => {
-    navigate("/createservice", { state: { id, mode: "edit" } });
-  };
-
-  // Handle view
-  const handleView = (id) => {
-    navigate("/createservice", { state: { id, mode: "view" } });
-  };
-
-  // Handle delete confirmation
-  const handleDelete = (id, forceDelete = false, deletedType = "Service") => {
-    deleteItem("admin/deleteservice", id, setServices, forceDelete, deletedType)
-  };
-
-  // Perform delete when deleteServiceId is set
-  useEffect(() => {
-    const token = Cookies.get("token");
-    if (deleteServiceId) {
-      api
-        .delete(`admin/deleteservice/${deleteServiceId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then(() => {
-          Swal.fire("Deleted!", "Service has been deleted.", "success");
-          setServices(services.filter((service) => service.id !== deleteServiceId));
-          setDeleteServiceId(null);
-        })
-        .catch((error) => {
-          Swal.fire("Error!", "There was an issue deleting the service.", "error");
-          console.error("Error deleting service:", error);
-          setDeleteServiceId(null);
-        });
+  // ✅ Handle Assign Service to Organization Type
+  const handleAssignService = async () => {
+    if (!selectedOrgType) {
+      Swal.fire("Error", "Please select an organization type.", "error");
+      return;
     }
-  }, [deleteServiceId, services]);
 
-  // Fetch organization types for the dropdown
+    if (selectedItems.length === 0) {
+      Swal.fire("Error", "Please select at least one service.", "error");
+      return;
+    }
+
+    const organizationTypee = orgTypeOptions.find((item) => item.value === selectedOrgType);
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Assign selected services to ${organizationTypee?.label}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Assign",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const token = Cookies.get("token");
+
+        try {
+          await api.post(
+            "/admin/assign-service",
+            {
+              organizationType_id: selectedOrgType, // ✅ Using selectedOrgType directly
+              service_id: selectedItems,
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+
+          Swal.fire("Success", "Services assigned successfully!", "success");
+
+          // ✅ Fetch updated services after assignment
+          fetchServices(); // Call function to reload the list
+        } catch (error) {
+          console.error("Error assigning services:", error);
+          Swal.fire({
+            text: error.response?.data?.message || "An error occurred.",
+            icon: "error",
+          });
+        }
+
+        setSelectedItems([]);
+      }
+    });
+  };
+
+  // ✅ Fetch Organization Types
   useEffect(() => {
     const fetchOrganizationTypes = async () => {
       const token = Cookies.get("token");
@@ -94,23 +128,27 @@ const Services = () => {
         const response = await api.get("organization/getall", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("Organization Types Response:", response);
+
         if (response.data && Array.isArray(response.data.results)) {
-          setOrgTypeOptions(response.data.results.map(org => ({
-            value: org.id, // Use org.id for value
-            label: org.organizationType, // Use org.name for label
-          })));
+          setOrgTypeOptions(
+            response.data.results.map((org) => ({
+              value: org.id,
+              label: org.organizationType,
+            }))
+          );
         } else {
-          setOrgTypeOptions([]); // Ensure it's always an array
+          setOrgTypeOptions([]);
         }
       } catch (error) {
         console.error("Error fetching organization types:", error);
-        setOrgTypeOptions([]); // Fallback to empty array on error
+        setOrgTypeOptions([]);
       }
     };
+
     fetchOrganizationTypes();
   }, []);
 
+  // ✅ Fetch Service Filter Options
   useEffect(() => {
     const fetchServiceFilterOptions = async () => {
       const token = Cookies.get("token");
@@ -119,75 +157,25 @@ const Services = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log("Services Filter Response:", response);
-
         if (response.data && Array.isArray(response.data.services)) {
           setServicesFilteroptions(
-            response.data.services.map(service => ({
-              value: service.id, // Service ID for filtering
-              label: service.servicename, // Displayed service name
-              organizationType: service.organizationType, // Organization type ID
+            response.data.services.map((service) => ({
+              value: service.id,
+              label: service.servicename,
+              organizationType: service.organizationType,
             }))
           );
         } else {
-          setServicesFilteroptions([]); // Ensure fallback is an empty array
+          setServicesFilteroptions([]);
         }
       } catch (error) {
         console.error("Error fetching service filter options:", error);
-        setServicesFilteroptions([]); // Fallback to an empty array on error
+        setServicesFilteroptions([]);
       }
     };
 
     fetchServiceFilterOptions();
   }, []);
-  // Handle service assignment to organization type
-  const handleAssignService = () => {
-    if (!selectedOrgType) {
-      Swal.fire("Error", "Please select an organization type.", "error");
-      return;
-    }
-
-    if (services.length === 0) {
-      Swal.fire("Error", "Please select at least one service.", "error");
-      return;
-    }
-    const organizationTypee = orgTypeOptions.find((item) => item.value === selectedOrgType);
-    Swal.fire({
-      title: "Are you sure?",
-      text: `Assign selected services to  ${organizationTypee?.label}?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Assign",
-    }).then((result) => {
-      const token = Cookies.get("token");
-      if (result.isConfirmed) {
-        api
-          .post("/admin/assign-service", {
-            organizationType_id: organizationType_id,
-            service_id: selectedItems
-          },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            })
-          .then(() => {
-            Swal.fire("Success", "Services assigned successfully!", "success");
-
-          })
-          .catch((error) => {
-            
-            console.error("Error assigning services:", error);
-            Swal.fire({
-              text:error.response.data.message,
-              icon: "error",
-
-            });
-            
-          });
-
-      }
-      setSelectedItems([]);
-    });
-  };
 
   return (
     <div className="bg-gray-100 h-full">
@@ -215,21 +203,20 @@ const Services = () => {
         organizationType_id={organizationType_id}
         setOrganizationType_id={setOrganizationType_id}
         assignButtonLabel="Assign"
-        onAssignClick={handleAssignService} // Updated function call
+        onAssignClick={handleAssignService} // ✅ Assign Button Click
       />
 
       <div className="overflow-x-auto sm:overflow-x-visible">
         <Table
-          columns={["Service Name","Organization Type", "From Date", "To Date"]}
-          fields={["servicename","organizationType", "fromdate", "todate"]}
+          columns={["Service Name", "Organization Type", "From Date", "To Date"]}
+          fields={["servicename", "organizationType", "fromdate", "todate"]}
           data={services}
           page={page}
-          
           totalPages={totalPages}
           setPage={setPage}
-          handleEdit={handleEdit}
-          handleView={handleView}
-          handleDelete={handleDelete}
+          handleEdit={(id) => navigate("/createservice", { state: { id, mode: "edit" } })}
+          handleView={(id) => navigate("/createservice", { state: { id, mode: "view" } })}
+          handleDelete={(id) => deleteItem("admin/deleteservice", id, setServices, false, "Service")}
           setSelectedItems={setSelectedItems}
           selectedItems={selectedItems}
         />
