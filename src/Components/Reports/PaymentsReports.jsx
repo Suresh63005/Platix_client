@@ -55,7 +55,7 @@ const PaymentsReports = () => {
     "Order Date": "orderDate",
     "From": "from",
     "Username": "username",
-    "User Contact": "userContact",
+    "User Contact no": "userContact",
     "To": "to",
     "Contact Name": "contactName",
     "Contact Number": "contactNumber",
@@ -79,14 +79,14 @@ const PaymentsReports = () => {
       
       const response = await api.get(endpoint);
       const apiData = response.data.data || [];
-
+      console.log(apiData,"ddddddddddddddddddddata")
 
       const formattedOrders = apiData.map((order) => ({
         orderId: order.orderId || "N/A",
         orderDate: order.orderDate || "N/A",
         from: order.fromOrg?.name || "N/A",
-        username: order.user?.firstName || "N/A",
-        userContact: order.MobileNo || "N/A",
+        username: order.userDetails?.firstName || "N/A",
+        userContact: order.userDetails?.mobileNo || "N/A",
         to: order.toOrg?.name || "N/A",  // Extracting the actual string value here as well
         contactName: order.patientName || "N/A",
         contactNumber: order.MobileNo || "N/A",
