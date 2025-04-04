@@ -167,6 +167,7 @@ const OrganizationList = () => {
           handleDelete={handleDelete}
           setSelectedItems={setSelectedItems}
           selectedItems={selectedItems}
+          
         />
       </div>
     </div>

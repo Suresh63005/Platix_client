@@ -62,7 +62,7 @@ const OrderReports = () => {
         if (fromDate && toDate) {
           endpoint = `order/getbyorderdate/${fromDate}/${toDate}`;
         }
-
+        console.log(endpoint)
         const response = await api.get(endpoint);
         const apiData = response.data.data || [];
         console.log(apiData,"dddddddddddddddddata")
