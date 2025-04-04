@@ -69,6 +69,7 @@ const Settings = () => {
             paymentGatewayApiKey: data?.paymentGatewayApiKey || "",
             emailApiKey: data?.emailApiKey || "",
             whatsappApiKey: data?.whatsappApiKey || "",
+            platformFee: data?.platformFee || "",
           });
   
           setValue("privacyPolicy", data?.privacyPolicy || "");
@@ -167,7 +168,7 @@ const Settings = () => {
               </div>
               <div className="flex flex-col">
                 <PasswordInput
-                  label="platformFee"
+                  label="PlatformFee"
                   placeholder="Enter API Key"
                   {...register("platformFee", {
                     required: "platformFee is required",
