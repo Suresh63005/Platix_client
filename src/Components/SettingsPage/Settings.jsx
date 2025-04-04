@@ -22,6 +22,7 @@ const Settings = () => {
     whatsappApiKey: yup.string().required("whatsapp API key is required"),
     privacyPolicy: yup.string().required("Privacy Policy is required"),
     termsAndConditions: yup.string().required("Terms & Conditions are required"),
+    platformFee: yup.string().required("platformFee required"),
   });
 
   const {
@@ -162,6 +163,19 @@ const Settings = () => {
                   error={errors.notificationApiKey}
                 />
                 {errors.notificationApiKey && <p className="text-red-500 text-xs mt-1">{errors.notificationApiKey.message}</p>}
+
+              </div>
+              <div className="flex flex-col">
+                <PasswordInput
+                  label="platformFee"
+                  placeholder="Enter API Key"
+                  {...register("platformFee", {
+                    required: "platformFee is required",
+                  })}
+                  defaultValue={watch("platformFee")}
+                  error={errors.platformFee}
+                />
+                {errors.platformFee && <p className="text-red-500 text-xs mt-1">{errors.platformFee.message}</p>}
 
               </div>
 
