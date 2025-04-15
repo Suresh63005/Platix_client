@@ -82,7 +82,6 @@ const CreateOrganization = () => {
   const [newService, setNewService] = useState({ name: "", price: "" });
   const [editingIndex, setEditingIndex] = useState(null);
   const [orgType, setOrgTYpe] = useState([]);
-  console.log(orgType,"orggggggggggggggggggggggggggggggggggggg")
   const [servicesList, setServicesList] = useState({});
   const [orgTypeEditId, setOrgTypeEditId] = useState("")
   const [PImages, setPImages] = useState([]);
@@ -90,7 +89,7 @@ const CreateOrganization = () => {
   const [addresses, setAddresses] = useState([]); // Stores added addresses
   const [newAddress, setNewAddress] = useState(""); // Holds input value for a new/editing address
   const [editingIndex2, setEditingIndex2] = useState(null); // Tracks which address is being edited
-
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const handleAddAddress = () => {
     if (newAddress.trim() !== "") {
       if (editingIndex2 !== null) {
@@ -138,79 +137,64 @@ const CreateOrganization = () => {
   }, [id, location, setIsLoading]);
 
   useEffect(() => {
-  if (id && (mode1 === "edit" || mode1 === "view")) {
-    api
-      .get(`api/organization/getby/${id}`)
-      .then((response) => {
-        const orgData = response.data.data;
-        setOrganization(orgData);
-        setOrgTypeEditId(orgData.organizationType_id);
+    setIsDataLoading(true);
+    Promise.all([
+      id && mode1 !== "create"
+        ? api.get(`api/organization/getby/${id}`)
+        : Promise.resolve(null),
+      api.get("admin/allservices"),
+      api.get("organization/getall"),
+    ])
+      .then(([orgResponse, servicesResponse, orgTypesResponse]) => {
+        if (orgResponse) {
+          const orgData = orgResponse.data.data;
+          setOrganization(orgData);
+          setOrgTypeEditId(orgData.organizationType_id);
 
-        Object.keys(orgData).forEach((key) => {
-          if (orgData[key] !== null && typeof orgData[key] === "object") {
-            Object.keys(orgData[key]).forEach((nestedKey) => {
-              setValue(`${key}.${nestedKey}`, orgData[key][nestedKey]);
-            });
-          } else {
-            setValue(key, orgData[key]);
+          if (orgData.services) {
+            const servicesWithNames = orgData.services.map((service) => ({
+              id: service.serviceDetail.id,
+              name: service.serviceDetail.servicename || service.name,
+              price: service.price,
+            }));
+            setUserServices(servicesWithNames);
           }
-        });
 
-        // ✅ Fix Address Handling
-        let parsedAddress = [];
-        if (typeof orgData.address === "string") {
-          try {
-            // Attempt to parse if it's a JSON string
-            parsedAddress = JSON.parse(orgData.address);
-            if (!Array.isArray(parsedAddress)) {
-              parsedAddress = [parsedAddress]; // Convert single value to array
+          Object.keys(orgData).forEach((key) => {
+            if (orgData[key] !== null && typeof orgData[key] === "object") {
+              Object.keys(orgData[key]).forEach((nestedKey) => {
+                setValue(`${key}.${nestedKey}`, orgData[key][nestedKey]);
+              });
+            } else {
+              setValue(key, orgData[key]);
             }
-          } catch (error) {
-            parsedAddress = [orgData.address]; // Store as single element array if parsing fails
+          });
+
+          let parsedAddress = [];
+          if (typeof orgData.address === "string") {
+            try {
+              parsedAddress = JSON.parse(orgData.address);
+              if (!Array.isArray(parsedAddress)) {
+                parsedAddress = [parsedAddress];
+              }
+            } catch (error) {
+              parsedAddress = [orgData.address];
+            }
+          } else if (Array.isArray(orgData.address)) {
+            parsedAddress = orgData.address;
           }
-        } else if (Array.isArray(orgData.address)) {
-          parsedAddress = orgData.address;
+          setAddresses(parsedAddress);
         }
 
-        setAddresses(parsedAddress); // ✅ Set normalized address list
-
-        // ✅ Fix Services Handling
-        if (orgData.services) {
-          const servicesWithNames = orgData.services.map((service) => ({
-            id: service.serviceDetail.id,
-            name: service.serviceDetail.servicename || service.name,
-            price: service.price,
-          }));
-          setUserServices(servicesWithNames);
-        }
-      })
-      .catch((error) =>
-        console.error("Error fetching organization data:", error)
-      );
-  } else {
-    setMode1("create");
-  }
-
-  api
-      .get("admin/allservices")
-      .then((response) => {
-        const servicesData = response.data.services;
+        const servicesData = servicesResponse.data.services;
         setAvailableServices(
           servicesData.map((service) => ({
             id: service.id,
             name: service.servicename,
           }))
         );
-      })
-      .catch((error) => {
-        console.error("Error fetching services:", error);
-      });
 
-      api
-      .get("organization/getall")
-      .then((response) => {
-        const OrgData = response.data.results;
-        // console.log(OrgData,"from orgdata");
+        const OrgData = orgTypesResponse.data.results;
         setOrgTYpe(
           OrgData.map((org) => ({
             value: org.id,
@@ -220,10 +204,12 @@ const CreateOrganization = () => {
         );
       })
       .catch((error) => {
-        console.error("Error fetching services:", error);
+        console.error("Error fetching data:", error);
+      })
+      .finally(() => {
+        setIsDataLoading(false);
       });
-
-}, [id, mode1, setValue]);
+  }, [id, mode1, setValue]);
 
 
   const dentistId = orgType.find((option) => option.label === "Dentist")?.value;
@@ -475,7 +461,9 @@ const CreateOrganization = () => {
 
   return (
     <div>
-      {isLoading && <Loader />}
+      {isLoading || isDataLoading ? (
+        <Loader />
+      ) : (
       <div className="flex flex-col h-screen bg-gray-100">
         <div className="bg-gray-100">
           <Header name={"Organization"} />
@@ -1260,7 +1248,7 @@ const CreateOrganization = () => {
             </form>
           </div>
         </div>
-      </div>
+      </div>)}
       <Toaster position="top-right" reverseOrder={false} toastOptions={{ duration: 2000 }} />
     </div>
   );
