@@ -84,7 +84,7 @@ const PaymentsReports = () => {
       const formattedOrders = apiData.map((order) => ({
         orderId: order.orderId || "N/A",
         orderDate: order.orderDate || "N/A",
-        from: order.fromOrg?.name || "N/A",
+        from: order.userDetails?.organization?.name || "N/A",
         username: order.userDetails?.firstName || "N/A",
         userContact: order.userDetails?.mobileNo || "N/A",
         to: order.toOrg?.name || "N/A",  // Extracting the actual string value here as well

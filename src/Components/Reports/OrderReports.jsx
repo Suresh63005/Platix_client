@@ -65,13 +65,13 @@ const OrderReports = () => {
         console.log(endpoint)
         const response = await api.get(endpoint);
         const apiData = response.data.data || [];
-        console.log(apiData,"dddddddddddddddddata")
+        console.log(apiData,"dddddddddddddddddata");
 
         const formattedData = apiData.map((order) => ({
           id: order.id || "N/A",
           orderId: order.orderId || "N/A",
           orderDate: order.orderDate || "N/A",
-          from: order.fromOrg?.name || "N/A",
+          from: order.userDetails?.organization?.name || "N/A",
           username: order.userDetails?.firstName || "N/A",
           to: order.toOrg?.name || "N/A",
           orderStatus: order.orderStatus || "N/A",
