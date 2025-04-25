@@ -228,12 +228,12 @@ export const FileUpload = forwardRef(({ name, onChange, readOnly, files = [], se
             <span className="text-sm text-gray-700 truncate max-w-[300px]">
               {file.name}
             </span>
-            <button
+            <span
               className="flex items-center gap-1 text-[#660F5D] hover:text-red-500"
               onClick={() => handleDelete(file)}
             >
               <Delete className="w-[15px]" />
-            </button>
+            </span>
           </div>
         ))}
       </div>
