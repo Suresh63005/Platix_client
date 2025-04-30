@@ -78,13 +78,17 @@ const UserReports = () => {
       const apiData = response.data.users || [];
       
       // Format the date inside the map function
-      const formattedData = apiData.map((user, index) => {
-        const dateOnly = user?.dateOfBirth
-          ? new Date(user.dateOfBirth).toISOString().split('T')[0]
-          : "N/A";
+     const formattedData = apiData.map((user) => {
+        let dateOnly = "N/A";
+        if (user?.dateOfBirth) {
+          const dateObj = new Date(user.dateOfBirth);
+          if (!isNaN(dateObj.getTime())) {
+            dateOnly = dateObj.toISOString().split("T")[0];
+          }
+        }
       
         return {
-          id: `user${user.id.substring(0, 8)}`,
+          id: `user${user.id?.substring(0, 8)}`,
           username: user?.Username || "N/A",
           organization: user?.organization?.name || "N/A",
           email: user?.email || "N/A",
