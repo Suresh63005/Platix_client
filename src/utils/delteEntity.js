@@ -44,11 +44,29 @@ export const deleteItem = async (url, id, setData, forceDelete = false, deletedT
     console.error("Error deleting item:", error);
 
     const errorMessage = error.response?.data?.error || "Something went wrong! Please try again.";
-    Swal.fire({
-      text: errorMessage,
-      icon: "error",
-      background: "white",
-      color: "black",
-    });
+    
+    // Check for 400 status code when deleting an organization
+    if (deletedType === "Organization" && error.response?.status === 400) {
+      Swal.fire({
+        text: "Cannot delete organization because it may have associated users or other dependencies. Please go to the users list and resolve them first.",
+        icon: "error",
+        background: "white",
+        color: "black",
+        confirmButtonText: "Go to Users List",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = `/userspage/${id}`; // Redirect to users list with organization ID
+        }
+      });
+    } else {
+      Swal.fire({
+        text: errorMessage,
+        icon: "error",
+        background: "white",
+        color: "black",
+      });
+    }
   }
 };

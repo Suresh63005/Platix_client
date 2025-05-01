@@ -74,6 +74,8 @@ const CreateOrganization = () => {
     accountHolder: "",
     ifscCode: "",
     upiId: "",
+    beneficiary_id:" ",
+    googlemaplink: "",
   });
 
   const [availableServices, setAvailableServices] = useState([]);
@@ -147,11 +149,11 @@ const CreateOrganization = () => {
           setOrganization(orgData);
           setOrgTypeEditId(orgData.organizationType_id);
 
-          if (orgData.services) {
-            const servicesWithNames = orgData.services.map((service) => ({
-              id: service.serviceDetail.id,
-              name: service.serviceDetail.servicename || service.name,
-              price: service.price,
+          if (orgData?.services) {
+            const servicesWithNames = orgData?.services?.map((service) => ({
+              id: service?.serviceDetail.id,
+              name: service?.serviceDetail?.servicename || service?.name,
+              price: service?.price,
             }));
             setUserServices(servicesWithNames);
           }
@@ -184,7 +186,7 @@ const CreateOrganization = () => {
 
         const servicesData = servicesResponse.data.services;
         setAvailableServices(
-          servicesData.map((service) => ({
+          servicesData?.map((service) => ({
             id: service.id,
             name: service.servicename,
           }))
@@ -327,6 +329,8 @@ const CreateOrganization = () => {
       form.append("accountHolder", data.accountHolder);
       form.append("ifscCode", data.ifscCode);
       form.append("upiId", data.upiId);
+      form.append("googlemaplink", data.googlemaplink);
+      form.append("beneficiary_id",data.beneficiary_id)
 
       form.append("services", JSON.stringify(userServices));
       form.append("addresses", JSON.stringify(addresses));
@@ -531,6 +535,33 @@ const CreateOrganization = () => {
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  <div>
+                    <Controller
+                      name="googlemaplink"
+                      control={control}
+                      defaultValue=""
+                      rules={{ required: "Google Map Link is required." }}
+                      render={({ field }) => (
+                        <InputField
+                          label={"Google Map Link*"}
+                          type={"text"}
+                          placeholder={"Enter Google Map Link"}
+                          {...field}
+                          readOnly={mode1}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            trigger("googlemaplink");
+                          }}
+                        />
+                      )}
+                    />
+                    {errors.googlemaplink && (
+                      <p className="text-red-500 text-xs">
+                        {errors.googlemaplink.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -860,6 +891,20 @@ const CreateOrganization = () => {
                       </p>
                     )}
                   </div>
+                  <div>
+                    <InputField
+                      label={"CashFree Vendor ID*"}
+                      type={"text"}
+                      placeholder={"Enter Vendor ID"}
+                      {...register("beneficiary_id")}
+                      readOnly={mode1}
+                    />
+                    {errors.beneficiary_id && (
+                      <p className="text-red-500 text-xs">
+                        {errors.beneficiary_id.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {watch("organizationType_id") !== dentistId && (
@@ -1076,7 +1121,7 @@ const CreateOrganization = () => {
                   <Controller
                     name="file2"
                     control={control}
-                    defaultValue={[]}
+                    default value={[]}
                     render={({ field }) => (
                       <FileUpload
                         name="file2"

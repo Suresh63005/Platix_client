@@ -7,15 +7,19 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalItems = data.length; // Use data.length as totalItems
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
   const paginatedData = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  // Calculate start and end item numbers for the current page
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
   // Function to convert data to CSV and trigger download
   const downloadCSV = (data, filename) => {
-
     if (!data.length) {
       alert("No data available for download!");
       return;
@@ -37,7 +41,6 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
   // Single Row Download
   const handleSingleDownload = (item) => {
     downloadCSV([item], `Report_${item.orderId || item.id}.csv`);
-
   };
 
   // Select all items on current page
@@ -73,16 +76,6 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
   return (
     <div className="reports-container p-4 flex-1">
       <div className="table-container bg-white border border-[#EAEAFF] shadow-sm rounded-md p-4 max-w-[77vw]">
-        {/* Download All Button */}
-        {/* <div className="flex justify-end mb-4">
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
-            onClick={handleBulkDownload}
-          >
-            Download All
-          </button>
-        </div> */}
-
         <div className="w-full max-h-[55vh] overflow-auto scrollbar-color">
           <table className="text-sm min-w-full table-auto">
             <thead className="text-[12px]">
@@ -104,7 +97,7 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
                   <th
                     key={index}
                     className="p-2 font-medium text-left whitespace-nowrap"
-                    style={{ minWidth: "120px" }} // Adjust minWidth as needed
+                    style={{ minWidth: "120px" }}
                   >
                     {column}
                   </th>
@@ -113,39 +106,50 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
               </tr>
             </thead>
             <tbody>
-              {paginatedData.map((item, index) => (
-                <tr key={item.id} className="border-b-[1px] border-[#F3E6F2]">
-                  <td className="p-2 text-center">
-                    <input
-                      type="checkbox"
-                      className="cursor-pointer"
-                      onChange={(e) => handleSelectItem(e, item.id)}
-                      checked={selectedItems.includes(item.id)}
-                      aria-label={`Select Row ${index + 1}`}
-                    />
-                  </td>
-                  <td className="p-2 text-center">
-                    {(currentPage - 1) * itemsPerPage + index + 1}
-                  </td>
-                  {columns.map((col, colIndex) => (
-                    <td
-                      key={colIndex}
-                      className="p-2 text-left text-[12px] font-medium text-gray-500"
-                      style={{ minWidth: "120px" }}
-                    >
-                      {item[columnKeyMapping[col]] || "-"}
-                    </td>
-                  ))}
-                  <td className="p-2 text-center">
-                    <div className="flex justify-center">
-                      <Download 
-                        className="w-5 h-5 text-blue-600 cursor-pointer" 
-                        onClick={() => handleSingleDownload(item)} 
-                      />
-                    </div>
+              {paginatedData.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={columns.length + 2}
+                    className="p-2 text-center text-[12px] font-medium text-gray-500"
+                  >
+                    No Data available
                   </td>
                 </tr>
-              ))}
+              ) : (
+                paginatedData.map((item, index) => (
+                  <tr key={item.id} className="border-b-[1px] border-[#F3E6F2]">
+                    <td className="p-2 text-center">
+                      <input
+                        type="checkbox"
+                        className="cursor-pointer"
+                        onChange={(e) => handleSelectItem(e, item.id)}
+                        checked={selectedItems.includes(item.id)}
+                        aria-label={`Select Row ${index + 1}`}
+                      />
+                    </td>
+                    <td className="p-2 text-center">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
+                    {columns.map((col, colIndex) => (
+                      <td
+                        key={colIndex}
+                        className="p-2 text-left text-[12px] font-medium text-gray-500"
+                        style={{ minWidth: "120px" }}
+                      >
+                        {item[columnKeyMapping[col]] || "-"}
+                      </td>
+                    ))}
+                    <td className="p-2 text-center">
+                      <div className="flex justify-center">
+                        <Download
+                          className="w-5 h-5 text-blue-600 cursor-pointer"
+                          onClick={() => handleSingleDownload(item)}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -154,11 +158,10 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
         <div className="pagination-container flex items-center justify-between mt-4 flex-wrap gap-4 w-full">
           <div className="showing-container text-[#71717A] font-medium text-[12px]">
             Showing{" "}
-            <span className="text-black">{String(currentPage).padStart(2, "0")}</span>{" "}
+            <span className="text-black">{startItem}-{endItem}</span>{" "}
             of{" "}
-            <span className="text-black">
-              {String(totalPages).padStart(2, "0")}
-            </span>
+            <span className="text-black">{totalItems}</span>{" "}
+            items
           </div>
           <div className="flex items-center font-medium text-[12px] gap-4">
             <button
@@ -171,8 +174,8 @@ const ReportsTable = ({ columns, data, columnKeyMapping }) => {
               <LeftArrow className="w-5 h-5 text-gray-600" />
               Previous
             </button>
-            <div className="text-gray-700">
-              Page {currentPage} of {totalPages}
+            <div className="text-[#660F5D]">
+              Page {String(currentPage).padStart(2, "0")} of {String(totalPages).padStart(2,"0")}
             </div>
             <button
               className={`bg-[#660F5D] text-white p-2 rounded flex items-center gap-2 ${
