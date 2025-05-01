@@ -74,6 +74,7 @@ const CreateOrganization = () => {
     accountHolder: "",
     ifscCode: "",
     upiId: "",
+    beneficiary_id:" ",
     googlemaplink: "",
   });
 
@@ -148,11 +149,11 @@ const CreateOrganization = () => {
           setOrganization(orgData);
           setOrgTypeEditId(orgData.organizationType_id);
 
-          if (orgData.services) {
-            const servicesWithNames = orgData.services.map((service) => ({
-              id: service.serviceDetail.id,
-              name: service.serviceDetail.servicename || service.name,
-              price: service.price,
+          if (orgData?.services) {
+            const servicesWithNames = orgData?.services?.map((service) => ({
+              id: service?.serviceDetail.id,
+              name: service?.serviceDetail?.servicename || service?.name,
+              price: service?.price,
             }));
             setUserServices(servicesWithNames);
           }
@@ -185,7 +186,7 @@ const CreateOrganization = () => {
 
         const servicesData = servicesResponse.data.services;
         setAvailableServices(
-          servicesData.map((service) => ({
+          servicesData?.map((service) => ({
             id: service.id,
             name: service.servicename,
           }))
@@ -329,6 +330,7 @@ const CreateOrganization = () => {
       form.append("ifscCode", data.ifscCode);
       form.append("upiId", data.upiId);
       form.append("googlemaplink", data.googlemaplink);
+      form.append("beneficiary_id",data.beneficiary_id)
 
       form.append("services", JSON.stringify(userServices));
       form.append("addresses", JSON.stringify(addresses));
@@ -886,6 +888,20 @@ const CreateOrganization = () => {
                     {errors.upiId && (
                       <p className="text-red-500 text-xs">
                         {errors.upiId.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <InputField
+                      label={"CashFree Vendor ID*"}
+                      type={"text"}
+                      placeholder={"Enter Vendor ID"}
+                      {...register("beneficiary_id")}
+                      readOnly={mode1}
+                    />
+                    {errors.beneficiary_id && (
+                      <p className="text-red-500 text-xs">
+                        {errors.beneficiary_id.message}
                       </p>
                     )}
                   </div>
