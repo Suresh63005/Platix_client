@@ -19,14 +19,20 @@ const Table = ({
   handleDelete,
   setSelectedItems,
   selectedItems,
-  currentPage
+  currentPage,
+  totalItems, // New prop for total number of items
+  itemsPerPage = 10, // New prop with default value of 10
 }) => {
-
-  console.log(data, "boloooooooooooooooooooooooooooooooooooo")
-  console.log(selectedItems, "select items")
+  console.log(data, "boloooooooooooooooooooooooooooooooooooo");
+  console.log(selectedItems, "select items");
 
   const [editingItem, setEditingItem] = useState(null);
-  const isCheckboxVisible = currentPage !== "roles"
+  const isCheckboxVisible = currentPage !== "roles";
+
+  // Calculate start and end item numbers for the current page
+  const startItem = (page - 1) * itemsPerPage + 1;
+  const endItem = Math.min(page * itemsPerPage, totalItems || data.length);
+
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       const allItems = data.map((item) => item.id);
@@ -56,35 +62,29 @@ const Table = ({
     }
   };
 
-
-
   const handleSave = (itemId) => {
     setEditingItem(null);
   };
 
   return (
     <div className="userlist-container p-4 flex-1 overflow-auto scrollbar-color h-[78vh]">
-      <div className="usertable-container bg-white border border-[#EAEAFF] shadow-sm rounded-md p-4 h-[max-content] ">
-        <table className="w-full table text-[12px] ">
+      <div className="usertable-container bg-white border border-[#EAEAFF] shadow-sm rounded-md p-4 h-[max-content]">
+        <table className="w-full table text-[12px]">
           <thead className="text-[12px]">
             <tr className="border-b-[1px] border-[#F3E6F2] bg-white">
               <th className="p-2 text-center text-[12px]">
-                {
-                  isCheckboxVisible && (
-                    <input
-                      type="checkbox"
-                      className="border-none cursor-pointer th-checkbox"
-                      onChange={handleSelectAll}
-                      checked={selectedItems?.length === data?.length}
-                    />
-                  )
-                }
+                {isCheckboxVisible && (
+                  <input
+                    type="checkbox"
+                    className="border-none cursor-pointer th-checkbox"
+                    onChange={handleSelectAll}
+                    checked={selectedItems?.length === data?.length}
+                  />
+                )}
               </th>
               <th className="p-2 font-medium text-left">S.No.</th>
               {columns.map((column, index) => {
-                // Extract label and style if column is an object
-                const label =
-                  typeof column === "object" ? column.label : column;
+                const label = typeof column === "object" ? column.label : column;
                 const style = typeof column === "object" ? column.style : {};
                 return (
                   <th
@@ -107,29 +107,31 @@ const Table = ({
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + (showActions ? 2 : 0)} className="p-2 text-center text-[12px] font-medium text-[#4D5D6B]">No Data available</td>
+                <td
+                  colSpan={columns.length + (showActions ? 2 : 0)}
+                  className="p-2 text-center text-[12px] font-medium text-[#4D5D6B]"
+                >
+                  No Data available
+                </td>
               </tr>
-            ): (
+            ) : (
               data.map((item, index) => (
-                <tr key={item.id} className="border-b border-[#F3E6F2] ">
+                <tr key={item.id} className="border-b border-[#F3E6F2]">
                   <td className="p-2 text-center text-[12px]">
                     <div className="custom-checkbox">
-                      {
-                        isCheckboxVisible && (
-                          <input
-                            type="checkbox"
-                            className="cursor-pointer text-[12px]"
-                            onChange={(e) => handleSelectItem(e, item.id)}
-                            checked={selectedItems?.includes(item?.id)}
-                          />
-                        )
-                      }
-                      <div className="custom-checkbox-box"></div>{" "}
-                      {/* Custom checkbox box */}
+                      {isCheckboxVisible && (
+                        <input
+                          type="checkbox"
+                          className="cursor-pointer text-[12px]"
+                          onChange={(e) => handleSelectItem(e, item.id)}
+                          checked={selectedItems?.includes(item?.id)}
+                        />
+                      )}
+                      <div className="custom-checkbox-box"></div>
                     </div>
                   </td>
                   <td className="p-2 text-left text-[12px] font-medium text-[#4D5D6B]">
-                    {(page - 1) * 10 + (index + 1)}
+                    {(page - 1) * itemsPerPage + (index + 1)}
                   </td>
                   {fields.map((field, idx) => (
                     <td
@@ -153,20 +155,17 @@ const Table = ({
                           }}
                         />
                       ) : field === "organizationType" && Array.isArray(item[field]) ? (
-                        // Check if the field is an array and then map through it
                         item[field].map((orgType, idx) => (
                           <span className="flex flex-col justify-center p-1 mt-1" key={idx}>
                             {orgType}
-                            {idx < item[field].length - 1 && ""} {/* Add a comma if it's not the last item */}
+                            {idx < item[field].length - 1 && ""}
                           </span>
                         ))
                       ) : (
-                        // Default display for non-array fields
                         item[field]
                       )}
                     </td>
                   ))}
-  
                   {showActions && (
                     <>
                       <td className="p-2 text-center">
@@ -183,7 +182,6 @@ const Table = ({
                               className="w-5 h-5 text-gray-600 cursor-pointer"
                               onClick={() => {
                                 handleEdit(item.id);
-  
                               }}
                             />
                           )}
@@ -212,17 +210,17 @@ const Table = ({
         <div className="pagination-container flex items-center justify-between mt-4 flex-wrap gap-4">
           <div className="showing-container text-[#71717A] font-medium text-[12px]">
             Showing{" "}
-            <span className="text-black">{String(page).padStart(2, "0")}</span>{" "}
+            <span className="text-black">{startItem}-{endItem}</span>{" "}
             of{" "}
-            <span className="text-black">
-              {String(totalPages).padStart(2, "0")}
-            </span>
+            <span className="text-black">{totalItems || data.length}</span>{" "}
+            items
           </div>
 
           <div className="flex items-center font-medium text-[12px] gap-4">
             <button
-              className={`previous-container flex items-center gap-2 bg-[#F3E6F2] p-2 rounded cursor-pointer ${page === 1 ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+              className={`previous-container flex items-center gap-2 bg-[#F3E6F2] p-2 rounded cursor-pointer ${
+                page === 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               onClick={handlePrevious}
               disabled={page === 1}
             >
@@ -230,12 +228,12 @@ const Table = ({
               Previous
             </button>
             <div className="pagenumber-container text-[#660F5D]">
-              Page {String(page).padStart(2, "0")} of{" "}
-              {String(totalPages).padStart(2, "0")}
+              Page {String(page).padStart(2, "0")} of {String(totalPages).padStart(2,"0")}
             </div>
             <button
-              className={`next-container flex items-center gap-2 bg-[#660F5D] p-2 px-4 rounded text-white ${page === totalPages ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+              className={`next-container flex items-center gap-2 bg-[#660F5D] p-2 px-4 rounded text-white ${
+                page === totalPages ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               onClick={handleNext}
               disabled={page === totalPages}
             >

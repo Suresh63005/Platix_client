@@ -128,8 +128,8 @@ const Userspage = () => {
   const handleView = (id) => {
     navigate(`/createuser/${organization_id}`, { state: { id, mode: "view" } });
   };
-  const handleDelete = async (id, forceDelete = false) => {
-    deleteItem("/user/delete", id, setUsers, forceDelete);
+  const handleDelete = async (id, forceDelete = false, deletedType="User") => {
+    deleteItem("/user/delete", id, setUsers, forceDelete,deletedType);
   };
 
   return (

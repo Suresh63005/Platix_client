@@ -74,6 +74,7 @@ const CreateOrganization = () => {
     accountHolder: "",
     ifscCode: "",
     upiId: "",
+    googlemaplink: "",
   });
 
   const [availableServices, setAvailableServices] = useState([]);
@@ -327,6 +328,7 @@ const CreateOrganization = () => {
       form.append("accountHolder", data.accountHolder);
       form.append("ifscCode", data.ifscCode);
       form.append("upiId", data.upiId);
+      form.append("googlemaplink", data.googlemaplink);
 
       form.append("services", JSON.stringify(userServices));
       form.append("addresses", JSON.stringify(addresses));
@@ -531,6 +533,33 @@ const CreateOrganization = () => {
                         </p>
                       )}
                     </div>
+                  </div>
+
+                  <div>
+                    <Controller
+                      name="googlemaplink"
+                      control={control}
+                      defaultValue=""
+                      rules={{ required: "Google Map Link is required." }}
+                      render={({ field }) => (
+                        <InputField
+                          label={"Google Map Link*"}
+                          type={"text"}
+                          placeholder={"Enter Google Map Link"}
+                          {...field}
+                          readOnly={mode1}
+                          onChange={(e) => {
+                            field.onChange(e.target.value);
+                            trigger("googlemaplink");
+                          }}
+                        />
+                      )}
+                    />
+                    {errors.googlemaplink && (
+                      <p className="text-red-500 text-xs">
+                        {errors.googlemaplink.message}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -1076,7 +1105,7 @@ const CreateOrganization = () => {
                   <Controller
                     name="file2"
                     control={control}
-                    defaultValue={[]}
+                    default value={[]}
                     render={({ field }) => (
                       <FileUpload
                         name="file2"
