@@ -20,6 +20,7 @@ const Pagetitle = ({
   organizationChange,
   organizationOptions,
   assignButtonLabel,
+  handleBackClick,
   onAssignClick,
   setOrganizationType_id
 }) => {
@@ -67,9 +68,7 @@ const Pagetitle = ({
     }),
   };
   const navigate = useNavigate();
-  const handleBackClick = () => {
-    navigate(-1);
-  };
+ 
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-center p-2 space-y-4 md:space-y-0 pl-5">
