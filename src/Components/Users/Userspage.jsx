@@ -120,6 +120,9 @@ const Userspage = () => {
     setPage(1);
 };
 
+const handleBackClick=()=>{
+  navigate("/organizationlist")
+}
 
   const handleEdit = (id) => {
     navigate(`/createuser/${organization_id}`, { state: { id, mode: "edit" } });
@@ -144,6 +147,7 @@ const Userspage = () => {
           filterValue={userTypeFilter}
           onFilterChange={handleFilterChange}
           options={filterOptions}
+          handleBackClick={handleBackClick}
           searchPlaceholder="Search"
           onSearch={handleSearch}
           filterPlaceholder={"Filter"}
