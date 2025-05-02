@@ -30,6 +30,7 @@ const CreateOrganization = () => {
   const bankRegex = /^[a-zA-Z\s]{2,100}$/;
   const AccountNumberRegex = /^[0-9]{8,18}$/;
   const accountHolderRegex = /^[a-zA-Z\s]{2,100}$/;
+  const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
   const location = useLocation();
   const navigate = useNavigate();
   const { id, mode } = location.state || {};
@@ -62,7 +63,6 @@ const CreateOrganization = () => {
     designation: "",
     email: "",
     googleCoordinates: { latitude: "", longitude: "" },
-    gstNumber: null,
     mobile: "",
     name: "",
     registrationId: null,
@@ -74,8 +74,19 @@ const CreateOrganization = () => {
     accountHolder: "",
     ifscCode: "",
     upiId: "",
-    beneficiary_id:" ",
+    beneficiary_id: " ",
     googlemaplink: "",
+  });
+
+  const [vendorData, setVendorData] = useState({
+    accountType: "",
+    pan: "",
+    gst: "",
+    cin: "",
+    aadhaar: "",
+    drivingLicense: "",
+    voterId: "",
+    passportNumber: "",
   });
 
   const [availableServices, setAvailableServices] = useState([]);
@@ -158,12 +169,35 @@ const CreateOrganization = () => {
             setUserServices(servicesWithNames);
           }
 
+          // Populate vendor data if available
+          if (orgData?.vendor) {
+            setVendorData({
+              accountType: orgData.vendor.accountType || "",
+              pan: orgData.vendor.pan || "",
+              gst: orgData.vendor.gst || "",
+              cin: orgData.vendor.cin || "",
+              aadhaar: orgData.vendor.aadhaar || "",
+              drivingLicense: orgData.vendor.drivingLicense || "",
+              voterId: orgData.vendor.voterId || "",
+              passportNumber: orgData.vendor.passportNumber || "",
+            });
+            // Set form values for vendor fields
+            setValue("vendorData.accountType", orgData.vendor.accountType || "");
+            setValue("vendorData.pan", orgData.vendor.pan || "");
+            setValue("vendorData.gst", orgData.vendor.gst || "");
+            setValue("vendorData.cin", orgData.vendor.cin || "");
+            setValue("vendorData.aadhaar", orgData.vendor.aadhaar || "");
+            setValue("vendorData.drivingLicense", orgData.vendor.drivingLicense || "");
+            setValue("vendorData.voterId", orgData.vendor.voterId || "");
+            setValue("vendorData.passportNumber", orgData.vendor.passportNumber || "");
+          }
+
           Object.keys(orgData).forEach((key) => {
-            if (orgData[key] !== null && typeof orgData[key] === "object") {
+            if (orgData[key] !== null && typeof orgData[key] === "object" && key !== "vendor") {
               Object.keys(orgData[key]).forEach((nestedKey) => {
                 setValue(`${key}.${nestedKey}`, orgData[key][nestedKey]);
               });
-            } else {
+            } else if (key !== "vendor") {
               setValue(key, orgData[key]);
             }
           });
@@ -311,6 +345,22 @@ const CreateOrganization = () => {
     try {
       console.log("Services before submission:", userServices);
       console.log("Addresses before submission:", addresses);
+      console.log("Vendor data before submission:", vendorData);
+
+      // Validate address proof fields
+      const hasAddressProof =
+        vendorData.aadhaar ||
+        vendorData.drivingLicense ||
+        vendorData.voterId ||
+        vendorData.passportNumber;
+      if (!hasAddressProof) {
+        setError("addressProof", {
+          type: "manual",
+          message: "At least one address proof is required.",
+        });
+        setloading(false);
+        return;
+      }
 
       const form = new FormData();
       form.append("name", data.name);
@@ -320,7 +370,6 @@ const CreateOrganization = () => {
       form.append("whatsapp", data.whatsapp);
       form.append("email", data.email);
       form.append("description", data.description);
-      form.append("gstNumber", data.gstNumber);
       form.append("designation", data.designation);
       form.append("businessName", data.businessName);
       form.append("registrationId", data.registrationId);
@@ -330,10 +379,11 @@ const CreateOrganization = () => {
       form.append("ifscCode", data.ifscCode);
       form.append("upiId", data.upiId);
       form.append("googlemaplink", data.googlemaplink);
-      form.append("beneficiary_id",data.beneficiary_id)
+      form.append("beneficiary_id", data.beneficiary_id);
 
       form.append("services", JSON.stringify(userServices));
       form.append("addresses", JSON.stringify(addresses));
+      form.append("vendorData", JSON.stringify(vendorData));
 
       if (id) {
         form.append("id", id);
@@ -407,6 +457,26 @@ const CreateOrganization = () => {
       handleOrginazationtypeid(orgTypeEditId);
     }
   }, [orgTypeEditId]);
+
+  // Watch accountType and address proof fields
+  const accountType = watch("vendorData.accountType");
+  const aadhaar = watch("vendorData.aadhaar");
+  const drivingLicense = watch("vendorData.drivingLicense");
+  const voterId = watch("vendorData.voterId");
+  const passportNumber = watch("vendorData.passportNumber");
+
+  // Validate address proof fields
+  useEffect(() => {
+    const hasAddressProof = aadhaar || drivingLicense || voterId || passportNumber;
+    if (hasAddressProof) {
+      clearErrors("addressProof");
+    } else {
+      setError("addressProof", {
+        type: "manual",
+        message: "At least one address proof is required.",
+      });
+    }
+  }, [aadhaar, drivingLicense, voterId, passportNumber, setError, clearErrors]);
 
   return (
     <div>
@@ -672,24 +742,6 @@ const CreateOrganization = () => {
                       readOnly={mode1}
                     />
                   </div>
-                  {watch("organizationType_id") !== dentistId && (
-                  <div>
-                    <InputField
-                      label="GST*"
-                      type="text"
-                      placeholder="Enter GST Number"
-                      {...register("gstNumber", {
-                        required: "GST is required.",
-                      })}
-                      readOnly={mode1}
-                    />
-                    {errors.gstNumber && (
-                      <p className="text-red-500 text-xs">
-                        {errors.gstNumber.message}
-                      </p>
-                    )}
-                  </div>
-                  )}
 
                   {watch("organizationType_id") === dentistId && (
                     <div>
@@ -908,6 +960,212 @@ const CreateOrganization = () => {
                 </div>
 
                 {watch("organizationType_id") !== dentistId && (
+                  <div>
+                    <h3 className="text-lg font-bold mb-4 mt-6">
+                      Business Details
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium mb-1">Account Type*</label>
+                        <Controller
+                          name="vendorData.accountType"
+                          control={control}
+                          defaultValue=""
+                          rules={{ required: "Account Type is required." }}
+                          render={({ field }) => (
+                            <Select
+                              isDisabled={mode1 === "view"}
+                              value={
+                                field.value
+                                  ? { value: field.value, label: field.value }
+                                  : null
+                              }
+                              onChange={(selectedOption) => {
+                                const value = selectedOption ? selectedOption.value : "";
+                                field.onChange(value);
+                                setVendorData((prev) => ({ ...prev, accountType: value }));
+                              }}
+                              options={[
+                                { value: "Individual", label: "Individual" },
+                                { value: "Business", label: "Business" },
+                              ]}
+                              placeholder="Select Account Type"
+                              className="text-[12px]"
+                              styles={{
+                                control: (base, { isFocused }) => ({
+                                  ...base,
+                                  border: isFocused
+                                    ? "2px solid #660F5D"
+                                    : "1px solid #EAEAFF",
+                                  boxShadow: isFocused ? "none" : "none",
+                                  borderRadius: "5px",
+                                  padding: "2px",
+                                  fontSize: "12px",
+                                  color: "#757575",
+                                  height: "42px",
+                                  "&:hover": {},
+                                }),
+                                placeholder: (base) => ({
+                                  ...base,
+                                  color: "#757575",
+                                  fontSize: "12px",
+                                }),
+                                singleValue: (base) => ({
+                                  ...base,
+                                  fontSize: "12px",
+                                  fontWeight: "600",
+                                  color: "#757575",
+                                  fontFamily: "Montserrat, sans-serif",
+                                }),
+                                option: (base) => ({
+                                  ...base,
+                                  backgroundColor: "white",
+                                  color: "#757575",
+                                  fontWeight: "100",
+                                  cursor: "pointer",
+                                  fontSize: "12px",
+                                  "&:hover": {
+                                    backgroundColor: "#660F5D",
+                                    color: "white",
+                                  },
+                                }),
+                              }}
+                              components={{
+                                DropdownIndicator: () => (
+                                  <DownArrow className="w-[16px] h-[16px] pr-1" />
+                                ),
+                                IndicatorSeparator: () => null,
+                              }}
+                            />
+                          )}
+                        />
+                        {errors.vendorData?.accountType && (
+                          <p className="text-red-500 text-xs">
+                            {errors.vendorData.accountType.message}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <InputField
+                          label={"PAN*"}
+                          type={"text"}
+                          placeholder={"Enter PAN"}
+                          {...register("vendorData.pan", {
+                            required: "PAN is required.",
+                            pattern: {
+                              value: panRegex,
+                              message: "Enter a valid PAN (e.g., ABCDE1234F).",
+                            },
+                          })}
+                          readOnly={mode1}
+                          onChange={(e) => {
+                            setValue("vendorData.pan", e.target.value);
+                            setVendorData((prev) => ({ ...prev, pan: e.target.value }));
+                            trigger("vendorData.pan");
+                          }}
+                        />
+                        {errors.vendorData?.pan && (
+                          <p className="text-red-500 text-xs">
+                            {errors.vendorData.pan.message}
+                          </p>
+                        )}
+                      </div>
+                      {accountType === "Business" && (
+                        <>
+                          <div>
+                            <InputField
+                              label={"GST"}
+                              type={"text"}
+                              placeholder={"Enter GST"}
+                              {...register("vendorData.gst")}
+                              readOnly={mode1}
+                              onChange={(e) => {
+                                setValue("vendorData.gst", e.target.value);
+                                setVendorData((prev) => ({ ...prev, gst: e.target.value }));
+                              }}
+                            />
+                          </div>
+                          <div>
+                            <InputField
+                              label={"CIN"}
+                              type={"text"}
+                              placeholder={"Enter CIN"}
+                              {...register("vendorData.cin")}
+                              readOnly={mode1}
+                              onChange={(e) => {
+                                setValue("vendorData.cin", e.target.value);
+                                setVendorData((prev) => ({ ...prev, cin: e.target.value }));
+                              }}
+                            />
+                          </div>
+                        </>
+                      )}
+                      <div>
+                        <InputField
+                          label={"Aadhaar"}
+                          type={"text"}
+                          placeholder={"Enter Aadhaar"}
+                          {...register("vendorData.aadhaar")}
+                          readOnly={mode1}
+                          onChange={(e) => {
+                            setValue("vendorData.aadhaar", e.target.value);
+                            setVendorData((prev) => ({ ...prev, aadhaar: e.target.value }));
+                            trigger("vendorData.aadhaar");
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <InputField
+                          label={"Driving License"}
+                          type={"text"}
+                          placeholder={"Enter Driving License"}
+                          {...register("vendorData.drivingLicense")}
+                          readOnly={mode1}
+                          onChange={(e) => {
+                            setValue("vendorData.drivingLicense", e.target.value);
+                            setVendorData((prev) => ({ ...prev, drivingLicense: e.target.value }));
+                            trigger("vendorData.drivingLicense");
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <InputField
+                          label={"Voter ID"}
+                          type={"text"}
+                          placeholder={"Enter Voter ID"}
+                          {...register("vendorData.voterId")}
+                          readOnly={mode1}
+                          onChange={(e) => {
+                            setValue("vendorData.voterId", e.target.value);
+                            setVendorData((prev) => ({ ...prev, voterId: e.target.value }));
+                            trigger("vendorData.voterId");
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <InputField
+                          label={"Passport Number"}
+                          type={"text"}
+                          placeholder={"Enter Passport Number"}
+                          {...register("vendorData.passportNumber")}
+                          readOnly={mode1}
+                          onChange={(e) => {
+                            setValue("vendorData.passportNumber", e.target.value);
+                            setVendorData((prev) => ({ ...prev, passportNumber: e.target.value }));
+                            trigger("vendorData.passportNumber");
+                          }}
+                        />
+                      </div>
+                    </div>
+                    {errors.addressProof && (
+                      <p className="text-red-500 text-xs mt-2">
+                        {errors.addressProof.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {watch("organizationType_id") !== dentistId && (
                   <div className="">
                     <h3 className="text-lg font-semibold mb-4">Services</h3>
                     <div className="flex flex-col sm:flex-row gap-4 items-center mb-6">
@@ -1121,7 +1379,7 @@ const CreateOrganization = () => {
                   <Controller
                     name="file2"
                     control={control}
-                    default value={[]}
+                    defaultValue={[]}
                     render={({ field }) => (
                       <FileUpload
                         name="file2"
