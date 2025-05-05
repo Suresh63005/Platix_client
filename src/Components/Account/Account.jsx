@@ -5,12 +5,13 @@ import Header from "../../common/Header";
 import { InputField, PhoneNumberInput } from "../../common/Input_fileds";
 import PasswordInput from "../../common/PasswordInput";
 import { Icon } from "@iconify/react";
-import ProfileICon from "../../assets/images/User-100.svg"; 
+import ProfileICon from "../../assets/images/User-100.svg";
 import api from "../../utils/api";
 
 const Account = () => {
   const token = Cookies.get("token");
   const [loading, setLoading] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   // Extract admin ID from JWT
   let adminId = null;
@@ -32,7 +33,7 @@ const Account = () => {
     password: "",
     confirmPassword: "",
     profileImage: null,
-    imgPreview: ProfileICon, 
+    imgPreview: ProfileICon,
   });
 
   useEffect(() => {
@@ -55,7 +56,7 @@ const Account = () => {
           password: "",
           confirmPassword: "",
           profileImage: data.profileImage || ProfileICon,
-          imgPreview: data.profileImage || ProfileICon, 
+          imgPreview: data.profileImage || ProfileICon,
         });
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -75,7 +76,7 @@ const Account = () => {
       setProfile((prevData) => ({
         ...prevData,
         profileImage: file,
-        imgPreview: previewUrl, 
+        imgPreview: previewUrl,
       }));
     } else {
       setProfile((prevData) => ({
@@ -88,6 +89,7 @@ const Account = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formattedPhoneNumber = profile.phoneNumber.replace(/\s+/g, "");
     if (profile.password && profile.password !== profile.confirmPassword) {
       alert("Passwords do not match!");
       return;
@@ -96,7 +98,7 @@ const Account = () => {
     const formData = new FormData();
     formData.append("name", profile.name);
     formData.append("dateOfBirth", profile.dateOfBirth);
-    formData.append("phoneNumber", profile.phoneNumber);
+    formData.append("phoneNumber", formattedPhoneNumber);
     formData.append("confirmPassword", profile.confirmPassword);
     formData.append("email", profile.email);
     formData.append("password", profile.password);
@@ -104,15 +106,15 @@ const Account = () => {
 
     setLoading(true);
     try {
-      const response=await api.put(`admin/profile/update`, formData, {
+      const response = await api.put(`admin/profile/update`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if(response.status === 200){
+      if (response.status === 200) {
         alert(response.data.message);
       }
     } catch (error) {
-      console.error("Update failed:", error);
-      alert("Failed to update profile.");
+      const errorMessage = error.response?.data?.message || "Failed to update profile.";
+      alert(errorMessage);  // Show the backend error message
     } finally {
       setLoading(false);
     }
@@ -127,7 +129,7 @@ const Account = () => {
           <div className="relative bg-white rounded-lg w-full flex justify-center p-6">
             <div className="relative">
               <img
-                src={profile.imgPreview} 
+                src={profile.imgPreview}
                 alt="Profile"
                 className="w-[60px] h-[60px] rounded-full object-cover object-center"
               />
@@ -144,7 +146,7 @@ const Account = () => {
               type="file"
               className="hidden"
               accept="image/*"
-              onChange={handleChange} 
+              onChange={handleChange}
             />
           </div>
         </div>
@@ -182,13 +184,28 @@ const Account = () => {
                 <div className="w-full md:flex-1">
                   <PhoneNumberInput
                     value={profile.phoneNumber}
-                    onChange={(value) =>
-                      setProfile({ ...profile, phoneNumber: value })
-                    }
-                    defaultCountry="US"
+                    onChange={(value) => {
+                      const cleaned = value ? value.replace(/\s+/g, "") : "";
+
+                      setProfile({ ...profile, phoneNumber: cleaned });
+
+                      const indianRegex = /^\+91\d{10}$/;
+                      if (cleaned && !indianRegex.test(cleaned)) {
+                        setPhoneError("Phone number must be 10 digits after +91");
+                      } else {
+                        setPhoneError("");
+                      }
+                    }}
+
+
+                    defaultCountry="IN"
                     label={"Phone Number"}
                     className="p-2"
                   />
+                  {phoneError && (
+                    <p className="text-red-500 text-xs mt-1">{phoneError}</p>
+                  )}
+
                 </div>
                 <div className="w-full md:flex-1">
                   <InputField
@@ -196,7 +213,7 @@ const Account = () => {
                     name="email"
                     type="email"
                     value={profile.email}
-                    // readOnly 
+                  // readOnly 
                   />
                 </div>
               </div>
