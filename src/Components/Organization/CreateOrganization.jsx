@@ -420,7 +420,7 @@ const CreateOrganization = () => {
               timer: 2000,
               showConfirmButton: false,
               willClose: () => {
-                navigate("/organizationlist");
+                // navigate("/organizationlist");
               },
             });
           }
