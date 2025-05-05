@@ -120,6 +120,9 @@ const Userspage = () => {
     setPage(1);
 };
 
+const handleBackClick=()=>{
+  navigate("/organizationlist")
+}
 
   const handleEdit = (id) => {
     navigate(`/createuser/${organization_id}`, { state: { id, mode: "edit" } });
@@ -128,8 +131,8 @@ const Userspage = () => {
   const handleView = (id) => {
     navigate(`/createuser/${organization_id}`, { state: { id, mode: "view" } });
   };
-  const handleDelete = async (id, forceDelete = false) => {
-    deleteItem("/user/delete", id, setUsers, forceDelete);
+  const handleDelete = async (id, forceDelete = false, deletedType="User") => {
+    deleteItem("/user/delete", id, setUsers, forceDelete,deletedType);
   };
 
   return (
@@ -144,6 +147,7 @@ const Userspage = () => {
           filterValue={userTypeFilter}
           onFilterChange={handleFilterChange}
           options={filterOptions}
+          handleBackClick={handleBackClick}
           searchPlaceholder="Search"
           onSearch={handleSearch}
           filterPlaceholder={"Filter"}

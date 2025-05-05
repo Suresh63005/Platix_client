@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../../utils/api";
+import { toast, Toaster } from 'react-hot-toast';
 
 const Createnewpass = () => {
   const { register, handleSubmit, watch, setError, formState: { errors } } = useForm();
@@ -18,35 +19,43 @@ const Createnewpass = () => {
 
   const onSubmit = async (data) => {
     const { newPassword, confirmPassword } = data;
-
-    // Check if passwords match
+  
     if (newPassword !== confirmPassword) {
       setError("confirmPassword", { message: "Passwords do not match" });
       return;
     }
-
+  
     try {
-      // Extract the token from the URL parameter (not from the query string)
-      const token = window.location.pathname.split("/").pop(); // Get the last part of the path as token
-
+      const token = window.location.pathname.split("/").pop();
+  
       if (!token) {
         setErrorState("Token is missing. Please use the link sent to your email.");
         return;
       }
-
-      // Send request to backend to update password
+  
       const response = await api.post(
-        `admin/createnewpass/${token}`, // Token in URL
-        { newPassword },  // Send only newPassword
+        `admin/createnewpass/${token}`,
+        { newPassword },
         {
           headers: { "Content-Type": "application/json" },
         }
       );
-
+  
+      // ✅ Show toast before redirect
+      toast.dismiss();
+      toast.success('Password updated successfully!');
+  
+      // ✅ Delay navigation to let toast appear
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
+  
       setSuccess("Password updated successfully!");
-      navigate("/")
       setErrorState("");
+  
     } catch (error) {
+      console.error("Password reset error:", error);
+  
       if (error.response?.status === 400) {
         setErrorState(error.response.data.message || "Invalid or expired token.");
       } else if (error.response?.status === 404) {
@@ -54,9 +63,11 @@ const Createnewpass = () => {
       } else {
         setErrorState("Server error. Please try again later.");
       }
+  
       setSuccess("");
     }
   };
+  
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -77,7 +88,6 @@ const Createnewpass = () => {
             Set your new password here
           </h4>
 
-          {/* Show success or error messages */}
           {error && <div className="text-red-500 mb-4">{error}</div>}
           {success && <div className="text-green-500 mb-4">{success}</div>}
 
@@ -99,7 +109,7 @@ const Createnewpass = () => {
                 >
                   <Icon
                     icon={showPassword ? "mdi:eye" : "mdi:eye-off"}
-                    width={20} 
+                    width={20}
                   />
                 </span>
               </div>
@@ -149,8 +159,14 @@ const Createnewpass = () => {
       </div>
 
       <div className="flex justify-center py-4 mt-auto bg-white">
-        <h4 className="text-sm text-[#25064C] font-medium ">© Copyright 2025 Platix Admin portal</h4>
+        <h4 className="text-sm text-[#25064C] font-medium">© Copyright 2025 Platix Admin portal</h4>
       </div>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{ duration: 3000 }} // Match navigation delay
+        containerStyle={{ zIndex: 9999 }} // Ensure visibility
+      />
     </div>
   );
 };
