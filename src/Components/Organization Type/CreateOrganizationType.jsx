@@ -43,6 +43,7 @@ const CreateOrganizationType = () => {
       api.get(`organization/getbyid/${id}`)
         .then((response) => {
           const orgData = response.data.data;
+          console.log(orgData,"ytetettte")
           // Pre-fill form fields
           setValue("organizationType", orgData.organizationType || "");
           setValue("description", orgData.description || "");
