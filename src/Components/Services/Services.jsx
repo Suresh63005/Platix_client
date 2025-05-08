@@ -128,10 +128,14 @@ const Services = () => {
         const response = await api.get("organization/getall", {
           headers: { Authorization: `Bearer ${token}` },
         });
-
+  
         if (response.data && Array.isArray(response.data.results)) {
+          const filteredTypes = response.data.results.filter(
+            (org) => org.organizationType.toLowerCase() !== "dentist"
+          );
+  
           setOrgTypeOptions(
-            response.data.results.map((org) => ({
+            filteredTypes.map((org) => ({
               value: org.id,
               label: org.organizationType,
             }))
@@ -144,9 +148,10 @@ const Services = () => {
         setOrgTypeOptions([]);
       }
     };
-
+  
     fetchOrganizationTypes();
   }, []);
+  
 
   // ✅ Fetch Service Filter Options
   useEffect(() => {

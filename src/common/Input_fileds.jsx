@@ -1,3 +1,4 @@
+
 import React, { useState, forwardRef,useRef, useEffect } from "react";
 import { WhatsApp } from "@mui/icons-material";
 import PhoneInput from "react-phone-number-input";
@@ -228,12 +229,12 @@ export const FileUpload = forwardRef(({ name, onChange, readOnly, files = [], se
             <span className="text-sm text-gray-700 truncate max-w-[300px]">
               {file.name}
             </span>
-            <span
+            <button
               className="flex items-center gap-1 text-[#660F5D] hover:text-red-500"
               onClick={() => handleDelete(file)}
             >
               <Delete className="w-[15px]" />
-            </span>
+            </button>
           </div>
         ))}
       </div>
@@ -337,3 +338,4 @@ export const ServiceForm = forwardRef((props, ref) => {
     </div>
   );
 });
+
