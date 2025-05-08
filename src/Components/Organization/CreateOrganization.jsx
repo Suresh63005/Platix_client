@@ -28,6 +28,7 @@ const CreateOrganization = () => {
   const longitudeRegex = /^-?((1[0-7]\d(\.\d+)?)|([1-9]?\d(\.\d+)?))$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const bankRegex = /^[a-zA-Z\s]{2,100}$/;
+  const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
   const AccountNumberRegex = /^[0-9]{8,18}$/;
   const accountHolderRegex = /^[a-zA-Z\s]{2,100}$/;
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
@@ -943,7 +944,7 @@ const CreateOrganization = () => {
                       </p>
                     )}
                   </div>
-                  <div>
+                  {/* <div>
                     <InputField
                       label={"CashFree Vendor ID*"}
                       type={"text"}
@@ -956,7 +957,7 @@ const CreateOrganization = () => {
                         {errors.beneficiary_id.message}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
 
                 {watch("organizationType_id") !== dentistId && (
@@ -1073,18 +1074,30 @@ const CreateOrganization = () => {
                       {accountType === "Business" && (
                         <>
                           <div>
-                            <InputField
-                              label={"GST"}
-                              type={"text"}
-                              placeholder={"Enter GST"}
-                              {...register("vendorData.gst")}
-                              readOnly={mode1}
-                              onChange={(e) => {
-                                setValue("vendorData.gst", e.target.value);
-                                setVendorData((prev) => ({ ...prev, gst: e.target.value }));
-                              }}
-                            />
-                          </div>
+  <InputField
+    label={"GST"}
+    type={"text"}
+    placeholder={"Enter GST"}
+    {...register("vendorData.gst", {
+      required: "GST is required.",
+      pattern: {
+        value: gstRegex,
+        message: "Enter a valid GST (e.g., 12ABCDE1234F1Z5).",
+      },
+    })}
+    readOnly={mode1}
+    onChange={(e) => {
+      setValue("vendorData.gst", e.target.value);
+      setVendorData((prev) => ({ ...prev, gst: e.target.value }));
+      trigger("vendorData.gst");
+    }}
+  />
+  {errors.vendorData?.gst && (
+    <p className="text-red-500 text-xs">
+      {errors.vendorData.gst.message}
+    </p>
+  )}
+</div>
                           <div>
                             <InputField
                               label={"CIN"}

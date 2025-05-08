@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 
 const api = axios.create({
   // baseURL: "http://localhost:5001",
-  baseURL: "https://platix-server.vercel.app/",
+  baseURL: "https://platix-server-gray.vercel.app/",
  
   withCredentials: true, 
 });
