@@ -21,13 +21,14 @@ import { Vortex } from "react-loader-spinner";
 import api from "../../utils/api";
 import { useLoading } from "../../context/LoadingContext";
 import { organizationTypesData } from "../../Data/data";
-import { toast, Toaster } from 'react-hot-toast';
+import { toast, Toaster } from "react-hot-toast";
 
 const CreateOrganization = () => {
   const latitudeRegex = /^-?([1-8]?\d(\.\d+)?|90(\.0+)?)$/;
   const longitudeRegex = /^-?((1[0-7]\d(\.\d+)?)|([1-9]?\d(\.\d+)?))$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const bankRegex = /^[a-zA-Z\s]{2,100}$/;
+  const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
   const AccountNumberRegex = /^[0-9]{8,18}$/;
   const accountHolderRegex = /^[a-zA-Z\s]{2,100}$/;
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
@@ -182,18 +183,31 @@ const CreateOrganization = () => {
               passportNumber: orgData.vendor.passportNumber || "",
             });
             // Set form values for vendor fields
-            setValue("vendorData.accountType", orgData.vendor.accountType || "");
+            setValue(
+              "vendorData.accountType",
+              orgData.vendor.accountType || ""
+            );
             setValue("vendorData.pan", orgData.vendor.pan || "");
             setValue("vendorData.gst", orgData.vendor.gst || "");
             setValue("vendorData.cin", orgData.vendor.cin || "");
             setValue("vendorData.aadhaar", orgData.vendor.aadhaar || "");
-            setValue("vendorData.drivingLicense", orgData.vendor.drivingLicense || "");
+            setValue(
+              "vendorData.drivingLicense",
+              orgData.vendor.drivingLicense || ""
+            );
             setValue("vendorData.voterId", orgData.vendor.voterId || "");
-            setValue("vendorData.passportNumber", orgData.vendor.passportNumber || "");
+            setValue(
+              "vendorData.passportNumber",
+              orgData.vendor.passportNumber || ""
+            );
           }
 
           Object.keys(orgData).forEach((key) => {
-            if (orgData[key] !== null && typeof orgData[key] === "object" && key !== "vendor") {
+            if (
+              orgData[key] !== null &&
+              typeof orgData[key] === "object" &&
+              key !== "vendor"
+            ) {
               Object.keys(orgData[key]).forEach((nestedKey) => {
                 setValue(`${key}.${nestedKey}`, orgData[key][nestedKey]);
               });
@@ -243,8 +257,8 @@ const CreateOrganization = () => {
       });
   }, [id, mode1, setValue]);
 
-  const dentistId = orgType.find((option) => 
-    option.label.toLowerCase() === "dentist"
+  const dentistId = orgType.find(
+    (option) => option.label.toLowerCase() === "dentist"
   )?.value;
 
   const handleBackClick = () => {
@@ -280,7 +294,7 @@ const CreateOrganization = () => {
     const filess = Array.from(e.target.files);
     const maxFiles = 3;
     const maxSize = 1 * 1024 * 1024;
-    
+
     setPImages(filess);
     setValue("file2", filess);
   };
@@ -403,13 +417,13 @@ const CreateOrganization = () => {
       const maxSize = 1 * 1024 * 1024;
       const oversizedImages = PImages.filter((file) => file.size > maxSize);
 
-      if ((PImages.length + imageExtra.length) > 3) {
+      if (PImages.length + imageExtra.length > 3) {
         toast.dismiss();
-        toast.error('Exceeded the maximum number of images');
+        toast.error("Exceeded the maximum number of images");
         return;
       } else if (oversizedImages.length > 0) {
         toast.dismiss();
-        toast.error('Each image must be less than 1MB.');
+        toast.error("Each image must be less than 1MB.");
         return;
       } else {
         const response = await api.post("api/organization/upsert", form, {
@@ -421,12 +435,15 @@ const CreateOrganization = () => {
         setTimeout(() => {
           if (response.status === 201 || response.status === 200) {
             Swal.fire({
-              text: mode1 === "edit" ? "Organization Updated Successfully" : "Organization Added Successfully",
+              text:
+                mode1 === "edit"
+                  ? "Organization Updated Successfully"
+                  : "Organization Added Successfully",
               icon: "success",
               timer: 2000,
               showConfirmButton: false,
               willClose: () => {
-                // navigate("/organizationlist");
+                navigate("/organizationlist");
               },
             });
           }
@@ -434,7 +451,8 @@ const CreateOrganization = () => {
       }
     } catch (error) {
       Swal.fire({
-        text: error.response?.data?.error || "An error occurred. Please try again.",
+        text:
+          error.response?.data?.error || "An error occurred. Please try again.",
         icon: "error",
       });
       console.error("Form submission error:", error);
@@ -467,7 +485,8 @@ const CreateOrganization = () => {
 
   // Validate address proof fields
   useEffect(() => {
-    const hasAddressProof = aadhaar || drivingLicense || voterId || passportNumber;
+    const hasAddressProof =
+      aadhaar || drivingLicense || voterId || passportNumber;
     if (hasAddressProof) {
       clearErrors("addressProof");
     } else {
@@ -491,8 +510,8 @@ const CreateOrganization = () => {
                 mode1 === "edit"
                   ? "Edit Organization"
                   : mode1 === "view"
-                    ? "View Organization"
-                    : "Create Organization"
+                  ? "View Organization"
+                  : "Create Organization"
               }
               onBackClick={handleBackClick}
             />
@@ -504,8 +523,8 @@ const CreateOrganization = () => {
                 {mode1 === "view"
                   ? "View Organization"
                   : mode1 === "edit"
-                    ? "Edit Organization"
-                    : "Create Organization"}
+                  ? "Edit Organization"
+                  : "Create Organization"}
               </h3>
 
               <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
@@ -557,7 +576,10 @@ const CreateOrganization = () => {
 
                   <div>
                     <div className="flex flex-col p-1 mt-[-5px]">
-                      <label htmlFor="google-coordinates" className="block text-xs font-medium">
+                      <label
+                        htmlFor="google-coordinates"
+                        className="block text-xs font-medium"
+                      >
                         Google Coordinates*
                       </label>
                       <div className="flex gap-2">
@@ -568,11 +590,15 @@ const CreateOrganization = () => {
                             required: "Latitude is required.",
                             pattern: {
                               value: latitudeRegex,
-                              message: "Please enter a valid latitude (-90 to 90).",
+                              message:
+                                "Please enter a valid latitude (-90 to 90).",
                             },
                           })}
                           onChange={(e) => {
-                            setValue("googleCoordinates.latitude", e.target.value);
+                            setValue(
+                              "googleCoordinates.latitude",
+                              e.target.value
+                            );
                             trigger("googleCoordinates.latitude");
                           }}
                           readOnly={mode1}
@@ -584,11 +610,15 @@ const CreateOrganization = () => {
                             required: "Longitude is required.",
                             pattern: {
                               value: longitudeRegex,
-                              message: "Please enter a valid longitude (-180 to 180).",
+                              message:
+                                "Please enter a valid longitude (-180 to 180).",
                             },
                           })}
                           onChange={(e) => {
-                            setValue("googleCoordinates.longitude", e.target.value);
+                            setValue(
+                              "googleCoordinates.longitude",
+                              e.target.value
+                            );
                             trigger("googleCoordinates.longitude");
                           }}
                           readOnly={mode1}
@@ -653,12 +683,14 @@ const CreateOrganization = () => {
                             if (value && value.length < 10) {
                               setError("mobile", {
                                 type: "manual",
-                                message: "Mobile number must be at least 10 digits.",
+                                message:
+                                  "Mobile number must be at least 10 digits.",
                               });
                             } else if (value && value.length > 13) {
                               setError("mobile", {
                                 type: "manual",
-                                message: "Mobile number cannot exceed 10 digits.",
+                                message:
+                                  "Mobile number cannot exceed 10 digits.",
                               });
                             } else {
                               clearErrors("mobile");
@@ -692,7 +724,8 @@ const CreateOrganization = () => {
                             if (value.length > 10) {
                               setError("whatsapp", {
                                 type: "manual",
-                                message: "WhatsApp number cannot exceed 10 digits.",
+                                message:
+                                  "WhatsApp number cannot exceed 10 digits.",
                               });
                             } else {
                               clearErrors("whatsapp");
@@ -850,7 +883,8 @@ const CreateOrganization = () => {
                         required: "Bank name is required.",
                         pattern: {
                           value: bankRegex,
-                          message: "Enter a valid Bank Name (only letters and spaces).",
+                          message:
+                            "Enter a valid Bank Name (only letters and spaces).",
                         },
                       })}
                       onChange={(e) => {
@@ -874,7 +908,8 @@ const CreateOrganization = () => {
                         required: "Account number is required.",
                         pattern: {
                           value: AccountNumberRegex,
-                          message: "Enter a valid account number (8-18 digits).",
+                          message:
+                            "Enter a valid account number (8-18 digits).",
                         },
                       })}
                       onChange={(e) => {
@@ -898,7 +933,8 @@ const CreateOrganization = () => {
                         required: "Account Holder is required.",
                         pattern: {
                           value: accountHolderRegex,
-                          message: "Enter a valid name (only letters and spaces).",
+                          message:
+                            "Enter a valid name (only letters and spaces).",
                         },
                       })}
                       onChange={(e) => {
@@ -934,7 +970,9 @@ const CreateOrganization = () => {
                       label={"UPI ID*"}
                       type={"text"}
                       placeholder={"Enter UPI ID"}
-                      {...register("upiId", { required: "UPI ID is required." })}
+                      {...register("upiId", {
+                        required: "UPI ID is required.",
+                      })}
                       readOnly={mode1}
                     />
                     {errors.upiId && (
@@ -943,7 +981,7 @@ const CreateOrganization = () => {
                       </p>
                     )}
                   </div>
-                  <div>
+                  {/* <div>
                     <InputField
                       label={"CashFree Vendor ID*"}
                       type={"text"}
@@ -956,7 +994,7 @@ const CreateOrganization = () => {
                         {errors.beneficiary_id.message}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
 
                 {watch("organizationType_id") !== dentistId && (
@@ -966,7 +1004,9 @@ const CreateOrganization = () => {
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                       <div>
-                        <label className="block text-xs font-medium mb-1">Account Type*</label>
+                        <label className="block text-xs font-medium mb-1">
+                          Account Type*
+                        </label>
                         <Controller
                           name="vendorData.accountType"
                           control={control}
@@ -981,9 +1021,14 @@ const CreateOrganization = () => {
                                   : null
                               }
                               onChange={(selectedOption) => {
-                                const value = selectedOption ? selectedOption.value : "";
+                                const value = selectedOption
+                                  ? selectedOption.value
+                                  : "";
                                 field.onChange(value);
-                                setVendorData((prev) => ({ ...prev, accountType: value }));
+                                setVendorData((prev) => ({
+                                  ...prev,
+                                  accountType: value,
+                                }));
                               }}
                               options={[
                                 { value: "Individual", label: "Individual" },
@@ -1060,7 +1105,10 @@ const CreateOrganization = () => {
                           readOnly={mode1}
                           onChange={(e) => {
                             setValue("vendorData.pan", e.target.value);
-                            setVendorData((prev) => ({ ...prev, pan: e.target.value }));
+                            setVendorData((prev) => ({
+                              ...prev,
+                              pan: e.target.value,
+                            }));
                             trigger("vendorData.pan");
                           }}
                         />
@@ -1077,13 +1125,29 @@ const CreateOrganization = () => {
                               label={"GST"}
                               type={"text"}
                               placeholder={"Enter GST"}
-                              {...register("vendorData.gst")}
+                              {...register("vendorData.gst", {
+                                required: "GST is required.",
+                                pattern: {
+                                  value: gstRegex,
+                                  message:
+                                    "Enter a valid GST (e.g., 12ABCDE1234F1Z5).",
+                                },
+                              })}
                               readOnly={mode1}
                               onChange={(e) => {
                                 setValue("vendorData.gst", e.target.value);
-                                setVendorData((prev) => ({ ...prev, gst: e.target.value }));
+                                setVendorData((prev) => ({
+                                  ...prev,
+                                  gst: e.target.value,
+                                }));
+                                trigger("vendorData.gst");
                               }}
                             />
+                            {errors.vendorData?.gst && (
+                              <p className="text-red-500 text-xs">
+                                {errors.vendorData.gst.message}
+                              </p>
+                            )}
                           </div>
                           <div>
                             <InputField
@@ -1094,7 +1158,10 @@ const CreateOrganization = () => {
                               readOnly={mode1}
                               onChange={(e) => {
                                 setValue("vendorData.cin", e.target.value);
-                                setVendorData((prev) => ({ ...prev, cin: e.target.value }));
+                                setVendorData((prev) => ({
+                                  ...prev,
+                                  cin: e.target.value,
+                                }));
                               }}
                             />
                           </div>
@@ -1109,7 +1176,10 @@ const CreateOrganization = () => {
                           readOnly={mode1}
                           onChange={(e) => {
                             setValue("vendorData.aadhaar", e.target.value);
-                            setVendorData((prev) => ({ ...prev, aadhaar: e.target.value }));
+                            setVendorData((prev) => ({
+                              ...prev,
+                              aadhaar: e.target.value,
+                            }));
                             trigger("vendorData.aadhaar");
                           }}
                         />
@@ -1122,8 +1192,14 @@ const CreateOrganization = () => {
                           {...register("vendorData.drivingLicense")}
                           readOnly={mode1}
                           onChange={(e) => {
-                            setValue("vendorData.drivingLicense", e.target.value);
-                            setVendorData((prev) => ({ ...prev, drivingLicense: e.target.value }));
+                            setValue(
+                              "vendorData.drivingLicense",
+                              e.target.value
+                            );
+                            setVendorData((prev) => ({
+                              ...prev,
+                              drivingLicense: e.target.value,
+                            }));
                             trigger("vendorData.drivingLicense");
                           }}
                         />
@@ -1137,7 +1213,10 @@ const CreateOrganization = () => {
                           readOnly={mode1}
                           onChange={(e) => {
                             setValue("vendorData.voterId", e.target.value);
-                            setVendorData((prev) => ({ ...prev, voterId: e.target.value }));
+                            setVendorData((prev) => ({
+                              ...prev,
+                              voterId: e.target.value,
+                            }));
                             trigger("vendorData.voterId");
                           }}
                         />
@@ -1150,8 +1229,14 @@ const CreateOrganization = () => {
                           {...register("vendorData.passportNumber")}
                           readOnly={mode1}
                           onChange={(e) => {
-                            setValue("vendorData.passportNumber", e.target.value);
-                            setVendorData((prev) => ({ ...prev, passportNumber: e.target.value }));
+                            setValue(
+                              "vendorData.passportNumber",
+                              e.target.value
+                            );
+                            setVendorData((prev) => ({
+                              ...prev,
+                              passportNumber: e.target.value,
+                            }));
                             trigger("vendorData.passportNumber");
                           }}
                         />
@@ -1188,11 +1273,13 @@ const CreateOrganization = () => {
                               name: selectedOption.label,
                             })
                           }
-                          options={servicesList[0]?.services?.map((service) => ({
-                            id: service?.id,
-                            value: service?.id,
-                            label: service?.servicename,
-                          }))}
+                          options={servicesList[0]?.services?.map(
+                            (service) => ({
+                              id: service?.id,
+                              value: service?.id,
+                              label: service?.servicename,
+                            })
+                          )}
                           placeholder="Select service"
                           className="text-[12px]"
                           styles={{
@@ -1395,7 +1482,10 @@ const CreateOrganization = () => {
                   {organization?.file2 && (
                     <div className="flex gap-3">
                       {organization?.file2.map((item, index) => (
-                        <div key={index} className="mt-2 w-[50px] h-[50px] relative">
+                        <div
+                          key={index}
+                          className="mt-2 w-[50px] h-[50px] relative"
+                        >
                           <img
                             src={item}
                             alt="Existing"
@@ -1438,7 +1528,14 @@ const CreateOrganization = () => {
                           ariaLabel="vortex-loading"
                           wrapperStyle={{}}
                           wrapperClass="vortex-wrapper"
-                          colors={["white", "white", "white", "white", "white", "white"]}
+                          colors={[
+                            "white",
+                            "white",
+                            "white",
+                            "white",
+                            "white",
+                            "white",
+                          ]}
                         />
                       ) : mode1 === "edit" ? (
                         "Update"
@@ -1453,7 +1550,11 @@ const CreateOrganization = () => {
           </div>
         </div>
       )}
-      <Toaster position="top-right" reverseOrder={false} toastOptions={{ duration: 2000 }} />
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{ duration: 2000 }}
+      />
     </div>
   );
 };
