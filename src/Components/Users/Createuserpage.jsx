@@ -39,6 +39,7 @@ const CreateUserPage = () => {
     watch,
     control,
     reset,
+    getValues,
     formState: { errors },
     setError,
     clearErrors,
@@ -80,7 +81,6 @@ const CreateUserPage = () => {
           },
         });
         const result = response.data.formattedRoles;
-
         if (result) {
           const roleOptions = result.map((role) => ({
             value: role.id,
@@ -94,7 +94,6 @@ const CreateUserPage = () => {
         console.error("Error fetching roles:", error);
       }
     };
-
     fetchRoles();
   }, []);
 
@@ -104,19 +103,43 @@ const CreateUserPage = () => {
         .get(`user/getbyid/${id}`)
         .then((response) => {
           const userData = response.data.user;
-          console.log(userData);
-          reset(userData);
-          handleRoleChange(userData.role_id);
+          console.log("User Data:", userData);
+          const transformedData = {
+            ...userData,
+            prefix: userData.prefix ? userData.prefix.toLowerCase() : "",
+          };
+          reset(transformedData);
+          console.log("Form State:", getValues());
+          // Set designation field visibility based on role
+          if (userData.role?.rolename === "Dentist") {
+            setDesignationOptions([
+              { value: "General Dentist", label: "General Dentist" },
+              { value: "Prosthodontist", label: "Prosthodontist" },
+              { value: "Oral surgeon", label: "Oral surgeon" },
+              { value: "Periodontist", label: "Periodontist" },
+              { value: "Implantologist", label: "Implantologist" },
+              { value: "Orthodontist", label: "Orthodontist" },
+              { value: "Oral Pathologist", label: "Oral Pathologist" },
+              { value: "Oral Medicine & Radiologist", label: "Oral Medicine & Radiologist" },
+              { value: "Community dentist", label: "Community dentist" },
+              { value: "Paeddontist", label: "Paeddontist" },
+            ]);
+            setShowDesignationField(true);
+          }
+          // Call handleRoleChange only if roles are loaded
+          if (roles.length > 0) {
+            handleRoleChange(userData.role_id);
+          }
         })
         .catch((error) => console.error("Error fetching user data:", error));
     }
     setMode(initialMode || "create");
-  }, [id, initialMode, reset]);
+  }, [id, initialMode, reset, getValues, roles]);
 
   const handleRoleChange = (selectedRoleId) => {
     setValue("role_id", selectedRoleId);
-
     const selectedRole = roles.find((role) => role.value === selectedRoleId);
+    console.log("Selected Role:", selectedRole); // Debug
     if (!selectedRole) return;
 
     switch (selectedRole.label) {
@@ -159,9 +182,10 @@ const CreateUserPage = () => {
       const requestData = {
         ...data,
         organization_id,
+        prefix: data.prefix ? data.prefix.toUpperCase() : data.prefix,
         ...(mode === "edit" && { id }),
       };
-      console.log(requestData);
+      console.log("Request Data:", requestData);
 
       const response = await api.post("user/upsert", requestData, {
         headers: {
@@ -187,7 +211,6 @@ const CreateUserPage = () => {
         throw new Error(result.message || "Something went wrong");
       }
     } catch (error) {
-      // Handle specific uniqueness errors
       if (error.response?.status === 400) {
         const errorMessage = error.response.data.message;
         if (errorMessage === "Email already exists") {
@@ -301,6 +324,7 @@ const CreateUserPage = () => {
                       placeholder="Enter First Name"
                       {...field}
                       readOnly={mode === "view"}
+                    Munch
                     />
                   )}
                 />
@@ -372,37 +396,36 @@ const CreateUserPage = () => {
 
               {/* Mobile Number */}
               <div>
-  <Controller
-    name="mobileNo"
-    control={control}
-    defaultValue=""
-    rules={{ required: "Mobile number is required." }}
-    render={({ field }) => (
-      <PhoneNumberInput
-        label="Mobile Number*"
-        {...field}
-        defaultCountry="IN"
-        placeholder="Enter Mobile Number"
-        className="p-1"
-        readOnly={mode === "view"}
-        onChange={(value) => {
-          // Normalize the value to count only digits
-          const numericValue = value ? value.replace(/[^0-9]/g, "") : "";
-          field.onChange(value); // Update form state with original value
-          if (numericValue.length > 12) {
-            setError("mobileNo", {
-              type: "manual",
-              message: "Mobile number cannot exceed 10 digits.",
-            });
-          } else {
-            clearErrors("mobileNo");
-          }
-        }}
-      />
-    )}
-  />
-  {errors.mobileNo && <p className="text-red-500 text-xs">{errors.mobileNo.message}</p>}
-</div>
+                <Controller
+                  name="mobileNo"
+                  control={control}
+                  defaultValue=""
+                  rules={{ required: "Mobile number is required." }}
+                  render={({ field }) => (
+                    <PhoneNumberInput
+                      label="Mobile Number*"
+                      {...field}
+                      defaultCountry="IN"
+                      placeholder="Enter Mobile Number"
+                      className="p-1"
+                      readOnly={mode === "view"}
+                      onChange={(value) => {
+                        const numericValue = value ? value.replace(/[^0-9]/g, "") : "";
+                        field.onChange(value);
+                        if (numericValue.length > 12) {
+                          setError("mobileNo", {
+                            type: "manual",
+                            message: "Mobile number cannot exceed 10 digits.",
+                          });
+                        } else {
+                          clearErrors("mobileNo");
+                        }
+                      }}
+                    />
+                  )}
+                />
+                {errors.mobileNo && <p className="text-red-500 text-xs">{errors.mobileNo.message}</p>}
+              </div>
 
               {/* WhatsApp Number */}
               <div>
