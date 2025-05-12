@@ -11,15 +11,15 @@ const ProtectedRoute = ({ children }) => {
 
   try {
     const decodedToken = jwtDecode(token);
-    const currentTime = Date.now() / 3600; 
+    const currentTime = Math.floor(Date.now() / 1000); // Convert milliseconds to seconds
 
     if (decodedToken.exp < currentTime) {
-      Cookies.remove("token"); 
+      Cookies.remove("token");
       return <Navigate to="/" />;
     }
   } catch (error) {
     console.error("Invalid token:", error);
-    Cookies.remove("token"); 
+    Cookies.remove("token");
     return <Navigate to="/" />;
   }
 
